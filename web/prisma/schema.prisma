@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ApplicationStatus {
+  SAVED
+  PREPARING
+  APPLIED
+  INTERVIEW
+  ACCEPTED
+  REJECTED
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model User {
+  id          String       @id @default(cuid())
+  email       String       @unique
+  name        String?
+  internships Internship[]
+  profile     Profile?
+  createdAt   DateTime     @default(now())
+}
+
+model Profile {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName         String
+  major               String
+  year                String
+  bio                 String?  @db.Text
+  university          String
+  email               String
+  location            String
+  preferredFields     Json
+  preferredLocation   String
+  skills              Json
+  tools               Json
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Internship {
+  id               String             @id @default(cuid())
+  companyName      String
+  position         String
+  location         String?
+  deadline         DateTime?
+  description      String?            @db.Text
+  requirements     Json
+  skills           Json
+  applicationUrl   String?
+  hrEmail          String?
+  sourceUrl        String?
+  status           ApplicationStatus  @default(SAVED)
+  priority         Priority           @default(MEDIUM)
+  notes            String?            @db.Text
+  applicationDate  DateTime?
+  followUpDate     DateTime?
+  interviewDate    DateTime?
+  interviewTime    String?
+  interviewLink    String?
+  preparationNotes String?            @db.Text
+  translations     Json               @default("{}")
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  userId           String
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents        Document[]
+  tags             Tag[]
+  extractions      ExtractionHistory[]
+}
+
+model Document {
+  id           String     @id @default(cuid())
+  name         String
+  completed    Boolean    @default(false)
+  internshipId String
+  internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Tag {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  internships Internship[]
+}
+
+model ExtractionHistory {
+  id            String      @id @default(cuid())
+  sourceType    String
+  sourceUrl     String?
+  filename      String?
+  extractedText String      @db.Text
+  aiResult      Json?
+  extractedAt   DateTime    @default(now())
+  internshipId  String?
+  internship    Internship? @relation(fields: [internshipId], references: [id], onDelete: SetNull)
+  userId        String?
+}
