@@ -77,18 +77,11 @@ Give icon-only controls accessible names.
 
 ## Status and Priority
 
-Statuses:
-
-`saved`, `preparing`, `applied`, `interview`, `accepted`, `rejected`.
-
-Existing status color families:
-
-- Saved: slate.
-- Preparing: indigo.
-- Applied: blue.
-- Interview: violet.
-- Accepted: emerald.
-- Rejected: rose.
+Application status values and status badge color families are deferred.
+The current build does not expose application-status controls or require
+status badges. The previously proposed values (`saved`, `preparing`,
+`applied`, `interview`, `accepted`, `rejected`) and their color assignments
+should not be treated as implemented UI.
 
 Priorities:
 

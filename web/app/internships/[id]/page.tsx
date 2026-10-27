@@ -164,13 +164,13 @@ export default function InternshipDetailPage() {
             <CardTitle>Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="grid gap-1 border-b border-border/70 pb-3 sm:grid-cols-[140px_1fr]">
+            <div className="grid gap-1 rounded-lg border border-border/70 p-3 sm:grid-cols-[140px_1fr]">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">HR email</p>
               <p className={internship.hrEmail ? "text-sm text-navy" : "text-sm text-muted-foreground"}>
                 {internship.hrEmail || "HR email not found. Add it manually."}
               </p>
             </div>
-            <div className="grid gap-1 border-b border-border/70 pb-3 sm:grid-cols-[140px_1fr]">
+            <div className="grid gap-1 rounded-lg border border-border/70 p-3 sm:grid-cols-[140px_1fr]">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Company</p>
               <p className="text-sm text-navy">{internship.company}</p>
             </div>
@@ -183,7 +183,7 @@ export default function InternshipDetailPage() {
                 ["Notes", "notes", internship.notes || ""],
               ] as const
             ).map(([label, field, original]) => (
-              <div key={field} className="border-b border-border/70 pb-3">
+              <div key={field} className="rounded-lg border border-border/70 p-3">
                 <TranslatableReadout
                   label={label}
                   field={field}
@@ -195,7 +195,7 @@ export default function InternshipDetailPage() {
               </div>
             ))}
             {info.map(([label, value]) => (
-              <div key={label} className="grid gap-1 border-b border-border/70 pb-3 last:border-0 sm:grid-cols-[140px_1fr]">
+              <div key={label} className="grid gap-1 rounded-lg border border-border/70 p-3 sm:grid-cols-[140px_1fr]">
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
                 {label === "Application link" && internship.url ? (
                   <a

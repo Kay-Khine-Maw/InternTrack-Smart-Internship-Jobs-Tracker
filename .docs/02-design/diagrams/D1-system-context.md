@@ -23,14 +23,15 @@ The Student uses InternTrack to:
 - Submit internship URLs or supported files.
 - Review and correct extracted drafts.
 - Save, search, reopen and delete records.
-- Manage status, priority, checklists and notes.
+- Manage priority, checklists and notes. Application-status tracking is deferred.
 - Track deadlines, follow-ups and interviews.
 - Translate supported fields into English.
 
 ## System Boundaries
 
-- Authentication and authorization are handled within the system boundary.
-- An external identity provider should be added only if selected.
+- Local email/password authentication and authorization are handled within the system boundary.
+- PostgreSQL-backed sessions use an HTTP-only `interntrack_session` cookie.
+- New accounts start with blank profile and internship data; records are isolated by authenticated user.
 - PostgreSQL is internal and appears in D3.
 - Uploaded files are inputs supplied by the Student.
 - Gemini is the sole AI provider.
@@ -49,7 +50,7 @@ The Student uses InternTrack to:
 
 - F1: Profile management.
 - F2–F6: Capture, extraction, review, saving and duplicates.
-- F7–F10: Tracking, preparation, dates and search.
+- F7–F10: Internship details and priority, preparation, dates and search.
 - F11: Translation.
 - F12: Deletion.
 - F13: Authentication and session access.

@@ -5,6 +5,7 @@ export type AppErrorCode =
   | "DATABASE_FAILURE"
   | "EXTRACT_FAILURE"
   | "NOT_FOUND"
+  | "UNAUTHENTICATED"
   | "VALIDATION"
   | "DUPLICATE";
 

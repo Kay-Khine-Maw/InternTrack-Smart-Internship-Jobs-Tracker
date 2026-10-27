@@ -3,7 +3,9 @@ import { z } from "zod";
 export const resumeSchema = z.object({
   displayName: z.string().nullable().default(null),
   contact: z.object({ phone: z.string().nullable().default(null), email: z.string().nullable().default(null) }).default({ phone: null, email: null }),
-  location: z.string().nullable().default(null),
+  address: z.string().nullable().default(null),
+  year: z.string().nullable().default(null),
+  major: z.string().nullable().default(null),
   education: z.array(z.object({
     school: z.string(),
     degree: z.string().nullable().default(null),

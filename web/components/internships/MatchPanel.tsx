@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { Progress } from "@/components/ui/progress";
 import type { MatchResult } from "@/lib/matching";
 
 export function MatchPanel({ internshipId }: { internshipId: string }) {
@@ -46,10 +47,8 @@ export function MatchPanel({ internshipId }: { internshipId: string }) {
       ) : null}
       {result?.state === "ready" ? (
         <>
-          <div className="flex items-end justify-between gap-3">
-            <p className="text-3xl font-semibold text-navy">{result.score}% <span className="text-sm font-normal text-muted-foreground">Provisional</span></p>
-            <p className="text-right text-xs text-muted-foreground">Assessment coverage<br />{result.coverage}%</p>
-          </div>
+          <p className="text-3xl font-semibold text-navy">{result.score}%</p>
+          <Progress className="mt-3" value={result.score ?? 0} />
           <p className="mt-2 text-xs text-muted-foreground">This percentage concerns assessed requirements and is not a hiring-success prediction.</p>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {result.criteria.map((criterion) => (

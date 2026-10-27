@@ -7,7 +7,7 @@ import { extractFromPdf } from "@/lib/extractors/pdfExtractor";
 import { extractFromUrl } from "@/lib/extractors/urlExtractor";
 import { findDuplicateInternship } from "@/lib/server/duplicates";
 import { AppError, databaseError, isAppError } from "@/lib/server/errors";
-import { getDemoUser } from "@/lib/server/demoUser";
+import { getCurrentUser } from "@/lib/server/auth";
 import { prisma } from "@/lib/prisma";
 import { hasAnyExtractedField, hydrateFromSourceText } from "@/lib/extract-mapper";
 
@@ -158,7 +158,7 @@ export async function POST(request: Request) {
 
     let historyId: string | null = null;
     try {
-      const user = await getDemoUser();
+      const user = await getCurrentUser();
       const history = await prisma.extractionHistory.create({
         data: {
           sourceType,

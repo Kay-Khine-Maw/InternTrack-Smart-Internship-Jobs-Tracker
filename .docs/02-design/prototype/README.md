@@ -5,8 +5,9 @@
 The prototype describes the intended user experience of the whole system.
 
 It covers the core workflow and supporting screens.
-Prototype interactions do not prove working authentication,
-AI processing or database persistence.
+Prototype interactions do not prove production readiness, AI processing
+or database persistence. Local authentication and database persistence are
+implemented in the application and are documented in the backlog.
 
 Implementation and verification status remain in the backlog.
 
@@ -25,15 +26,18 @@ The Student remains in control of the final saved information.
 
 ## Main Screens
 
-### 1. Sign-In
+### 1. Sign-In and Sign-Up
 
-- Provide access through the selected authentication method.
+- Provide local email/password sign-in and sign-up.
 - Show authentication errors clearly.
 - Explain session expiry and allow sign-in again.
+- Allow sign-out and invalidate the active session.
+- Keep each account's profile and internship records separate.
 
-Trace: F13; B13.
+Trace: F13; B12.
 
-A prototype sign-in screen does not establish real authentication.
+The current implementation is local-development authentication. Account recovery,
+email verification, rate limiting and production session hardening remain future work.
 
 ### 2. Dashboard
 
@@ -153,15 +157,15 @@ Follow the shared design system for:
 - Colors and typography.
 - Spacing and layout.
 - Buttons, inputs and dialogs.
-- Status and priority badges.
+- Priority badges; application-status badges are deferred.
 - Keyboard focus and accessibility.
 - Responsive behavior.
 
 Use the same terminology as the specification.
 
-Statuses:
-
-`saved`, `preparing`, `applied`, `interview`, `accepted`, `rejected`.
+Application status values and status badge colors are deferred from the
+current prototype. Do not present the previously proposed status list as
+implemented behavior.
 
 Priorities:
 

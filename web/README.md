@@ -32,10 +32,11 @@ Supporting features include profiles, application tracking, checklists, calendar
 
 ## Authentication and Access
 
-The whole system requires authenticated sessions and server-side ownership checks for protected records.
+The application provides local email/password sign-up, sign-in and sign-out. Sessions are stored in PostgreSQL and represented in the browser by an HTTP-only `interntrack_session` cookie. Protected APIs derive the user from that verified session and apply server-side ownership checks.
 
-A shared demo user does not provide authenticated isolation.
-Any remaining demo-user behavior must be tracked as an implementation limitation under F13 / B13.
+The existing local demo account remains separate. Every newly created account starts with a blank profile and no internships, documents, or extraction history.
+
+The current password policy requires at least eight characters. For production use, add account recovery, email verification, rate limiting, CSRF protections appropriate to the deployment, and a documented session-revocation policy.
 
 ## Commands
 

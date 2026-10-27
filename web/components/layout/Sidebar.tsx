@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Briefcase, CalendarDays, LayoutDashboard, X } from "lucide-react";
+import { Briefcase, CalendarDays, LayoutDashboard, LogOut, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -32,7 +32,7 @@ export function Sidebar({
       />
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-border bg-white px-4 py-6 transition-transform lg:static lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-border bg-white px-4 pb-2 pt-6 transition-transform lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -76,9 +76,12 @@ export function Sidebar({
             );
           })}
         </nav>
-        <p className="mt-auto px-2 text-xs leading-5 text-muted-foreground">
-          Track internships, deadlines, and documents in one place.
-        </p>
+        <div className="mt-auto border-t border-border pt-2">
+          <button type="button" className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-navy/70 transition-colors hover:bg-red-50 hover:text-red-700" onClick={async () => { await fetch("/api/auth/signout", { method: "POST" }); window.location.href = "/auth"; }}>
+            <LogOut className="h-4 w-4" />
+            Log out
+          </button>
+        </div>
       </aside>
     </>
   );

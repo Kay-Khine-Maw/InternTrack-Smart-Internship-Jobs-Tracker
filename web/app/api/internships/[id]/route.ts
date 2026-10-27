@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getDemoUser } from "@/lib/server/demoUser";
+import { getCurrentUser } from "@/lib/server/auth";
 import { AppError, databaseError, isAppError } from "@/lib/server/errors";
 import { parseOptionalDate, toClientInternship, toDbPriority } from "@/lib/server/mapInternship";
 import { parseTranslations } from "@/lib/translations";
 import { readInternshipExtras, writeHrEmail, writeTranslations } from "@/lib/server/translationsDb";
 import type { Priority } from "@/lib/types";
+import { normalizeMatchingRequirements } from "@/lib/matching";
 
 const updateSchema = z.object({
   companyName: z.string().trim().min(1).optional(),
@@ -24,13 +25,13 @@ const updateSchema = z.object({
   sourceUrl: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
   priority: z.enum(["high", "medium", "low"]).optional(),
-  matchingRequirements: z.array(z.object({
+  matchingRequirements: z.preprocess((value) => normalizeMatchingRequirements(value), z.array(z.object({
     label: z.string().trim().min(1),
     category: z.enum(["skill", "tool", "education", "language", "location", "availability", "other"]),
     classification: z.enum(["required", "preferred"]),
     sourceExcerpt: z.string().optional(),
     mandatory: z.boolean().optional(),
-  })).optional(),
+  })).optional()),
   tags: z.array(z.string()).optional(),
   documents: z
     .array(z.object({ id: z.string().optional(), name: z.string(), completed: z.boolean().optional() }))
@@ -56,7 +57,7 @@ function jsonError(error: unknown) {
 }
 
 async function loadOwned(id: string) {
-  const user = await getDemoUser();
+  const user = await getCurrentUser();
   const row = await prisma.internship.findFirst({
     where: { id, userId: user.id },
     include: { documents: true, tags: true },

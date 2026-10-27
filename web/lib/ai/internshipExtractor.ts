@@ -221,7 +221,7 @@ function buildUserContent(rawText: string, sourceUrl?: string) {
     sourceUrl ? `Source URL: ${sourceUrl}` : null,
     "Job posting text:",
     rawText.slice(0, MAX_CHARS),
-    "Return only JSON with keys: companyName, position, location, deadline, description, requirements, requiredDocuments, applicationUrl, hrEmail, skills.",
+    "Return only JSON with keys: companyName, position, location, deadline, description, requirements, requiredDocuments, applicationUrl, hrEmail, skills, matchingRequirements.",
   ]
     .filter(Boolean)
     .join("\n\n");

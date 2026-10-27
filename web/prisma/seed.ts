@@ -20,13 +20,13 @@ async function main() {
     user.id,
     "Nway Ei Hlaing",
     "Computer Engineering",
-    "3rd Year",
+    "",
     "Computer Engineering student passionate about building impactful technology. Seeking internships in software engineering and product development.",
     "Chulalongkorn University",
     "nway.ei@student.chula.ac.th",
     "Bangkok, Thailand",
     JSON.stringify(["Software Engineering", "Full-Stack Development", "Machine Learning"]),
-    "Bangkok, Thailand",
+    "",
     JSON.stringify(["Java", "Python", "React"]),
     JSON.stringify(["Git", "Figma", "VS Code"])
   );
@@ -45,6 +45,10 @@ async function main() {
   const cloud = await tag("Cloud");
   const interview = await tag("Interview");
   const product = await tag("Product");
+  const frontend = await tag("Frontend");
+  const overdue = await tag("Overdue");
+  const data = await tag("Data");
+  const local = await tag("Local");
 
   await prisma.internship.create({
     data: {
@@ -152,6 +156,58 @@ async function main() {
           { name: "Resume", completed: true },
           { name: "Transcript", completed: true },
           { name: "Portfolio", completed: true },
+          { name: "Cover Letter", completed: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.internship.create({
+    data: {
+      companyName: "Grab",
+      position: "Frontend Engineering Intern",
+      location: "Remote, Southeast Asia",
+      deadline: new Date("2026-09-18"),
+      description: "Contribute to frontend experiences for Grab products across Southeast Asia.",
+      requirements: ["Frontend development", "Communication"],
+      skills: ["TypeScript", "React"],
+      applicationUrl: "https://www.grab.careers/jobs/frontend-engineering-intern",
+      sourceUrl: "https://www.grab.careers/jobs/frontend-engineering-intern",
+      priority: "HIGH",
+      notes: "Deadline passed — decide whether to still submit or archive.",
+      userId: user.id,
+      tags: { connect: [{ id: frontend.id }, { id: overdue.id }] },
+      documents: {
+        create: [
+          { name: "Resume", completed: true },
+          { name: "Transcript", completed: false },
+          { name: "Portfolio", completed: false },
+          { name: "Cover Letter", completed: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.internship.create({
+    data: {
+      companyName: "LINE MAN Wongnai",
+      position: "Data Analyst Intern",
+      location: "Bangkok, Thailand",
+      deadline: new Date("2026-11-02"),
+      description: "Analyze marketplace data and prepare insights for local product teams.",
+      requirements: ["SQL", "Data analysis"],
+      skills: ["SQL", "Python"],
+      applicationUrl: "https://careers.linemanwongnai.com/data-analyst-intern",
+      sourceUrl: "https://careers.linemanwongnai.com/data-analyst-intern",
+      priority: "LOW",
+      notes: "Need SQL practice set and a one-page analytics case study.",
+      userId: user.id,
+      tags: { connect: [{ id: data.id }, { id: local.id }] },
+      documents: {
+        create: [
+          { name: "Resume", completed: false },
+          { name: "Transcript", completed: false },
+          { name: "Portfolio", completed: false },
           { name: "Cover Letter", completed: false },
         ],
       },

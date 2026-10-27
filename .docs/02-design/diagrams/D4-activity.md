@@ -4,10 +4,12 @@
 
 This diagram shows the whole system's core workflow:
 
-Sign in → capture → extract → review → save → reopen.
+Sign up or sign in → capture → extract → review → save → reopen.
 
 It includes decisions, cancellation and failure paths.
 Supporting workflows are described in the user journey and D2.
+Application-status tracking remains deferred; priority, checklist, dates,
+search, translation and deletion follow the same authorization rules.
 
 Implementation and acceptance status remain in the backlog.
 
@@ -18,7 +20,7 @@ flowchart TD
     Start(( )) --> Session{"Valid session?"}
 
     Session -->|Yes| Capture
-    Session -->|No| SignIn("Sign in")
+    Session -->|No| SignIn("Sign in or sign up")
     SignIn --> AuthResult{"Authentication successful?"}
     AuthResult -->|No| AuthError("Show sign-in error")
     AuthError --> SignIn

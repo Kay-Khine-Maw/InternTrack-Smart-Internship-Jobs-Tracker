@@ -68,6 +68,9 @@ Review is an AI safeguard. It is not a reported student pain point.
 - Reject unauthorized or expired-session requests.
 - Prevent access to another Student's records.
 - Protect related documents, history and translations.
+- Implemented with local email/password accounts, salted scrypt hashes, PostgreSQL sessions and an HTTP-only `interntrack_session` cookie.
+- New accounts start with blank profile and internship data; demo records remain separate.
+- Production hardening still requires recovery, email verification, rate limiting and deployment-appropriate CSRF/session controls.
 
 ## Supporting Features
 
@@ -83,6 +86,7 @@ Supporting features extend the core workflow. Their priorities follow the specif
 - Show update failures clearly.
 - Upload PDF/DOCX resumes for temporary Gemini extraction.
 - Review extracted facts and explicitly choose when to apply them.
+- Extracted address, major and year are preserved when explicitly present; missing year and preferred location remain blank.
 
 ### F14 — Explainable Profile Matching
 
@@ -90,6 +94,8 @@ Supporting features extend the core workflow. Their priorities follow the specif
 - Show provisional score and assessment coverage.
 - Explain matched, not met and unknown criteria.
 - Do not present the result as a hiring prediction.
+- Normalize category aliases and support legacy records that only contain requirements and skills.
+- Use punctuation-, phrase- and common singular/plural-tolerant deterministic comparisons.
 
 ### F7 — Internship Details and Priority
 

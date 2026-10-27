@@ -5,14 +5,30 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { PriorityBadge } from "./PriorityBadge";
 import { deadlineLabel, formatShortDate, isDeadlineSoon } from "@/lib/dates";
-import { documentProgress } from "@/lib/store";
 import { companyInitials, cn } from "@/lib/utils";
 import type { Internship } from "@/lib/types";
+import type { MatchResult } from "@/lib/matching";
+import { useEffect, useState } from "react";
 
 export function InternshipCard({ internship }: { internship: Internship }) {
-  const { completed, total } = documentProgress(internship.documents);
+  const [match, setMatch] = useState<MatchResult | null>(null);
   const soon = isDeadlineSoon(internship.deadline, 7);
   const hasDeadline = Boolean(internship.deadline);
+
+  useEffect(() => {
+    let active = true;
+    void fetch(`/api/internships/${internship.id}/match`)
+      .then(async (response) => {
+        const body = (await response.json()) as { match?: MatchResult };
+        if (active && response.ok && body.match) setMatch(body.match);
+      })
+      .catch(() => {
+        if (active) setMatch(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [internship.id]);
 
   return (
     <Link href={`/internships/${internship.id}`} className="block h-full">
@@ -43,12 +59,10 @@ export function InternshipCard({ internship }: { internship: Internship }) {
         )}
         <div className="mt-3 space-y-2">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Documents</span>
-            <span>
-              {completed} of {total} documents
-            </span>
+            <span>Profile match</span>
+            <span>{match?.score === null || match?.score === undefined ? "Not available" : `${match.score}%`}</span>
           </div>
-          <Progress value={total ? (completed / total) * 100 : 0} />
+          <Progress value={match?.score ?? 0} />
         </div>
       </Card>
     </Link>

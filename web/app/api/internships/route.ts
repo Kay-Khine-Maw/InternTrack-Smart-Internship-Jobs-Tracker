@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getDemoUser } from "@/lib/server/demoUser";
+import { getCurrentUser } from "@/lib/server/auth";
 import { findDuplicateInternship } from "@/lib/server/duplicates";
 import { AppError, databaseError, isAppError } from "@/lib/server/errors";
 import { parseOptionalDate, toClientInternship, toDbPriority } from "@/lib/server/mapInternship";
 import { parseTranslations } from "@/lib/translations";
 import { readInternshipExtras, writeHrEmail, writeTranslations } from "@/lib/server/translationsDb";
 import type { Priority } from "@/lib/types";
+import { normalizeMatchingRequirements } from "@/lib/matching";
 
 const createSchema = z.object({
   companyName: z.string().trim().min(1, "Company is required."),
@@ -27,13 +28,13 @@ const createSchema = z.object({
   sourceUrl: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
   priority: z.enum(["high", "medium", "low"]).optional(),
-  matchingRequirements: z.array(z.object({
+  matchingRequirements: z.preprocess((value) => normalizeMatchingRequirements(value), z.array(z.object({
     label: z.string().trim().min(1),
     category: z.enum(["skill", "tool", "education", "language", "location", "availability", "other"]),
     classification: z.enum(["required", "preferred"]),
     sourceExcerpt: z.string().optional(),
     mandatory: z.boolean().optional(),
-  })).optional(),
+  })).optional()),
   extractionHistoryId: z.string().optional().nullable(),
   addAnyway: z.boolean().optional(),
   translations: z.unknown().optional(),
@@ -55,7 +56,7 @@ function jsonError(error: unknown) {
 
 export async function GET() {
   try {
-    const user = await getDemoUser();
+    const user = await getCurrentUser();
     const rows = await prisma.internship.findMany({
       where: { userId: user.id },
       include: { documents: true, tags: true },
@@ -77,7 +78,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = createSchema.parse(await request.json());
-    const user = await getDemoUser();
+    const user = await getCurrentUser();
 
     if (!body.addAnyway) {
       const match = await findDuplicateInternship({

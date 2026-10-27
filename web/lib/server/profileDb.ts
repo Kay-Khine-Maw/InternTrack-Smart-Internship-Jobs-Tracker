@@ -1,6 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import { DEFAULT_PROFILE, toStudentProfile, type StudentProfile } from "@/lib/profile";
+import { createEmptyProfile, toStudentProfile, type StudentProfile } from "@/lib/profile";
 
 type ProfileRow = Record<string, unknown> & {
   displayName: string;
@@ -22,7 +22,8 @@ function rowToProfile(row: ProfileRow): StudentProfile {
 
 const profileColumns = `"displayName", major, year, bio, university, email, location, "preferredFields", "preferredLocation", skills, tools,
   "resumeSummary", "resumeContact", "resumeEducation", "resumeExperience", "resumeProjects", "resumeLanguages", "resumeLinks",
-  "workArrangement", "relocationWillingness", "startAvailability", "internshipDuration", "profileVersion"`;
+  "workArrangement", "relocationWillingness", "startAvailability", "internshipDuration",
+  "internshipPeriod", "profileVersion"`;
 
 export async function readOrCreateProfile(userId: string): Promise<StudentProfile> {
   const existing = await prisma.$queryRawUnsafe<ProfileRow[]>(
@@ -31,7 +32,8 @@ export async function readOrCreateProfile(userId: string): Promise<StudentProfil
   );
   if (existing[0]) return rowToProfile(existing[0]);
 
-  const created = rowToProfile(DEFAULT_PROFILE);
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } });
+  const created = createEmptyProfile(user?.name ?? "", user?.email ?? "");
   await writeProfile(userId, created);
   return created;
 }
@@ -41,9 +43,9 @@ export async function writeProfile(userId: string, profile: StudentProfile): Pro
   const result = await prisma.$queryRawUnsafe<ProfileRow[]>(
     `INSERT INTO "Profile" (id, "userId", "displayName", major, year, bio, university, email, location, "preferredFields", "preferredLocation", skills, tools,
       "resumeSummary", "resumeContact", "resumeEducation", "resumeExperience", "resumeProjects", "resumeLanguages", "resumeLinks",
-      "workArrangement", "relocationWillingness", "startAvailability", "internshipDuration", "profileVersion", "createdAt", "updatedAt")
+      "workArrangement", "relocationWillingness", "startAvailability", "internshipDuration", "internshipPeriod", "profileVersion", "createdAt", "updatedAt")
      VALUES (concat('prf_', substr(md5(random()::text), 1, 20)), $1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10, $11::jsonb, $12::jsonb,
-      $13, $14::jsonb, $15::jsonb, $16::jsonb, $17::jsonb, $18::jsonb, $19::jsonb, $20, $21, $22, $23, 1, NOW(), NOW())
+      $13, $14::jsonb, $15::jsonb, $16::jsonb, $17::jsonb, $18::jsonb, $19::jsonb, $20, $21, $22, $23, $24::jsonb, 1, NOW(), NOW())
      ON CONFLICT ("userId") DO UPDATE SET
        "displayName" = EXCLUDED."displayName",
        major = EXCLUDED.major,
@@ -67,6 +69,7 @@ export async function writeProfile(userId: string, profile: StudentProfile): Pro
        "relocationWillingness" = EXCLUDED."relocationWillingness",
        "startAvailability" = EXCLUDED."startAvailability",
        "internshipDuration" = EXCLUDED."internshipDuration",
+       "internshipPeriod" = EXCLUDED."internshipPeriod",
        "profileVersion" = "Profile"."profileVersion" + 1,
        "updatedAt" = NOW()
      RETURNING ${profileColumns}`,
@@ -89,10 +92,11 @@ export async function writeProfile(userId: string, profile: StudentProfile): Pro
     JSON.stringify(next.resumeProjects),
     JSON.stringify(next.resumeLanguages),
     JSON.stringify(next.resumeLinks),
-    next.workArrangement || null,
+    null,
     next.relocationWillingness,
-    next.startAvailability || null,
-    next.internshipDuration || null
+    null,
+    null,
+    JSON.stringify(next.internshipPeriod)
   );
   return rowToProfile(result[0] ?? next);
 }

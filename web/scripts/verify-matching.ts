@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { calculateMatch, type MatchingRequirement } from "../lib/matching";
+import { calculateMatch, matchingRequirementsFromLegacy, type MatchingRequirement } from "../lib/matching";
 import { resumeSchema } from "../lib/resume-schema";
 import { DEFAULT_PROFILE } from "../lib/profile";
 
@@ -23,9 +23,26 @@ assert.equal(result.criteria.find((item) => item.label === "JavaScript")?.result
 assert.equal(result.criteria.find((item) => item.label === "French")?.result, "unknown");
 assert.ok(result.coverage > 0 && result.coverage <= 100);
 
+const qaResult = calculateMatch({
+  ...profile,
+  skills: ["Manual testing", "Test case design", "REST API testing"],
+}, [
+  { label: "manual software testing", category: "other", classification: "required" },
+  { label: "test-case design", category: "skill", classification: "required" },
+  { label: "APIs", category: "tool", classification: "preferred" },
+]);
+assert.equal(qaResult.criteria.find((item) => item.label === "manual software testing")?.result, "matched");
+assert.equal(qaResult.criteria.find((item) => item.label === "test-case design")?.result, "matched");
+assert.equal(qaResult.criteria.find((item) => item.label === "APIs")?.result, "matched");
+assert.ok((qaResult.score ?? 0) > 0);
+
 const empty = calculateMatch(profile, []);
 assert.equal(empty.state, "insufficient_requirements");
 assert.equal(empty.score, null);
+
+const legacy = matchingRequirementsFromLegacy(["SQL"], ["Python"]);
+assert.equal(legacy.length, 2);
+assert.equal(calculateMatch({ ...profile, skills: ["SQL"] }, legacy).state, "ready");
 
 const validated = resumeSchema.parse({ skills: ["Python"], tools: [], education: [], experience: [], projects: [], languages: [], contact: {}, links: {} });
 assert.deepEqual(validated.skills, ["Python"]);

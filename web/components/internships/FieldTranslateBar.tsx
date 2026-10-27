@@ -5,19 +5,9 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { InternshipTranslations, TranslatableField } from "@/lib/translations";
 
-export const TRANSLATE_ICON_SRC = "/google-translate.png";
-
 function TranslateIcon({ spinning }: { spinning?: boolean }) {
-  if (spinning) return <Loader2 className="h-4 w-4 animate-spin text-accent-deep" />;
-  return (
-    <img
-      src={TRANSLATE_ICON_SRC}
-      alt=""
-      width={16}
-      height={16}
-      className="h-4 w-4 object-contain"
-    />
-  );
+  if (spinning) return <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />;
+  return null;
 }
 
 function ModeLink({
@@ -38,7 +28,7 @@ function ModeLink({
       onClick={onClick}
       className={cn(
         "text-xs disabled:opacity-60",
-        active ? "font-semibold text-accent-deep" : "text-muted-foreground hover:text-navy"
+        active ? "font-semibold text-accent-deep underline underline-offset-2" : "text-muted-foreground underline underline-offset-2 hover:text-navy"
       )}
     >
       {children}
@@ -76,10 +66,11 @@ export function FieldTranslateBar({
             type="button"
             onClick={onTranslate}
             disabled={busy}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-md hover:bg-accent-soft disabled:opacity-70"
+            className="inline-flex h-7 items-center justify-center rounded-md px-1 text-xs text-muted-foreground underline underline-offset-2 hover:bg-accent-soft hover:text-navy disabled:opacity-70"
             aria-label="Translate"
           >
             <TranslateIcon spinning={busy} />
+            {!busy ? "See Translation" : null}
           </button>
         ) : (
           <>

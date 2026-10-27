@@ -76,7 +76,9 @@ Credentials and database access remain server-side.
 - Check ownership of records and related data.
 - Handle sign-out and session invalidation.
 
-The authentication method remains an implementation decision.
+The current implementation uses local email/password authentication.
+Passwords are stored as salted scrypt hashes, and PostgreSQL-backed sessions
+are represented in the browser by an HTTP-only `interntrack_session` cookie.
 No external identity provider is assumed.
 
 ### Server Processing
@@ -105,11 +107,13 @@ Gemini is the sole AI provider.
 
 ### Persistence
 
-PostgreSQL stores profiles, internships, checklists, tags, extraction history and related translation data.
+PostgreSQL stores users, password hashes, authenticated sessions, profiles,
+internships, checklists, tags, extraction history and related translation data.
 
 Use valid ownership relationships and consistent multi-step writes.
 
-The authentication approach determines how account and session information is stored.
+`AuthSession` stores server-side sessions with expiry and ownership indexes.
+New accounts receive a blank profile and no copied demo internships.
 
 ### Retention and Cleanup
 
@@ -125,6 +129,8 @@ Cleanup is a required capability, not a claim of implementation.
 - Website fetching must restrict unsafe destinations.
 - AI output remains a draft until explicitly saved after review.
 - Failed persistence must not appear successful.
+- Application-status tracking and status badge colors are deferred; priority remains supported.
+- Matching uses reviewed requirements, normalized categories and legacy requirement fallback.
 - Extraction history is separate from traffic/security logs.
 - Deployment logging must follow applicable rules in `rule.md`.
 

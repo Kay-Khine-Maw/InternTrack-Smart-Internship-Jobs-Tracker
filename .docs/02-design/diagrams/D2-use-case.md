@@ -44,14 +44,14 @@ This diagram does not show step order. D4 shows the interaction sequence.
 
 ## Traceability
 
-- Sign In / Sign Out: F13; B13.
+- Sign Up / Sign In / Sign Out: F13; B12.
 - Capture Source: F2; B02.
 - Extract Draft: F3; B03.
 - Review and Correct: F4; B04.
 - Save / Reopen: F5; B05.
 - Evaluate Duplicate Policy: F6; B06.
 - Maintain Profile: F1; B10.
-- Update Details, Status and Priority: F7; B01, B07.
+- Update Details and Priority: F7; B01, B07. Application-status tracking is deferred.
 - Checklist and Preparation Notes: F8; B08.
 - Dates and Calendar: F9; B09.
 - Search and Filter: F10; B20.
@@ -60,6 +60,9 @@ This diagram does not show step order. D4 shows the interaction sequence.
 
 Privacy, retention and access-control requirements apply across
 these use cases. They are detailed in the specification and rules.
+
+Application status values and status badge colors are deferred from the
+current build. Priority values remain supported.
 
 ## Scope Boundaries
 

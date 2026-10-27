@@ -1,4 +1,5 @@
 import type { DocumentItem, ExtractedInternshipData, ReviewDraft } from "@/lib/types";
+import { normalizeMatchingRequirements } from "@/lib/matching";
 
 function asString(value: unknown): string {
   if (typeof value === "string") return value.trim();
@@ -190,9 +191,7 @@ export function normalizeExtractedData(raw: unknown): ExtractedInternshipData {
     applicationUrl: contacts.applicationUrl,
     hrEmail: contacts.hrEmail,
     skills: asStringArray(obj.skills ?? obj.tags),
-    matchingRequirements: Array.isArray(obj.matchingRequirements)
-      ? obj.matchingRequirements.filter((item): item is import("@/lib/matching").MatchingRequirement => Boolean(item && typeof item === "object" && "label" in item && "category" in item && "classification" in item))
-      : [],
+    matchingRequirements: normalizeMatchingRequirements(obj.matchingRequirements),
   };
 }
 

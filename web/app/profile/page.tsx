@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { DEFAULT_PROFILE, profileInitial, type StudentProfile } from "@/lib/profile";
+import { createEmptyProfile, profileInitial, type StudentProfile } from "@/lib/profile";
 import type { ResumeDraft } from "@/lib/resume-schema";
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<StudentProfile>(DEFAULT_PROFILE);
-  const [draft, setDraft] = useState<StudentProfile>(DEFAULT_PROFILE);
+  const [profile, setProfile] = useState<StudentProfile>(createEmptyProfile());
+  const [draft, setDraft] = useState<StudentProfile>(createEmptyProfile());
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -72,13 +72,20 @@ export default function ProfilePage() {
 
   function applyResumeDraft() {
     if (!resumeDraft) return;
+    const extractedMajor = resumeDraft.education
+      .map((item) => item.major?.trim())
+      .find((value): value is string => Boolean(value));
+    const extractedSchool = resumeDraft.education
+      .map((item) => item.school.trim())
+      .find(Boolean);
     setDraft((current) => ({
       ...current,
       displayName: resumeDraft.displayName || current.displayName,
       email: resumeDraft.contact.email || current.email,
-      location: resumeDraft.location || current.location,
-      major: resumeDraft.education[0]?.major || current.major,
-      university: resumeDraft.education[0]?.school || current.university,
+      location: resumeDraft.address || current.location,
+      major: resumeDraft.major || extractedMajor || current.major,
+      year: resumeDraft.year || "",
+      university: extractedSchool || current.university,
       bio: resumeDraft.summary || current.bio,
       skills: resumeDraft.skills.length ? resumeDraft.skills : current.skills,
       tools: resumeDraft.tools.length ? resumeDraft.tools : current.tools,
@@ -162,7 +169,7 @@ export default function ProfilePage() {
                 <Field label="Year" value={draft.year} onChange={(value) => updateDraft("year", value)} />
                 <Field label="University" value={draft.university} onChange={(value) => updateDraft("university", value)} />
                 <Field label="Email" value={draft.email} onChange={(value) => updateDraft("email", value)} />
-                <Field label="Location" value={draft.location} onChange={(value) => updateDraft("location", value)} />
+                <Field label="Address" value={draft.location} onChange={(value) => updateDraft("location", value)} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="profile-bio">Bio</Label>
@@ -174,9 +181,22 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Work arrangement" value={draft.workArrangement} onChange={(value) => updateDraft("workArrangement", value)} />
-                <Field label="Start availability" value={draft.startAvailability} onChange={(value) => updateDraft("startAvailability", value)} />
-                <Field label="Internship duration" value={draft.internshipDuration} onChange={(value) => updateDraft("internshipDuration", value)} />
+                <div className="space-y-2">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Field
+                      label="Internship Start Date"
+                      type="date"
+                      value={draft.internshipPeriod.start}
+                      onChange={(value) => updateDraft("internshipPeriod", { ...draft.internshipPeriod, start: value })}
+                    />
+                    <Field
+                      label="Internship End Date"
+                      type="date"
+                      value={draft.internshipPeriod.end}
+                      onChange={(value) => updateDraft("internshipPeriod", { ...draft.internshipPeriod, end: value })}
+                    />
+                  </div>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="relocation-willingness">Relocation willingness</Label>
                   <select
@@ -240,9 +260,16 @@ export default function ProfilePage() {
                   <p className="mt-1 text-sm text-amber-900">Existing values are preserved until you choose to use extracted values. You can correct them before saving.</p>
                   <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-amber-950">
                     {resumeDraft.displayName ? <li>Name: {resumeDraft.displayName}</li> : null}
+                    {resumeDraft.year ? <li>Year: {resumeDraft.year}</li> : null}
+                    {resumeDraft.address ? <li>Address: {resumeDraft.address}</li> : null}
                     {resumeDraft.skills.length ? <li>Skills: {resumeDraft.skills.join(", ")}</li> : null}
                     {resumeDraft.tools.length ? <li>Tools: {resumeDraft.tools.join(", ")}</li> : null}
-                    {resumeDraft.education.length ? <li>Education: {resumeDraft.education[0]?.school}</li> : null}
+                    {resumeDraft.education.length ? (
+                      <li>
+                        Education: {resumeDraft.education[0]?.school}
+                        {resumeDraft.education[0]?.major ? ` — ${resumeDraft.education[0].major}` : ""}
+                      </li>
+                    ) : null}
                   </ul>
                   <div className="mt-4 flex gap-2">
                     <Button type="button" onClick={applyResumeDraft}>Use extracted values</Button>
@@ -261,7 +288,7 @@ export default function ProfilePage() {
               <div className="space-y-2.5 text-sm text-navy/80">
                 <InfoRow icon={GraduationCap} text={view.university} />
                 <InfoRow icon={Mail} text={view.email} />
-                <InfoRow icon={MapPin} text={view.location} />
+                <InfoRow icon={MapPin} text={view.location || "Address not set"} />
               </div>
 
               <div className="border-t border-border/80 pt-5">
@@ -271,7 +298,7 @@ export default function ProfilePage() {
 
               <div>
                 <p className="mb-3 text-sm font-medium text-navy">Preferred Location</p>
-                <InfoRow icon={MapPin} text={view.preferredLocation} />
+                <InfoRow icon={MapPin} text={view.preferredLocation || "Not specified"} />
               </div>
 
               <div>
@@ -322,16 +349,18 @@ function Field({
   label,
   value,
   onChange,
+  type = "text",
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  type?: "text" | "date";
 }) {
   const id = label.toLowerCase().replace(/\s+/g, "-");
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
-      <Input id={id} value={value} onChange={(event) => onChange(event.target.value)} />
+      <Input id={id} type={type} value={value} onChange={(event) => onChange(event.target.value)} />
     </div>
   );
 }

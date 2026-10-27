@@ -17,10 +17,8 @@ export type StudentProfile = {
   resumeProjects: Array<{ name: string; summary?: string | null; technologies?: string[] }>;
   resumeLanguages: Array<{ language: string; proficiency?: string | null }>;
   resumeLinks: { portfolio?: string | null; linkedin?: string | null; github?: string | null };
-  workArrangement: string;
   relocationWillingness: boolean | null;
-  startAvailability: string;
-  internshipDuration: string;
+  internshipPeriod: { start: string; end: string };
   profileVersion: number;
 };
 
@@ -33,7 +31,7 @@ export const DEFAULT_PROFILE: StudentProfile = {
   email: "nway.ei@student.chula.ac.th",
   location: "Bangkok, Thailand",
   preferredFields: ["Software Engineering", "Full-Stack Development", "Machine Learning"],
-  preferredLocation: "Bangkok, Thailand",
+  preferredLocation: "",
   skills: ["Java", "Python", "React"],
   tools: ["Git", "Figma", "VS Code"],
   resumeSummary: "",
@@ -43,12 +41,36 @@ export const DEFAULT_PROFILE: StudentProfile = {
   resumeProjects: [],
   resumeLanguages: [],
   resumeLinks: {},
-  workArrangement: "",
   relocationWillingness: null,
-  startAvailability: "",
-  internshipDuration: "",
+  internshipPeriod: { start: "", end: "" },
   profileVersion: 1,
 };
+
+export function createEmptyProfile(displayName = "", email = ""): StudentProfile {
+  return {
+    displayName,
+    major: "",
+    year: "",
+    bio: "",
+    university: "",
+    email,
+    location: "",
+    preferredFields: [],
+    preferredLocation: "",
+    skills: [],
+    tools: [],
+    resumeSummary: "",
+    resumeContact: {},
+    resumeEducation: [],
+    resumeExperience: [],
+    resumeProjects: [],
+    resumeLanguages: [],
+    resumeLinks: {},
+    relocationWillingness: null,
+    internshipPeriod: { start: "", end: "" },
+    profileVersion: 1,
+  };
+}
 
 function asStringList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
@@ -67,12 +89,12 @@ export function toStudentProfile(value: unknown): StudentProfile {
   const row = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
   return {
     displayName: String(row.displayName ?? DEFAULT_PROFILE.displayName).trim() || DEFAULT_PROFILE.displayName,
-    major: String(row.major ?? DEFAULT_PROFILE.major).trim() || DEFAULT_PROFILE.major,
-    year: String(row.year ?? DEFAULT_PROFILE.year).trim() || DEFAULT_PROFILE.year,
-    bio: String(row.bio ?? DEFAULT_PROFILE.bio),
-    university: String(row.university ?? DEFAULT_PROFILE.university).trim() || DEFAULT_PROFILE.university,
-    email: String(row.email ?? DEFAULT_PROFILE.email).trim() || DEFAULT_PROFILE.email,
-    location: String(row.location ?? DEFAULT_PROFILE.location).trim() || DEFAULT_PROFILE.location,
+    major: String(row.major ?? "").trim(),
+    year: String(row.year ?? "").trim(),
+    bio: String(row.bio ?? ""),
+    university: String(row.university ?? "").trim(),
+    email: String(row.email ?? "").trim(),
+    location: String(row.location ?? "").trim(),
     preferredFields: asStringList(row.preferredFields),
     preferredLocation: String(row.preferredLocation ?? "").trim(),
     skills: asStringList(row.skills),
@@ -84,10 +106,11 @@ export function toStudentProfile(value: unknown): StudentProfile {
     resumeProjects: asObjectList(row.resumeProjects) as StudentProfile["resumeProjects"],
     resumeLanguages: asObjectList(row.resumeLanguages) as StudentProfile["resumeLanguages"],
     resumeLinks: asObject(row.resumeLinks) as StudentProfile["resumeLinks"],
-    workArrangement: String(row.workArrangement ?? "").trim(),
     relocationWillingness: typeof row.relocationWillingness === "boolean" ? row.relocationWillingness : null,
-    startAvailability: String(row.startAvailability ?? "").trim(),
-    internshipDuration: String(row.internshipDuration ?? "").trim(),
+    internshipPeriod: {
+      start: String((row.internshipPeriod as Record<string, unknown> | null)?.start ?? "").trim(),
+      end: String((row.internshipPeriod as Record<string, unknown> | null)?.end ?? "").trim(),
+    },
     profileVersion: Number(row.profileVersion) || 1,
   };
 }

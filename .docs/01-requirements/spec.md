@@ -44,11 +44,29 @@ Acceptance criteria:
 
 - The profile supports display name, major, year, bio, university, email, location, preferred fields, preferred location, skills, and tools.
 - Profile data is loaded from and saved to PostgreSQL for the active user.
+- New accounts start with a blank profile apart from the account name and email; demo data is not copied into new accounts.
 - Invalid or incomplete requests return a clear validation error without partially saving the update.
-- Profile access is protected by a server-side ownership boundary when authentication is introduced.
+- Profile access is protected by the authenticated server-side session and ownership boundary.
 - A Student can upload a PDF or DOCX resume for server-side extraction.
-- Extracted resume facts are shown as an editable draft and require explicit profile save.
+- Extracted resume facts such as address, major and year are shown as an editable draft when explicitly present and require explicit profile save.
+- Preferred location and year remain blank when not found rather than receiving fixed defaults.
+- Internship availability is represented by editable internship start and end dates.
 - Re-uploaded values do not silently overwrite existing profile values.
+
+### F13. Authentication and Session Access
+
+**Priority: Must**
+
+As a student, I want secure account access, so that my profile and internship records remain private.
+
+Acceptance criteria:
+
+- The application supports local email/password sign-up, sign-in and sign-out.
+- Passwords are stored as salted hashes; plaintext passwords are not stored.
+- Sessions are stored server-side in PostgreSQL and represented by an HTTP-only `interntrack_session` cookie.
+- Missing, invalid and expired sessions are rejected.
+- Protected records and related data are scoped to the authenticated Student.
+- New accounts start with blank profile and internship data; existing demo data remains separate.
 
 ### F14. Explainable Profile Matching
 
@@ -63,6 +81,9 @@ Acceptance criteria:
 - Missing profile information is `Unknown`, not automatically `Not met`.
 - Mandatory conditions are shown separately from the score.
 - Results are limited to the authorized Student's profile and internship.
+- Requirement category aliases are normalized before validation.
+- Older records with only `requirements` and `skills` receive a fallback assessment.
+- Common punctuation, phrase and singular/plural variations are handled deterministically.
 
 ### F2. Capture an Internship Source
 
@@ -237,7 +258,7 @@ Each legal requirement cites the controlling section in `rule.md`:
 
 ## Out of Scope for the Current Build
 
-- Full authentication and multi-user tenancy
+- Account recovery, email verification, rate limiting and production authentication hardening
 - Sharing internships with other users
 - Sending emails or notifications
 - Payments or subscriptions

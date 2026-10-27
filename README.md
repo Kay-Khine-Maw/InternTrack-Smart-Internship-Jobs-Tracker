@@ -20,7 +20,7 @@ Capture → extract → review and correct → explicitly save → reopen.
 - View dates through a calendar.
 - Manage profiles and search internship records.
 - Upload a PDF or DOCX resume to review profile facts before saving.
-- Review internship requirements and view a provisional profile match with assessment coverage.
+- Review internship requirements and view a deterministic provisional profile-match percentage with criterion explanations.
 - Translate supported fields into English.
 
 Requirements and acceptance status are recorded in the
@@ -78,7 +78,11 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-If the current code still requires `DEMO_USER_ID`, configure it for local testing only. Track its replacement under F13 / B13.
+New accounts are isolated from existing demo data and begin with a blank profile and no internships.
+The current local setup does not require `DEMO_USER_ID`.
+
+The Docker Compose database is exposed on host port `5433` by default so it can coexist
+with a Windows PostgreSQL service using port `5432`.
 
 For a dedicated test database, inspect and verify the seed data before running:
 

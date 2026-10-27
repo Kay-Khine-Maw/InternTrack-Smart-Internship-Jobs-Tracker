@@ -53,10 +53,11 @@ The server must:
 - Check related documents, extraction history and translations.
 - Invalidate the relevant session on sign-out.
 
-The authentication method and provider remain implementation decisions.
-Their configuration and status must be recorded in the backlog.
+The current implementation uses local email/password authentication. Passwords are stored as salted scrypt hashes. Sessions are stored in the PostgreSQL `AuthSession` table and exposed to the browser through the HTTP-only `interntrack_session` cookie.
 
-Trace: F13, NFR3, LR4; B13, B22.
+Sessions expire after the configured lifetime. Sign-out deletes the current server-side session and expires the browser cookie. New accounts start with a blank profile and no internships, documents or extraction history; the existing demo account remains separate.
+
+Trace: F13, NFR3, LR4; B12, B22.
 
 ## 3. Server Routes
 
@@ -124,10 +125,29 @@ Server routes handle requests between the browser and internal services.
 
 - Load only the authorized Student profile and internship.
 - Calculate a deterministic provisional score from reviewed matching requirements and return coverage plus criterion explanations.
+- Normalize extracted requirement categories before persistence.
+- Fall back to legacy `requirements` and `skills` for older records whose reviewed matching requirements are empty.
 
 ### Authentication Routes
 
-Authentication endpoints depend on the selected approach.
+`POST /api/auth/signup`
+
+- Validate name, email and the minimum eight-character password.
+- Create an account with a password hash.
+- Create an authenticated session.
+
+`POST /api/auth/signin`
+
+- Validate credentials without revealing whether an email exists.
+- Create an authenticated session on success.
+
+`POST /api/auth/signout`
+
+- Invalidate the current server-side session and expire the session cookie.
+
+`GET /api/auth/me`
+
+- Return the current authenticated user or an unauthorized response.
 
 ## 4. Source Processing
 

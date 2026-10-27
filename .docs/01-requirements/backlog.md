@@ -67,19 +67,21 @@
 
 - Type: Feature
 - Priority: Should
-- Status: Implemented / verification pending
+- Status: Implemented
 - User story: As a Student, I want to review facts extracted from my resume before saving them to my profile.
 - Traces to: F1, F13, LR1, LR2, NFR3, NFR4
 - Evidence in code: `web/app/api/profile/resume/route.ts`, `web/app/profile/page.tsx`
+- Notes: Supports tolerant resume responses and reviewed extraction of address, major and year. Missing values remain blank; preferred location is not invented.
 
 ### B25 - Explainable internship matching
 
 - Type: Product proposal
 - Priority: Should
-- Status: Implemented / verification pending
+- Status: Implemented
 - User story: As a Student, I want a provisional, explainable comparison between my profile and reviewed requirements.
 - Traces to: F14, F1, NFR4
 - Evidence in code: `web/lib/matching.ts`, `web/app/api/internships/[id]/match/route.ts`, `web/components/internships/MatchPanel.tsx`
+- Notes: Normalizes requirement categories, supports legacy requirements and skills, preserves Unknown results, and uses deterministic phrase-tolerant matching.
 
 ### B08 - Document checklist and preparation notes
 
@@ -121,10 +123,13 @@
 
 - Type: Security
 - Priority: Must
-- Status: Backlog
+- Status: Implemented
 - User story: As a Student, I want secure access so others cannot access my records.
 - Traces to: F13, F1, LR4, NFR3
-- Dependency: Selected authentication and account-enrollment approach.
+- Evidence in code: `web/app/auth/page.tsx`, `web/app/api/auth/`, `web/lib/server/auth.ts`, `web/prisma/schema.prisma`, `web/prisma/migrations/20261027211500_add_auth_sessions/`
+- Decision: Local email/password authentication with salted scrypt password hashes, PostgreSQL-backed sessions, and an HTTP-only `interntrack_session` cookie.
+- Notes: New accounts start with blank profile data and no internships. Protected APIs derive identity from the verified session and scope records by `userId`.
+- Remaining hardening: account recovery, email verification, rate limiting, CSRF protections appropriate to deployment, and a documented production session-revocation policy.
 
 ### B13 - Personal-data rights
 

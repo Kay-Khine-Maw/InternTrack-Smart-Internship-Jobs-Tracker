@@ -17,9 +17,22 @@ model User {
   id          String       @id @default(cuid())
   email       String       @unique
   name        String?
+  passwordHash String?
   internships Internship[]
   profile     Profile?
   createdAt   DateTime     @default(now())
+  sessions    AuthSession[]
+}
+
+model AuthSession {
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Profile {
@@ -48,6 +61,7 @@ model Profile {
   relocationWillingness Boolean?
   startAvailability   String?
   internshipDuration  String?
+  internshipPeriod    Json     @default("{}")
   profileVersion      Int      @default(1)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt

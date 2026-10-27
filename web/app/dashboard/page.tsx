@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
   AlertTriangle,
-  Briefcase,
   CalendarClock,
-  type LucideIcon,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,16 +17,10 @@ type SummaryKey = "total";
 const summary: Array<{
   key: SummaryKey;
   label: string;
-  icon: LucideIcon;
-  cardClass: string;
-  iconClass: string;
 }> = [
   {
     key: "total",
-    label: "Total Internships",
-    icon: Briefcase,
-    cardClass: "border-[#A8C4E0] bg-[#C9E0F7]",
-    iconClass: "text-[#4A72A8]",
+    label: "Total Saved Internships",
   },
 ];
 
@@ -44,6 +37,22 @@ function attentionReasons(item: Internship) {
 
 export default function DashboardPage() {
   const { internships, ready, loadError } = useInternships();
+  const [displayName, setDisplayName] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    void fetch("/api/profile")
+      .then(async (response) => {
+        const body = (await response.json()) as { profile?: { displayName?: string } };
+        if (active && response.ok) setDisplayName(body.profile?.displayName?.trim() ?? "");
+      })
+      .catch(() => {
+        if (active) setDisplayName("");
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const counts = {
     total: internships.length,
@@ -76,7 +85,7 @@ export default function DashboardPage() {
       )}
       <div>
         <h2 className="text-2xl font-semibold tracking-tight text-navy sm:text-3xl">
-          Good morning, Nway!
+          Good morning{displayName ? `, ${displayName}` : ""}!
         </h2>
         <p className="mt-1 text-sm text-muted-foreground sm:text-base">
           Here is an overview of your internship pipeline.
@@ -85,15 +94,14 @@ export default function DashboardPage() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         {summary.map((item) => {
-          const Icon = item.icon;
           return (
-            <Card key={item.key} className={`p-4 shadow-none ${item.cardClass}`}>
-              <div className="flex items-start justify-between gap-2">
-                <p className="text-xs font-medium uppercase tracking-wide text-navy/55">{item.label}</p>
-                <Icon className={`h-4 w-4 shrink-0 ${item.iconClass}`} aria-hidden />
+            <div key={item.key} className="flex items-center gap-7 py-5">
+              <p className="text-7xl font-semibold leading-none tracking-tight text-navy">{counts[item.key]}</p>
+              <div className="border-l border-border pl-7">
+                <p className="text-base font-semibold text-navy">{item.label}</p>
+                <p className="mt-1 text-sm text-muted-foreground">Your Internship Opportunities at a Glance</p>
               </div>
-              <p className="mt-2 text-2xl font-semibold text-navy">{counts[item.key]}</p>
-            </Card>
+            </div>
           );
         })}
       </div>

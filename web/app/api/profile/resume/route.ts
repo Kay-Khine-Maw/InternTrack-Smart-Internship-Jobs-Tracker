@@ -3,7 +3,7 @@ import { extractFromDocx } from "@/lib/extractors/docxExtractor";
 import { extractFromPdf } from "@/lib/extractors/pdfExtractor";
 import { extractResumeFromText } from "@/lib/ai/resumeExtractor";
 import { AppError, isAppError } from "@/lib/server/errors";
-import { getDemoUser } from "@/lib/server/demoUser";
+import { getCurrentUser } from "@/lib/server/auth";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -17,7 +17,7 @@ function errorResponse(error: unknown) {
 
 export async function POST(request: Request) {
   try {
-    await getDemoUser();
+    await getCurrentUser();
     const form = await request.formData();
     const value = form.get("file");
     if (!value || typeof value === "string" || typeof (value as File).arrayBuffer !== "function") {

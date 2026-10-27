@@ -1,13 +1,13 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { findDuplicateRecord, toDuplicateInfo, type DuplicateCandidate } from "@/lib/duplicate-match";
-import { getDemoUser } from "./demoUser";
+import { getCurrentUser } from "./auth";
 import { toClientInternship } from "./mapInternship";
 
 export async function findDuplicateInternship(
   input: DuplicateCandidate & { ignoreId?: string; urlOnly?: boolean }
 ) {
-  const user = await getDemoUser();
+  const user = await getCurrentUser();
   const rows = await prisma.internship.findMany({
     where: { userId: user.id },
     include: { documents: true, tags: true },

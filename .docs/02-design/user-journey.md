@@ -20,17 +20,18 @@ This document describes intended system behavior. The backlog records implementa
 - Gemini is configured for extraction and translation.
 - Relevant data-handling information is available to the Student.
 
-## J0 — Sign In
+## J0 — Sign Up, Sign In and Sign Out
 
-The Student signs in through the selected authentication method.
+The Student creates an account or signs in with a local email address and password.
 
-- Trace: F13; B13.
+- Trace: F13; B12.
+- New accounts start with a blank profile and no internship records.
 - Successful authentication opens the application.
 - Failed authentication shows a clear error.
 - Protected requests require a verified server-side session.
 - The Student can access only authorized records.
-
-The authentication route is defined during implementation.
+- Signing out invalidates the server-side session and returns the Student to the authentication screen.
+- Expired sessions require the Student to sign in again.
 
 ## J1 — Start
 
@@ -140,6 +141,7 @@ The Student opens the profile and updates preparation information.
 - Show failed updates clearly.
 - Upload a PDF or DOCX resume, review proposed extracted values, then explicitly apply them.
 - Resume files are processed temporarily and are not retained by default.
+- Address, major and year are extracted only when explicitly stated; missing optional values remain blank.
 
 ## Supporting Journey — Track an Application
 

@@ -8,7 +8,8 @@ Core workflow:
 
 Capture → extract → review and correct → explicitly save → reopen.
 
-Supporting features include profiles, status, priority, documents, notes, dates, calendar, search and translation.
+Supporting features include profiles, priority, documents, notes, dates, calendar, search and translation.
+Application-status tracking and status badge colors are deferred; priority tracking remains supported.
 
 ## Technology
 
@@ -78,8 +79,8 @@ After implementation:
 
 Use the current identifiers:
 
-- P1–P7: student problem hypotheses.
-- F1–F13: functional requirements.
+- P1–P8: student problem hypotheses.
+- F1–F14: functional requirements.
 - NFR1–NFR8: non-functional requirements.
 - LR1–LR8: legal and compliance requirements.
 - B identifiers: backlog items.
@@ -164,8 +165,9 @@ Requirement → backlog item → design/code → verification → review.
 ## UI and Design
 
 - Follow `.docs/02-design/design-system.md`.
-- Reuse shared form, button, dialog and status components.
-- Use the specification's status and priority values.
+- Reuse shared form, button, dialog and priority components.
+- Treat application-status values and status badge colors as deferred unless the specification changes.
+- Use the specification's supported priority values.
 - Keep loading, empty, error and correction states visible.
 - Preserve user input after recoverable failures.
 - Provide accessible labels and visible keyboard focus.
