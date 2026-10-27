@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DEFAULT_PROFILE, profileInitial, type StudentProfile } from "@/lib/profile";
+import type { ResumeDraft } from "@/lib/resume-schema";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<StudentProfile>(DEFAULT_PROFILE);
@@ -15,6 +16,8 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resumeDraft, setResumeDraft] = useState<ResumeDraft | null>(null);
+  const [resumeLoading, setResumeLoading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,6 +51,51 @@ export default function ProfilePage() {
     setDraft(profile);
     setEditing(false);
     setError(null);
+  }
+
+  async function uploadResume(file: File) {
+    setResumeLoading(true);
+    setError(null);
+    try {
+      const form = new FormData();
+      form.set("file", file);
+      const response = await fetch("/api/profile/resume", { method: "POST", body: form });
+      const body = (await response.json().catch(() => null)) as { draft?: ResumeDraft; message?: string } | null;
+      if (!response.ok || !body?.draft) throw new Error(body?.message || "Could not process this resume.");
+      setResumeDraft(body.draft);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not process this resume.");
+    } finally {
+      setResumeLoading(false);
+    }
+  }
+
+  function applyResumeDraft() {
+    if (!resumeDraft) return;
+    setDraft((current) => ({
+      ...current,
+      displayName: resumeDraft.displayName || current.displayName,
+      email: resumeDraft.contact.email || current.email,
+      location: resumeDraft.location || current.location,
+      major: resumeDraft.education[0]?.major || current.major,
+      university: resumeDraft.education[0]?.school || current.university,
+      bio: resumeDraft.summary || current.bio,
+      skills: resumeDraft.skills.length ? resumeDraft.skills : current.skills,
+      tools: resumeDraft.tools.length ? resumeDraft.tools : current.tools,
+      resumeSummary: resumeDraft.summary || current.resumeSummary,
+      resumeContact: {
+        ...current.resumeContact,
+        ...(resumeDraft.contact.email ? { email: resumeDraft.contact.email } : {}),
+        ...(resumeDraft.contact.phone ? { phone: resumeDraft.contact.phone } : {}),
+      },
+      resumeEducation: resumeDraft.education,
+      resumeExperience: resumeDraft.experience,
+      resumeProjects: resumeDraft.projects,
+      resumeLanguages: resumeDraft.languages,
+      resumeLinks: resumeDraft.links,
+    }));
+    setResumeDraft(null);
+    setEditing(true);
   }
 
   async function save() {
@@ -125,6 +173,24 @@ export default function ProfilePage() {
                   placeholder="Tell companies about yourself"
                 />
               </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Work arrangement" value={draft.workArrangement} onChange={(value) => updateDraft("workArrangement", value)} />
+                <Field label="Start availability" value={draft.startAvailability} onChange={(value) => updateDraft("startAvailability", value)} />
+                <Field label="Internship duration" value={draft.internshipDuration} onChange={(value) => updateDraft("internshipDuration", value)} />
+                <div className="space-y-2">
+                  <Label htmlFor="relocation-willingness">Relocation willingness</Label>
+                  <select
+                    id="relocation-willingness"
+                    className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                    value={draft.relocationWillingness === null ? "" : String(draft.relocationWillingness)}
+                    onChange={(event) => updateDraft("relocationWillingness", event.target.value === "" ? null : event.target.value === "true")}
+                  >
+                    <option value="">Not specified</option>
+                    <option value="true">Willing</option>
+                    <option value="false">Not willing</option>
+                  </select>
+                </div>
+              </div>
               <ChipEditor
                 label="Preferred Internship Fields"
                 items={draft.preferredFields}
@@ -148,6 +214,42 @@ export default function ProfilePage() {
             </div>
           ) : (
             <div className="space-y-6">
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-indigo-100 bg-accent-soft/50 p-4">
+                <div>
+                  <p className="font-medium text-navy">Complete your profile from a resume</p>
+                  <p className="mt-1 text-xs text-muted-foreground">PDF or DOCX content is processed by Gemini and shown for review before saving.</p>
+                </div>
+                <label className="inline-flex cursor-pointer items-center rounded-md bg-accent-deep px-3 py-2 text-sm font-medium text-white hover:opacity-90">
+                  {resumeLoading ? "Processing..." : "Upload Resume"}
+                  <input
+                    className="sr-only"
+                    type="file"
+                    accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    disabled={resumeLoading}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) void uploadResume(file);
+                      event.currentTarget.value = "";
+                    }}
+                  />
+                </label>
+              </div>
+              {resumeDraft ? (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                  <p className="font-medium text-amber-950">Review extracted resume information</p>
+                  <p className="mt-1 text-sm text-amber-900">Existing values are preserved until you choose to use extracted values. You can correct them before saving.</p>
+                  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-amber-950">
+                    {resumeDraft.displayName ? <li>Name: {resumeDraft.displayName}</li> : null}
+                    {resumeDraft.skills.length ? <li>Skills: {resumeDraft.skills.join(", ")}</li> : null}
+                    {resumeDraft.tools.length ? <li>Tools: {resumeDraft.tools.join(", ")}</li> : null}
+                    {resumeDraft.education.length ? <li>Education: {resumeDraft.education[0]?.school}</li> : null}
+                  </ul>
+                  <div className="mt-4 flex gap-2">
+                    <Button type="button" onClick={applyResumeDraft}>Use extracted values</Button>
+                    <Button type="button" variant="outline" onClick={() => setResumeDraft(null)}>Cancel</Button>
+                  </div>
+                </div>
+              ) : null}
               <div>
                 <h2 className="text-2xl font-semibold tracking-tight text-navy">{view.displayName}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">

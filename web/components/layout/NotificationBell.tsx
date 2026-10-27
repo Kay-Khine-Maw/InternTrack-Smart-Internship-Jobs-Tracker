@@ -43,13 +43,13 @@ function readStoredIds() {
   const legacy = parseIdList(localStorage.getItem(LEGACY_STORAGE_KEY));
   const ids = new Set([...current, ...legacy]);
   if (legacy.length && current.length === 0) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...ids]));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(ids)));
   }
   return ids;
 }
 
 function writeReadIds(ids: Set<string>) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...ids]));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(ids)));
 }
 
 const KIND_LABEL: Record<NoticeKind, string> = {

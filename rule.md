@@ -6,6 +6,8 @@ These rules apply throughout the system’s development and operation. They desc
 
 ## PDPA (Personal Data Protection Act)
 
+Resume uploads are personal documents. InternTrack processes only supported PDF/DOCX content needed for profile completion, keeps the upload temporary, does not store it in `public/`, and saves only reviewed profile facts after an explicit action.
+
 ### What it is
 
 Thailand’s law governing the collection, use and disclosure of personal data.

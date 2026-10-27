@@ -14,7 +14,7 @@ Implementation and acceptance status remain in the backlog.
 
 ## Use-Case Diagram
 
-![alt text](D2-use-case.png)
+![alt text](image-1.png)
 
 ## Interpretation
 

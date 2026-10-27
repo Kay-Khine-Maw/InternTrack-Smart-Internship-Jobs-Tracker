@@ -10,7 +10,6 @@ export const seedInternships: Internship[] = [
     url: "https://careers.google.com/jobs/results/software-engineering-intern",
     location: "Bangkok / Remote",
     deadline: "2026-09-27",
-    status: "preparing",
     notes: "Focus on coding interviews and a concise resume tailored to Google.",
     documents: [
       { id: "g-resume", name: "Resume", completed: true },
@@ -29,7 +28,6 @@ export const seedInternships: Internship[] = [
     url: "https://careers.agoda.com/jobs/software-developer-intern",
     location: "Bangkok, Thailand",
     deadline: "2026-10-04",
-    status: "saved",
     notes: "Review backend case studies and company product notes.",
     documents: [
       { id: "a-resume", name: "Resume", completed: true },
@@ -48,7 +46,6 @@ export const seedInternships: Internship[] = [
     url: "https://careers.microsoft.com/us/en/job/software-engineering-intern",
     location: "Singapore / Hybrid",
     deadline: "2026-10-12",
-    status: "interview",
     notes: "Prepare system design stories and Azure project talking points.",
     documents: [
       { id: "m-resume", name: "Resume", completed: true },
@@ -73,7 +70,6 @@ export const seedInternships: Internship[] = [
     url: "https://careers.shopee.com/job/product-management-intern",
     location: "Bangkok, Thailand",
     deadline: "2026-10-20",
-    status: "applied",
     notes: "Submitted application with a product teardown of Shopee Live.",
     documents: [
       { id: "s-resume", name: "Resume", completed: true },
@@ -94,7 +90,6 @@ export const seedInternships: Internship[] = [
     url: "https://www.grab.careers/jobs/frontend-engineering-intern",
     location: "Remote, Southeast Asia",
     deadline: "2026-09-18",
-    status: "preparing",
     notes: "Deadline passed — decide whether to still submit or archive.",
     documents: [
       { id: "gr-resume", name: "Resume", completed: true },
@@ -113,7 +108,6 @@ export const seedInternships: Internship[] = [
     url: "https://careers.linemanwongnai.com/data-analyst-intern",
     location: "Bangkok, Thailand",
     deadline: "2026-11-02",
-    status: "saved",
     notes: "Need SQL practice set and a one-page analytics case study.",
     documents: [
       { id: "l-resume", name: "Resume", completed: false },

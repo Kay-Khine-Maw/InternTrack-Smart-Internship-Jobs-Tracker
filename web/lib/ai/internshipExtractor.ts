@@ -13,6 +13,13 @@ export type ExtractedInternshipData = {
   applicationUrl: string | null;
   hrEmail: string | null;
   skills: string[];
+  matchingRequirements?: Array<{
+    label: string;
+    category: "skill" | "tool" | "education" | "language" | "location" | "availability" | "other";
+    classification: "required" | "preferred";
+    sourceExcerpt?: string;
+    mandatory?: boolean;
+  }>;
 };
 
 export type ExtractionResult = {
@@ -49,6 +56,7 @@ location: extract the workplace when present in any language (city, campus, offi
 description: copy the visible role or program summary into description. Use body paragraphs when present. Do not leave description null if the post has a role summary.
 applicationUrl: Extract only valid web URLs related to applying for the internship. Do not extract email addresses, phone numbers, or contact information. If no application URL exists, return null.
 hrEmail: extract HR or application contact emails (for example hr@company.com). Never put an email in applicationUrl.
+matchingRequirements: include only explicit, reviewable criteria. Classify each as required or preferred; do not treat every mentioned technology as mandatory. Use an empty array when unclear.
 ${LANGUAGE_RULE}`;
 
 const VISION_PROMPT = `You are an internship information extraction assistant.
@@ -96,6 +104,20 @@ const GEMINI_RESPONSE_SCHEMA = {
     applicationUrl: { type: "STRING", nullable: true },
     hrEmail: { type: "STRING", nullable: true },
     skills: { type: "ARRAY", items: { type: "STRING" } },
+    matchingRequirements: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          label: { type: "STRING" },
+          category: { type: "STRING" },
+          classification: { type: "STRING" },
+          sourceExcerpt: { type: "STRING", nullable: true },
+          mandatory: { type: "BOOLEAN", nullable: true },
+        },
+        required: ["label", "category", "classification"],
+      },
+    },
   },
   required: [
     "companyName",
@@ -108,6 +130,7 @@ const GEMINI_RESPONSE_SCHEMA = {
     "applicationUrl",
     "hrEmail",
     "skills",
+    "matchingRequirements",
   ],
 };
 
@@ -152,30 +175,8 @@ function emptyData(): ExtractedInternshipData {
     applicationUrl: null,
     hrEmail: null,
     skills: [],
+    matchingRequirements: [],
   };
-}
-
-function asNullableString(value: unknown): string | null {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  return trimmed.length ? trimmed : null;
-}
-
-function asStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .filter((item): item is string => typeof item === "string")
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
-
-function isoDeadline(value: string | null): string | null {
-  if (!value) return null;
-  const match = value.match(/\d{4}-\d{2}-\d{2}/);
-  if (match) return match[0];
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return null;
-  return parsed.toISOString().slice(0, 10);
 }
 
 function computeMissing(data: ExtractedInternshipData) {

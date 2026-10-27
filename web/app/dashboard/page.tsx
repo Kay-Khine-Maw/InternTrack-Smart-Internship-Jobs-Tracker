@@ -3,23 +3,17 @@
 import Link from "next/link";
 import {
   AlertTriangle,
-  Bookmark,
   Briefcase,
   CalendarClock,
-  CheckCircle2,
-  FileEdit,
-  MessageSquare,
-  Send,
   type LucideIcon,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StatusBadge } from "@/components/internships/StatusBadge";
 import { documentProgress, useInternships } from "@/lib/store";
 import { daysUntil, deadlineLabel, isDeadlineSoon } from "@/lib/dates";
 import type { Internship } from "@/lib/types";
 
-type SummaryKey = "total" | "saved" | "preparing" | "applied" | "interview" | "accepted";
+type SummaryKey = "total";
 
 const summary: Array<{
   key: SummaryKey;
@@ -34,41 +28,6 @@ const summary: Array<{
     icon: Briefcase,
     cardClass: "border-[#A8C4E0] bg-[#C9E0F7]",
     iconClass: "text-[#4A72A8]",
-  },
-  {
-    key: "saved",
-    label: "Saved",
-    icon: Bookmark,
-    cardClass: "border-[#B8A8E0] bg-[#D6C9F7]",
-    iconClass: "text-[#6A58B0]",
-  },
-  {
-    key: "preparing",
-    label: "Preparing",
-    icon: FileEdit,
-    cardClass: "border-[#E0C4B0] bg-[#F7E4D6]",
-    iconClass: "text-[#B07A52]",
-  },
-  {
-    key: "applied",
-    label: "Applied",
-    icon: Send,
-    cardClass: "border-[#E0D48A] bg-[#FFF3B0]",
-    iconClass: "text-[#A8942A]",
-  },
-  {
-    key: "interview",
-    label: "Interview",
-    icon: MessageSquare,
-    cardClass: "border-[#E0B0C0] bg-[#F7D6E0]",
-    iconClass: "text-[#B05A78]",
-  },
-  {
-    key: "accepted",
-    label: "Accepted",
-    icon: CheckCircle2,
-    cardClass: "border-[#A8C8AA] bg-[#C9E4CA]",
-    iconClass: "text-[#4A8A52]",
   },
 ];
 
@@ -88,11 +47,6 @@ export default function DashboardPage() {
 
   const counts = {
     total: internships.length,
-    saved: internships.filter((i) => i.status === "saved").length,
-    preparing: internships.filter((i) => i.status === "preparing").length,
-    applied: internships.filter((i) => i.status === "applied").length,
-    interview: internships.filter((i) => i.status === "interview").length,
-    accepted: internships.filter((i) => i.status === "accepted").length,
   };
 
   const upcoming = [...internships]
@@ -106,8 +60,8 @@ export default function DashboardPage() {
     return (
       <div className="space-y-6">
         <Skeleton className="h-16 w-full max-w-xl" />
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
-          {Array.from({ length: 6 }).map((_, i) => (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {Array.from({ length: 2 }).map((_, i) => (
             <Skeleton key={i} className="h-24" />
           ))}
         </div>
@@ -129,7 +83,7 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
+      <div className="grid gap-3 sm:grid-cols-2">
         {summary.map((item) => {
           const Icon = item.icon;
           return (
@@ -172,7 +126,6 @@ export default function DashboardPage() {
                     >
                       {deadlineLabel(item.deadline)}
                     </span>
-                    <StatusBadge status={item.status} />
                   </div>
                 </Link>
               ))
@@ -202,7 +155,6 @@ export default function DashboardPage() {
                       <p className="text-sm font-semibold text-navy">{item.company}</p>
                       <p className="text-sm text-muted-foreground">{item.role}</p>
                     </div>
-                    <StatusBadge status={item.status} />
                   </div>
                   <p className="mt-2 text-xs text-orange-800">{attentionReasons(item).join(" · ")}</p>
                 </Link>

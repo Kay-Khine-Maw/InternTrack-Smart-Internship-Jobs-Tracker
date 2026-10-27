@@ -4,10 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { getDemoUser } from "@/lib/server/demoUser";
 import { findDuplicateInternship } from "@/lib/server/duplicates";
 import { AppError, databaseError, isAppError } from "@/lib/server/errors";
-import { parseOptionalDate, toClientInternship, toDbPriority, toDbStatus } from "@/lib/server/mapInternship";
+import { parseOptionalDate, toClientInternship, toDbPriority } from "@/lib/server/mapInternship";
 import { parseTranslations } from "@/lib/translations";
 import { readInternshipExtras, writeHrEmail, writeTranslations } from "@/lib/server/translationsDb";
-import type { InternshipStatus, Priority } from "@/lib/types";
+import type { Priority } from "@/lib/types";
 
 const createSchema = z.object({
   companyName: z.string().trim().min(1, "Company is required."),
@@ -26,8 +26,14 @@ const createSchema = z.object({
   hrEmail: z.string().optional().nullable(),
   sourceUrl: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
-  status: z.enum(["saved", "preparing", "applied", "interview", "accepted", "rejected"]).optional(),
   priority: z.enum(["high", "medium", "low"]).optional(),
+  matchingRequirements: z.array(z.object({
+    label: z.string().trim().min(1),
+    category: z.enum(["skill", "tool", "education", "language", "location", "availability", "other"]),
+    classification: z.enum(["required", "preferred"]),
+    sourceExcerpt: z.string().optional(),
+    mandatory: z.boolean().optional(),
+  })).optional(),
   extractionHistoryId: z.string().optional().nullable(),
   addAnyway: z.boolean().optional(),
   translations: z.unknown().optional(),
@@ -119,8 +125,8 @@ export async function POST(request: Request) {
         applicationUrl: body.applicationUrl || null,
         sourceUrl: body.sourceUrl || null,
         notes: body.notes || null,
-        status: toDbStatus(body.status as InternshipStatus) ?? "SAVED",
         priority: toDbPriority(body.priority as Priority) ?? "MEDIUM",
+        matchingRequirements: body.matchingRequirements ?? [],
         userId: user.id,
         documents: {
           create: body.requiredDocuments.map((doc) => ({

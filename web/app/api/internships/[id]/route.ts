@@ -3,10 +3,10 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getDemoUser } from "@/lib/server/demoUser";
 import { AppError, databaseError, isAppError } from "@/lib/server/errors";
-import { parseOptionalDate, toClientInternship, toDbPriority, toDbStatus } from "@/lib/server/mapInternship";
+import { parseOptionalDate, toClientInternship, toDbPriority } from "@/lib/server/mapInternship";
 import { parseTranslations } from "@/lib/translations";
 import { readInternshipExtras, writeHrEmail, writeTranslations } from "@/lib/server/translationsDb";
-import type { InternshipStatus, Priority } from "@/lib/types";
+import type { Priority } from "@/lib/types";
 
 const updateSchema = z.object({
   companyName: z.string().trim().min(1).optional(),
@@ -23,8 +23,14 @@ const updateSchema = z.object({
   url: z.string().optional().nullable(),
   sourceUrl: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
-  status: z.enum(["saved", "preparing", "applied", "interview", "accepted", "rejected"]).optional(),
   priority: z.enum(["high", "medium", "low"]).optional(),
+  matchingRequirements: z.array(z.object({
+    label: z.string().trim().min(1),
+    category: z.enum(["skill", "tool", "education", "language", "location", "availability", "other"]),
+    classification: z.enum(["required", "preferred"]),
+    sourceExcerpt: z.string().optional(),
+    mandatory: z.boolean().optional(),
+  })).optional(),
   tags: z.array(z.string()).optional(),
   documents: z
     .array(z.object({ id: z.string().optional(), name: z.string(), completed: z.boolean().optional() }))
@@ -134,8 +140,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         ...(applicationUrl !== undefined ? { applicationUrl } : {}),
         ...(body.sourceUrl !== undefined ? { sourceUrl: body.sourceUrl } : {}),
         ...(body.notes !== undefined ? { notes: body.notes } : {}),
-        ...(body.status ? { status: toDbStatus(body.status as InternshipStatus) } : {}),
         ...(body.priority ? { priority: toDbPriority(body.priority as Priority) } : {}),
+        ...(body.matchingRequirements ? { matchingRequirements: body.matchingRequirements } : {}),
         ...(body.applicationDate !== undefined ? { applicationDate: parseOptionalDate(body.applicationDate) } : {}),
         ...(body.followUpDate !== undefined ? { followUpDate: parseOptionalDate(body.followUpDate) } : {}),
         ...(body.interviewDate !== undefined ? { interviewDate: parseOptionalDate(body.interviewDate) } : {}),

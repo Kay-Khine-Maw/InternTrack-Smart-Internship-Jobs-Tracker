@@ -13,8 +13,86 @@ Implementation and acceptance status remain in the backlog.
 
 ## Activity Diagram
 
-![alt text](D4-activity.png)
+```mermaid
+flowchart TD
+    Start(( )) --> Session{"Valid session?"}
 
+    Session -->|Yes| Capture
+    Session -->|No| SignIn("Sign in")
+    SignIn --> AuthResult{"Authentication successful?"}
+    AuthResult -->|No| AuthError("Show sign-in error")
+    AuthError --> SignIn
+    AuthResult -->|Yes| Capture
+
+    Capture("Provide URL or supported file") --> InputCheck{"Input valid and permitted?"}
+    InputCheck -->|No| InputError("Show validation error")
+    InputError --> Capture
+    InputCheck -->|Yes| Extract("Process source with Gemini")
+
+    Extract --> ExtractResult{"Usable draft returned?"}
+    ExtractResult -->|No| ExtractError("Show extraction error")
+    ExtractError --> Retry{"Try again?"}
+    Retry -->|Yes| Capture
+    Retry -->|No| Cancel
+
+    ExtractResult -->|Yes| Review("Review and correct draft")
+    Review --> ReviewChoice{"Student action?"}
+
+    ReviewChoice -->|Cancel| Cancel("Cancel without creating an internship")
+    Cancel --> History("Handle extraction history under retention rules")
+    History --> Finish((( )))
+
+    ReviewChoice -->|Save| Access{"Session and record references authorized?"}
+    Access -->|No| AccessError("Reject save and explain access failure")
+    AccessError --> Reauth{"Sign in again?"}
+    Reauth -->|Yes| SignIn
+    Reauth -->|No| History
+
+    Access -->|Yes| Fields{"Reviewed fields valid?"}
+    Fields -->|No| FieldError("Show field errors")
+    FieldError --> Review
+
+    Fields -->|Yes| DuplicateCheck("Evaluate duplicate policy within Student records")
+    DuplicateCheck --> CheckResult{"Duplicate check result?"}
+
+    CheckResult -->|Failed| CheckError("Show check failure; do not save")
+    CheckError --> Review
+
+    CheckResult -->|No duplicate| Save
+    CheckResult -->|Possible duplicate| DuplicateChoice{"Student decision?"}
+
+    DuplicateChoice -->|Return to review| Review
+    DuplicateChoice -->|View existing| Load
+    DuplicateChoice -->|Override this save| Revalidate("Revalidate session, fields and references")
+    Revalidate --> OverrideValid{"Override request valid?"}
+    OverrideValid -->|No| OverrideError("Reject request and show error")
+    OverrideError --> Review
+    OverrideValid -->|Yes| Save
+
+    Save("Persist record and related data consistently") --> SaveResult{"Persistence successful?"}
+    SaveResult -->|No| SaveError("Show save failure; preserve recoverable draft")
+    SaveError --> Review
+
+    SaveResult -->|Yes| Confirm("Confirm save and display record")
+    Confirm --> Reopen("Reload or reopen record")
+    Reopen --> Load("Verify session and requested record ownership")
+
+    Load --> ReadAccess{"Access allowed?"}
+    ReadAccess -->|No| Denied("Show sign-in or access message")
+    Denied --> Finish
+
+    ReadAccess -->|Yes| Read("Load saved record")
+    Read --> ReadResult{"Record loaded?"}
+    ReadResult -->|No| ReadError("Show unavailable-record or read error")
+    ReadError --> Finish
+    ReadResult -->|Yes| Display("Display persisted values")
+    Display --> Finish
+
+    classDef initial fill:#222,stroke:#222,color:#222;
+    classDef final fill:#222,stroke:#222,color:#222;
+    class Start initial;
+    class Finish final;
+```
 
 ## Rules
 

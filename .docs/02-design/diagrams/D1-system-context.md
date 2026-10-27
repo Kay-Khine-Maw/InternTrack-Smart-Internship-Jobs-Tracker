@@ -12,7 +12,7 @@ Implementation and verification status are recorded in the backlog.
 
 ## System Context Diagram
 
-![alt text](D1-system-context.png)
+![alt text](image.png)
 
 ## Student Interactions
 

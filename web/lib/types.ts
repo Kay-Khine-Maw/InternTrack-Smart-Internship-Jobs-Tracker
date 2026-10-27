@@ -1,31 +1,3 @@
-export const INTERNSHIP_STATUSES = [
-  "saved",
-  "preparing",
-  "applied",
-  "interview",
-  "accepted",
-  "rejected",
-] as const;
-
-export type InternshipStatus = (typeof INTERNSHIP_STATUSES)[number];
-
-export const STATUS_LABELS: Record<InternshipStatus, string> = {
-  saved: "Saved",
-  preparing: "Preparing",
-  applied: "Applied",
-  interview: "Interview",
-  accepted: "Accepted",
-  rejected: "Rejected",
-};
-
-export const TIMELINE_STATUSES: InternshipStatus[] = [
-  "saved",
-  "preparing",
-  "applied",
-  "interview",
-  "accepted",
-];
-
 export const PRIORITIES = ["high", "medium", "low"] as const;
 export type Priority = (typeof PRIORITIES)[number];
 
@@ -48,12 +20,12 @@ export interface Internship {
   url?: string;
   location?: string;
   deadline: string | null;
-  status: InternshipStatus;
   notes?: string;
   documents: DocumentItem[];
   createdAt: string;
   sourceText?: string;
   priority: Priority;
+  matchingRequirements?: import("@/lib/matching").MatchingRequirement[];
   tags: string[];
   description?: string;
   requirements?: string[];
@@ -81,6 +53,7 @@ export interface ExtractedInternshipData {
   applicationUrl: string | null;
   hrEmail: string | null;
   skills: string[];
+  matchingRequirements?: import("@/lib/matching").MatchingRequirement[];
 }
 
 export type { DuplicateInfo } from "@/lib/duplicate-match";
@@ -101,4 +74,5 @@ export interface ReviewDraft {
   notes: string;
   extractionHistoryId?: string;
   translations?: import("@/lib/translations").InternshipTranslations;
+  matchingRequirements?: import("@/lib/matching").MatchingRequirement[];
 }

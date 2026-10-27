@@ -19,6 +19,18 @@ const profileSchema = z.object({
   preferredLocation: z.string().trim().min(1, "Preferred location is required."),
   skills: z.array(z.string().trim().min(1)).default([]),
   tools: z.array(z.string().trim().min(1)).default([]),
+  resumeSummary: z.string().default(""),
+  resumeContact: z.object({ phone: z.string().optional(), email: z.string().optional() }).default({ phone: undefined, email: undefined }),
+  resumeEducation: z.array(z.record(z.string(), z.string())).default([]),
+  resumeExperience: z.array(z.record(z.string(), z.string())).default([]),
+  resumeProjects: z.array(z.record(z.string(), z.unknown())).default([]),
+  resumeLanguages: z.array(z.record(z.string(), z.string())).default([]),
+  resumeLinks: z.object({ portfolio: z.string().optional(), linkedin: z.string().optional(), github: z.string().optional() }).default({ portfolio: undefined, linkedin: undefined, github: undefined }),
+  workArrangement: z.string().default(""),
+  relocationWillingness: z.boolean().nullable().default(null),
+  startAvailability: z.string().default(""),
+  internshipDuration: z.string().default(""),
+  profileVersion: z.number().int().positive().optional(),
 });
 
 function jsonError(error: unknown) {

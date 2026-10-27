@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import type { DocumentItem, Internship, InternshipStatus, Priority } from "./types";
+import type { DocumentItem, Internship, Priority } from "./types";
 import { findDuplicateRecord, toDuplicateInfo, type DuplicateCandidate, type DuplicateInfo } from "./duplicate-match";
 
 interface InternshipContextValue {
@@ -15,21 +15,6 @@ interface InternshipContextValue {
   toggleDocument: (internshipId: string, documentId: string) => Promise<void>;
   addDocument: (internshipId: string, name: string) => Promise<void>;
   removeDocument: (internshipId: string, documentId: string) => Promise<void>;
-  setStatus: (
-    id: string,
-    status: InternshipStatus,
-    extras?: Partial<
-      Pick<
-        Internship,
-        | "applicationDate"
-        | "followUpDate"
-        | "interviewDate"
-        | "interviewTime"
-        | "interviewLink"
-        | "preparationNotes"
-      >
-    >
-  ) => Promise<void>;
   setPriority: (id: string, priority: Priority) => Promise<void>;
   getById: (id: string) => Internship | undefined;
   findByUrl: (url: string, ignoreId?: string) => Internship | undefined;
@@ -132,8 +117,8 @@ export function InternshipProvider({ children }: { children: ReactNode }) {
           hrEmail: patch.hrEmail,
           sourceUrl: patch.sourceUrl,
           notes: patch.notes,
-          status: patch.status,
           priority: patch.priority,
+          matchingRequirements: patch.matchingRequirements,
           tags: patch.tags,
           documents: patch.documents,
           applicationDate: patch.applicationDate,
@@ -172,9 +157,6 @@ export function InternshipProvider({ children }: { children: ReactNode }) {
         await put(internshipId, {
           documents: current.documents.filter((doc) => doc.id !== documentId),
         });
-      },
-      setStatus: async (id, status, extras) => {
-        await put(id, { status, ...extras });
       },
       setPriority: async (id, priority) => {
         await put(id, { priority });

@@ -1,26 +1,8 @@
-import type { ApplicationStatus, Internship, Priority, Document, Tag } from "@prisma/client";
-import type { Internship as ClientInternship, InternshipStatus, Priority as ClientPriority } from "@/lib/types";
+import type { Internship, Priority, Document, Tag } from "@prisma/client";
+import type { Internship as ClientInternship, Priority as ClientPriority } from "@/lib/types";
 import { parseTranslations } from "@/lib/translations";
 
 type Row = Internship & { documents: Document[]; tags: Tag[] };
-
-const statusToClient: Record<ApplicationStatus, InternshipStatus> = {
-  SAVED: "saved",
-  PREPARING: "preparing",
-  APPLIED: "applied",
-  INTERVIEW: "interview",
-  ACCEPTED: "accepted",
-  REJECTED: "rejected",
-};
-
-const statusToDb: Record<InternshipStatus, ApplicationStatus> = {
-  saved: "SAVED",
-  preparing: "PREPARING",
-  applied: "APPLIED",
-  interview: "INTERVIEW",
-  accepted: "ACCEPTED",
-  rejected: "REJECTED",
-};
 
 const priorityToClient: Record<Priority, ClientPriority> = {
   HIGH: "high",
@@ -50,7 +32,6 @@ export function toClientInternship(row: Row): ClientInternship {
     url: row.applicationUrl ?? row.sourceUrl ?? undefined,
     location: row.location ?? undefined,
     deadline: isoDate(row.deadline) ?? null,
-    status: statusToClient[row.status],
     notes: row.notes ?? undefined,
     documents: row.documents.map((doc) => ({
       id: doc.id,
@@ -59,6 +40,9 @@ export function toClientInternship(row: Row): ClientInternship {
     })),
     createdAt: row.createdAt.toISOString(),
     priority: priorityToClient[row.priority],
+    matchingRequirements: Array.isArray((row as { matchingRequirements?: unknown }).matchingRequirements)
+      ? (row as unknown as { matchingRequirements: import("@/lib/matching").MatchingRequirement[] }).matchingRequirements
+      : [],
     tags: row.tags.map((tag) => tag.name),
     description: row.description ?? undefined,
     requirements: asStringArray(row.requirements),
@@ -74,10 +58,6 @@ export function toClientInternship(row: Row): ClientInternship {
     preparationNotes: row.preparationNotes ?? undefined,
     translations: parseTranslations((row as Row & { translations?: unknown }).translations),
   };
-}
-
-export function toDbStatus(status?: InternshipStatus) {
-  return status ? statusToDb[status] : undefined;
 }
 
 export function toDbPriority(priority?: ClientPriority) {

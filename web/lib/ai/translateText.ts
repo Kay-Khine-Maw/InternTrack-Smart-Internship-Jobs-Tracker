@@ -1,7 +1,6 @@
 import "server-only";
 import { AppError } from "@/lib/server/errors";
 
-const DEFAULT_GEMINI_MODEL = "gemini-flash-lite-latest";
 const MODELS = ["gemini-flash-lite-latest", "gemini-2.5-flash", "gemini-flash-latest"];
 
 function sanitize(message: string, apiKey?: string) {

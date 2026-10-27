@@ -35,7 +35,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const page = useMemo(() => {
     if (pathname.startsWith("/internships/") && pathname !== "/internships") {
-      return { title: "Internship workspace", subtitle: "Deadlines, documents, status, and notes in one place" };
+      return { title: "Internship workspace", subtitle: "Deadlines, documents, priority, and notes in one place" };
     }
     return meta[pathname] ?? { title: "InternTrack", subtitle: "Internship tracker for university students" };
   }, [pathname]);

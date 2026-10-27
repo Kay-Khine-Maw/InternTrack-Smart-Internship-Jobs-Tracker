@@ -115,6 +115,16 @@ Server routes handle requests between the browser and internal services.
 
 - Validate and save authorized profile changes.
 
+`POST /api/profile/resume`
+
+- Validate a temporary PDF/DOCX upload, extract text server-side and send only bounded resume text to Gemini.
+- Return an editable draft; do not persist the original file or extracted facts until explicit profile save.
+
+`GET /api/internships/:id/match`
+
+- Load only the authorized Student profile and internship.
+- Calculate a deterministic provisional score from reviewed matching requirements and return coverage plus criterion explanations.
+
 ### Authentication Routes
 
 Authentication endpoints depend on the selected approach.

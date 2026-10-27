@@ -81,14 +81,24 @@ Supporting features extend the core workflow. Their priorities follow the specif
 - Preserve intentionally cleared optional fields.
 - Restrict access to the authorized Student.
 - Show update failures clearly.
+- Upload PDF/DOCX resumes for temporary Gemini extraction.
+- Review extracted facts and explicitly choose when to apply them.
 
-### F7 — Application Lifecycle
+### F14 — Explainable Profile Matching
+
+- Compare a saved internship's reviewed requirements with the Student profile.
+- Show provisional score and assessment coverage.
+- Explain matched, not met and unknown criteria.
+- Do not present the result as a hiring prediction.
+
+### F7 — Internship Details and Priority
 
 - Priority: Must
 - Backlog: B01, B07
-- Update application status and priority.
+- Update internship priority.
 - Edit supported internship details and notes.
 - Show consistent values across dashboard, list and detail views.
+- Status tracking is deferred; priority and record editing remain supported.
 
 ### F8 — Documents and Preparation
 
@@ -117,7 +127,7 @@ In-app reminders do not imply email or push delivery.
 - Priority: Should
 - Backlog: B20
 - Search documented internship fields.
-- Filter by status, priority and tags.
+- Filter by priority and tags.
 - Preserve list context after viewing a record.
 - Show loading, error and empty-result states.
 - Display only authorized records.
@@ -177,10 +187,6 @@ The review form may be a state within Add Internship. Screen organization must m
 ## Shared Vocabulary
 
 Primary actor: Student.
-
-Application statuses:
-
-`saved`, `preparing`, `applied`, `interview`, `accepted`, `rejected`.
 
 Priorities:
 

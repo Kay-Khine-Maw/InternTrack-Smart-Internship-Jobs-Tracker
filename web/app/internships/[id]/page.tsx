@@ -3,20 +3,19 @@
 import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, CalendarDays, ExternalLink } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DocumentChecklist } from "@/components/internships/DocumentChecklist";
+import { MatchPanel } from "@/components/internships/MatchPanel";
+import { RequirementsReview } from "@/components/internships/RequirementsReview";
 import { EditInternshipModal } from "@/components/internships/EditInternshipModal";
 import { PriorityBadge } from "@/components/internships/PriorityBadge";
-import { ProgressTimeline } from "@/components/internships/ProgressTimeline";
-import { StatusBadge } from "@/components/internships/StatusBadge";
 import { TranslatableReadout } from "@/components/internships/FieldTranslateBar";
-import { UpdateStatusModal } from "@/components/internships/UpdateStatusModal";
 import { ConfirmModal } from "@/components/modals/ConfirmModal";
-import { daysUntil, deadlineRemainingLabel, formatLongDate, formatShortDate, isDeadlineSoon } from "@/lib/dates";
+import { formatLongDate, formatShortDate } from "@/lib/dates";
 import { useInternships } from "@/lib/store";
-import { companyInitials, cn } from "@/lib/utils";
+import { companyInitials } from "@/lib/utils";
 import { PRIORITIES, PRIORITY_LABELS, type Priority } from "@/lib/types";
 import {
   Dialog,
@@ -56,13 +55,8 @@ export default function InternshipDetailPage() {
     useInternships();
   const internship = getById(params.id);
   const [editOpen, setEditOpen] = useState(false);
-  const [statusOpen, setStatusOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [priorityOpen, setPriorityOpen] = useState(false);
-
-  const days = internship ? daysUntil(internship.deadline) : null;
-  const overdue = (days ?? 0) < 0;
-  const soon = internship ? isDeadlineSoon(internship.deadline) : false;
 
   const info = useMemo(() => {
     if (!internship) return [];
@@ -136,7 +130,6 @@ export default function InternshipDetailPage() {
               <p className="mt-1 text-sm text-navy/70">{internship.location || "Location not set"}</p>
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <PriorityBadge priority={internship.priority} onClick={() => setPriorityOpen(true)} />
-                <StatusBadge status={internship.status} />
               </div>
             </div>
           </div>
@@ -144,7 +137,6 @@ export default function InternshipDetailPage() {
             <Button variant="outline" onClick={() => setEditOpen(true)}>
               Edit Internship
             </Button>
-            <Button onClick={() => setStatusOpen(true)}>Update Status</Button>
             <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
               Delete Internship
             </Button>
@@ -152,44 +144,7 @@ export default function InternshipDetailPage() {
         </div>
       </Card>
 
-      <div className="grid gap-6 xl:grid-cols-3">
-        <Card className="xl:col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CalendarDays className="h-4 w-4 text-accent-deep" />
-              Application Deadline
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {internship.deadline ? (
-              <>
-                <p
-                  className={cn(
-                    "text-2xl font-semibold",
-                    overdue || soon ? "text-orange-700" : "text-navy"
-                  )}
-                >
-                  {formatLongDate(internship.deadline)}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">{deadlineRemainingLabel(internship.deadline)}</p>
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground">Deadline not found. Add it manually.</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="xl:col-span-2">
-          <CardHeader>
-            <CardTitle>Application Timeline</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ProgressTimeline status={internship.status} />
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Document Checklist</CardTitle>
@@ -235,6 +190,7 @@ export default function InternshipDetailPage() {
                   original={original}
                   translations={internship.translations}
                   onTranslated={persistTranslation}
+                  bullets={label === "Description" || label === "Requirements"}
                 />
               </div>
             ))}
@@ -256,13 +212,13 @@ export default function InternshipDetailPage() {
                 )}
               </div>
             ))}
-            {internship.status === "applied" && internship.applicationDate && (
+            {internship.applicationDate && (
               <p className="text-sm text-muted-foreground">
                 Applied {formatLongDate(internship.applicationDate)}
                 {internship.followUpDate ? ` · Follow-up ${formatLongDate(internship.followUpDate)}` : ""}
               </p>
             )}
-            {internship.status === "interview" && (
+            {(internship.interviewDate || internship.interviewLink) && (
               <div className="rounded-xl bg-accent-soft px-3 py-2 text-sm text-navy">
                 <p>
                   Interview {internship.interviewDate ? formatLongDate(internship.interviewDate) : "date TBD"}
@@ -277,10 +233,11 @@ export default function InternshipDetailPage() {
             )}
           </CardContent>
         </Card>
+        <MatchPanel internshipId={internship.id} />
+        <RequirementsReview internship={internship} />
       </div>
 
       <EditInternshipModal open={editOpen} internship={internship} onOpenChange={setEditOpen} />
-      <UpdateStatusModal open={statusOpen} internship={internship} onOpenChange={setStatusOpen} />
       <ConfirmModal
         open={deleteOpen}
         title="Delete this internship?"

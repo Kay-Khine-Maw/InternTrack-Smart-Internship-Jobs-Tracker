@@ -11,7 +11,54 @@ Implementation and verification status remain in the backlog.
 
 ## Architecture Diagram
 
-![alt text](D3-architecture.png)
+```mermaid
+flowchart TB
+    subgraph Browser["Browser"]
+        UI["Pages and shared components"]
+        Client["Client state and request handlers"]
+        UI <--> Client
+    end
+
+    subgraph App["InternTrack — Next.js application"]
+        Auth["Authentication and session handling"]
+        API["Protected server routes"]
+        Access["Authorization and record ownership"]
+        Logic["Validation, mapping and duplicate policy"]
+        Readers["Website and document readers"]
+        ExtractAI["Gemini extraction adapter"]
+        TranslateAI["Gemini translation adapter"]
+        Data["Prisma and database helpers"]
+        Cleanup["Retention and cleanup process"]
+
+        Auth -->|"Session verification"| API
+        API -->|"Check permitted operation"| Access
+        Access -->|"Check record ownership"| Data
+        API -->|"After authorization"| Logic
+        API -->|"Process source"| Readers
+        API -->|"Extract structured draft"| ExtractAI
+        API -->|"Translate fields"| TranslateAI
+        API -->|"Authorized reads and writes"| Data
+        Cleanup -->|"Apply retention decisions"| Data
+    end
+
+    subgraph Persistence["Internal persistence"]
+        DB[("PostgreSQL")]
+    end
+
+    Website["Source Website"]
+    Gemini["Gemini"]
+
+    Client <-->|"Sign-in and sign-out"| Auth
+    Client <-->|"Requests with session; responses"| API
+
+    Readers <-->|"Fetch posting content"| Website
+    Readers -->|"Prepared content"| API
+
+    ExtractAI <-->|"Necessary source content; draft or error"| Gemini
+    TranslateAI <-->|"Selected text; translation or error"| Gemini
+
+    Data <--> DB
+```
 
 ## Component Responsibilities
 

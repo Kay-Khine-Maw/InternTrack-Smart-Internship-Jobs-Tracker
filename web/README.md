@@ -24,6 +24,8 @@ Supporting features include profiles, application tracking, checklists, calendar
 - Supported sources include URLs, PDF, DOCX, PNG and JPG.
 - Gemini is the sole AI provider for extraction and translation.
 - Extracted information remains editable before saving.
+- Resume imports are temporary, server-side PDF/DOCX processing drafts; original resume files are not retained.
+- Matching is deterministic after requirement review, shows coverage, and is not a hiring-success prediction.
 - PostgreSQL stores saved records and related data.
 - Credentials and database access remain server-side.
 - Extraction history follows separate retention and cleanup rules.

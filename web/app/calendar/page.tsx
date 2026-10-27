@@ -8,10 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StatusBadge } from "@/components/internships/StatusBadge";
 import { useInternships } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import type { Internship, InternshipStatus } from "@/lib/types";
+import type { Internship } from "@/lib/types";
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const MONTHS = [
@@ -42,7 +41,6 @@ type CalendarEvent = {
   role: string;
   day: string;
   kind: EventKind;
-  status: InternshipStatus;
 };
 
 const KIND_META: Record<EventKind, { label: string; chip: string; bar: string; dot: string; title: string }> = {
@@ -104,7 +102,6 @@ function eventsFromInternships(internships: Internship[]): CalendarEvent[] {
         role: item.role,
         day,
         kind,
-        status: item.status,
       });
     }
   }
@@ -401,7 +398,6 @@ export default function CalendarPage() {
                     <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", KIND_META[event.kind].chip)}>
                       {KIND_META[event.kind].title}
                     </span>
-                    <StatusBadge status={event.status} />
                   </div>
                 </Link>
               ))}

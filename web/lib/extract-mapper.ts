@@ -190,6 +190,9 @@ export function normalizeExtractedData(raw: unknown): ExtractedInternshipData {
     applicationUrl: contacts.applicationUrl,
     hrEmail: contacts.hrEmail,
     skills: asStringArray(obj.skills ?? obj.tags),
+    matchingRequirements: Array.isArray(obj.matchingRequirements)
+      ? obj.matchingRequirements.filter((item): item is import("@/lib/matching").MatchingRequirement => Boolean(item && typeof item === "object" && "label" in item && "category" in item && "classification" in item))
+      : [],
   };
 }
 
@@ -218,6 +221,7 @@ export function toReviewDraft(
     skills: data.skills ?? [],
     sourceUrl: extras?.sourceUrl ?? "",
     notes,
+    matchingRequirements: data.matchingRequirements,
     extractionHistoryId: extras?.extractionHistoryId,
   };
 }

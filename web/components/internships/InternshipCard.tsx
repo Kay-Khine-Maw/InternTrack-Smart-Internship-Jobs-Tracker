@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { StatusBadge } from "./StatusBadge";
 import { PriorityBadge } from "./PriorityBadge";
 import { deadlineLabel, formatShortDate, isDeadlineSoon } from "@/lib/dates";
 import { documentProgress } from "@/lib/store";
@@ -28,7 +27,6 @@ export function InternshipCard({ internship }: { internship: Internship }) {
           </div>
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <StatusBadge status={internship.status} />
           <PriorityBadge priority={internship.priority} />
         </div>
         {hasDeadline ? (

@@ -54,14 +54,32 @@
 - Traces to: F6, P5
 - Evidence in code: `web/lib/server/duplicates.ts`, `web/components/modals/DuplicateWarningModal.tsx`
 
-### B07 - Application status and record updates
+### B07 - Internship record updates
 
 - Type: Feature
 - Priority: Must
 - Status: Implemented
-- User story: As a Student, I want to update my records so they reflect my progress.
+- User story: As a Student, I want to update internship details and priority.
 - Traces to: F7, NFR1, P6
 - Evidence in code: `web/app/internships/[id]/page.tsx`, `web/app/api/internships/[id]/route.ts`
+
+### B24 - Resume-assisted profile completion
+
+- Type: Feature
+- Priority: Should
+- Status: Implemented / verification pending
+- User story: As a Student, I want to review facts extracted from my resume before saving them to my profile.
+- Traces to: F1, F13, LR1, LR2, NFR3, NFR4
+- Evidence in code: `web/app/api/profile/resume/route.ts`, `web/app/profile/page.tsx`
+
+### B25 - Explainable internship matching
+
+- Type: Product proposal
+- Priority: Should
+- Status: Implemented / verification pending
+- User story: As a Student, I want a provisional, explainable comparison between my profile and reviewed requirements.
+- Traces to: F14, F1, NFR4
+- Evidence in code: `web/lib/matching.ts`, `web/app/api/internships/[id]/match/route.ts`, `web/components/internships/MatchPanel.tsx`
 
 ### B08 - Document checklist and preparation notes
 

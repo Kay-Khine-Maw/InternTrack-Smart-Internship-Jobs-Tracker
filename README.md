@@ -15,10 +15,12 @@ Capture → extract → review and correct → explicitly save → reopen.
 - Review and correct extracted information.
 - Detect possible duplicates before saving.
 - Save and reopen internship records.
-- Track status, priority, documents and notes.
+- Track priority, documents and notes.
 - Manage deadlines, follow-ups and interviews.
 - View dates through a calendar.
 - Manage profiles and search internship records.
+- Upload a PDF or DOCX resume to review profile facts before saving.
+- Review internship requirements and view a provisional profile match with assessment coverage.
 - Translate supported fields into English.
 
 Requirements and acceptance status are recorded in the
@@ -31,6 +33,8 @@ The whole system requires authenticated sessions and server-side ownership check
 
 Shared demo identity is not authentication.
 Any remaining demo-user behavior is an implementation limitation.
+
+Application-status tracking is deferred. Existing priority, dates, notes, documents and record editing remain available.
 
 Keep credentials server-side and follow [rule.md](rule.md) for personal-data processing, access, retention and deletion.
 

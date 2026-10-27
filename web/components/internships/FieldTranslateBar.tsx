@@ -105,12 +105,14 @@ export function TranslatableReadout({
   translations,
   onTranslated,
   label,
+  bullets = false,
 }: {
   field: TranslatableField;
   original: string;
   translations?: InternshipTranslations;
   onTranslated: (field: TranslatableField, originalText: string, translatedText: string) => void;
   label?: string;
+  bullets?: boolean;
 }) {
   const [view, setView] = useState<"original" | "translated">("original");
   const [busy, setBusy] = useState(false);
@@ -168,7 +170,17 @@ export function TranslatableReadout({
       ) : (
         bar
       )}
-      <p className="text-sm text-navy whitespace-pre-wrap">{text}</p>
+      {bullets ? (
+        <ul className="list-disc space-y-1 pl-5 text-sm text-navy">
+          {text
+            .split(/\r?\n|(?<=[.!?])\s+/)
+            .map((item) => item.trim())
+            .filter(Boolean)
+            .map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}
+        </ul>
+      ) : (
+        <p className="whitespace-pre-wrap text-sm text-navy">{text}</p>
+      )}
     </div>
   );
 }

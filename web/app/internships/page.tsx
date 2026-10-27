@@ -8,26 +8,18 @@ import { Input } from "@/components/ui/input";
 import { InternshipCard } from "@/components/internships/InternshipCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInternships } from "@/lib/store";
-import { INTERNSHIP_STATUSES, STATUS_LABELS, type InternshipStatus } from "@/lib/types";
-import { cn } from "@/lib/utils";
-
-const filters: Array<"all" | InternshipStatus> = ["all", ...INTERNSHIP_STATUSES];
 
 export default function InternshipsPage() {
   const { internships, ready, loadError } = useInternships();
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<"all" | InternshipStatus>("all");
-
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
     return internships.filter((item) => {
-      const statusOk = status === "all" || item.status === status;
-      if (!statusOk) return false;
       if (!q) return true;
       const haystack = [item.company, item.role, ...item.tags].join(" ").toLowerCase();
       return haystack.includes(q);
     });
-  }, [internships, query, status]);
+  }, [internships, query]);
 
   return (
     <div className="space-y-6">
@@ -51,24 +43,6 @@ export default function InternshipsPage() {
             Add Internship
           </Link>
         </Button>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {filters.map((item) => (
-          <button
-            key={item}
-            type="button"
-            onClick={() => setStatus(item)}
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
-              status === item
-                ? "border-accent-deep bg-accent-soft text-accent-deep"
-                : "border-border bg-white text-navy hover:bg-navy-50"
-            )}
-          >
-            {item === "all" ? "All" : STATUS_LABELS[item]}
-          </button>
-        ))}
       </div>
 
       <p className="text-sm text-muted-foreground">

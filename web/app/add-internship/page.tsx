@@ -269,10 +269,13 @@ export default function AddInternshipPage() {
 
       if (body?.duplicate) {
         const raw = body.duplicate;
+        const existingId = "existingId" in raw ? raw.existingId : undefined;
+        const legacyCompany = "company" in raw ? raw.company : undefined;
+        const legacyRole = "role" in raw ? raw.role : undefined;
         const info = toDuplicateInfo({
-          id: raw.id || raw.existingId || "",
-          companyName: raw.companyName || raw.company,
-          position: raw.position || raw.role,
+          id: raw.id || existingId || "",
+          companyName: raw.companyName || legacyCompany,
+          position: raw.position || legacyRole,
           sourceUrl: raw.sourceUrl,
         });
         if (info.id) {
@@ -344,6 +347,7 @@ export default function AddInternshipPage() {
         description: draft.description,
         requirements: draft.requirements,
         skills: draft.skills,
+        matchingRequirements: draft.matchingRequirements,
         requiredDocuments: draft.documents.map((doc) => ({ name: doc.name, completed: doc.completed })),
         tags: draft.skills.slice(0, 4),
         applicationUrl: draft.applicationUrl || (tab === "link" ? url : "") || null,

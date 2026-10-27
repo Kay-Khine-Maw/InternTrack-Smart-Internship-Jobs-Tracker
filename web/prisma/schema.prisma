@@ -7,15 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ApplicationStatus {
-  SAVED
-  PREPARING
-  APPLIED
-  INTERVIEW
-  ACCEPTED
-  REJECTED
-}
-
 enum Priority {
   HIGH
   MEDIUM
@@ -46,6 +37,18 @@ model Profile {
   preferredLocation   String
   skills              Json
   tools               Json
+  resumeSummary       String?  @db.Text
+  resumeContact       Json     @default("{}")
+  resumeEducation     Json     @default("[]")
+  resumeExperience    Json     @default("[]")
+  resumeProjects      Json     @default("[]")
+  resumeLanguages     Json     @default("[]")
+  resumeLinks         Json     @default("{}")
+  workArrangement     String?
+  relocationWillingness Boolean?
+  startAvailability   String?
+  internshipDuration  String?
+  profileVersion      Int      @default(1)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
@@ -58,11 +61,11 @@ model Internship {
   deadline         DateTime?
   description      String?            @db.Text
   requirements     Json
+  matchingRequirements Json @default("[]")
   skills           Json
   applicationUrl   String?
   hrEmail          String?
   sourceUrl        String?
-  status           ApplicationStatus  @default(SAVED)
   priority         Priority           @default(MEDIUM)
   notes            String?            @db.Text
   applicationDate  DateTime?

@@ -12,7 +12,8 @@
     "db:seed": "prisma db seed",
     "db:generate": "prisma generate",
     "test:duplicates": "tsx scripts/verify-duplicates.ts",
-    "test:extract": "tsx scripts/verify-extract.ts"
+    "test:extract": "tsx scripts/verify-extract.ts",
+    "test:matching": "tsx scripts/verify-matching.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
