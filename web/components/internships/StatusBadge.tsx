@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { STATUS_LABELS, type InternshipStatus } from "@/lib/types";
 
 const styles: Record<InternshipStatus, string> = {
-  saved: "bg-slate-100 text-slate-700 border-slate-200",
+  saved: "bg-slate-100 text-slate-600 border-slate-200",
   preparing: "bg-indigo-50 text-indigo-700 border-indigo-100",
   applied: "bg-blue-50 text-blue-700 border-blue-100",
   interview: "bg-violet-50 text-violet-700 border-violet-100",

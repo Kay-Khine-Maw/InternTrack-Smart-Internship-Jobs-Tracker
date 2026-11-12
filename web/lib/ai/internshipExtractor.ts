@@ -53,7 +53,7 @@ When a deadline is explicit, use ISO date (YYYY-MM-DD).
 requirements and skills must be arrays of short strings.
 requiredDocuments only if listed (Resume, Transcript, Cover Letter, Portfolio, etc.).
 location: extract the workplace when present in any language (city, campus, office, Remote, Hybrid, กรุงเทพฯ, Bangkok). Do not leave location null if a place is written.
-description: copy the visible role or program summary into description. Use body paragraphs when present. Do not leave description null if the post has a role summary.
+description: only the work itself (about the role and responsibilities). Leave out company background, benefits, perks, compensation, insurance, leave, and events. Write at most 8 short lines, each starting with "- ", summarizing that work. Do not paste the full posting. Do not leave description null when the post describes the work.
 applicationUrl: Extract only valid web URLs related to applying for the internship. Do not extract email addresses, phone numbers, or contact information. If no application URL exists, return null.
 hrEmail: extract HR or application contact emails (for example hr@company.com). Never put an email in applicationUrl.
 matchingRequirements: include only explicit, reviewable criteria. Classify each as required or preferred; do not treat every mentioned technology as mandatory. Use an empty array when unclear.
@@ -71,7 +71,7 @@ If the job post does not contain a deadline, return null.
 Never infer, estimate, or create a deadline.
 When a deadline is explicit, use ISO date (YYYY-MM-DD).
 location: extract the workplace when visible in any language (city, campus, office, Remote, Hybrid, กรุงเทพฯ, Bangkok). Do not leave location null if a place is shown.
-description: copy visible role or program summary paragraphs into description. Do not leave description null if the poster has a body summary.
+description: only the work itself. Leave out company background, benefits, perks, and compensation. Write at most 8 short lines, each starting with "- ". Do not paste the whole poster. Do not leave description null when the work is visible.
 applicationUrl: Extract only valid web URLs related to applying for the internship. Do not extract email addresses, phone numbers, or contact information. If no application URL exists, return null.
 hrEmail: extract HR or application contact emails (for example hr@company.com). Never put an email in applicationUrl.
 ${LANGUAGE_RULE}
@@ -258,6 +258,7 @@ async function generateWithGeminiRest(
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
   const response = await fetch(url, {
     method: "POST",
+    signal: AbortSignal.timeout(25_000),
     headers: {
       "Content-Type": "application/json",
       "x-goog-api-key": apiKey,
@@ -300,12 +301,22 @@ async function generateWithGeminiRest(
   return text;
 }
 
+function isTransientAiError(error: unknown) {
+  const message = error instanceof Error ? `${error.name} ${error.message}` : "";
+  const cause = error instanceof Error && error.cause instanceof Error ? `${error.cause.name} ${error.cause.message}` : "";
+  return /fetch failed|timeout|aborted|AbortError|ECONNRESET|ETIMEDOUT|UND_ERR|ENOTFOUND|EAI_AGAIN/i.test(`${message} ${cause}`);
+}
+
 async function extractWithGemini(apiKey: string, userContent: string): Promise<ExtractionResult> {
   const models = modelList(process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL);
   let lastError: unknown;
+  let transientFailures = 0;
+  let modelAttempts = 0;
 
   for (const modelName of models) {
-    for (const withSchema of [true, false]) {
+    modelAttempts += 1;
+    if (modelAttempts > 2) break;
+    for (const withSchema of [false, true]) {
       try {
         const content = await generateWithGeminiRest(apiKey, modelName, [{ text: userContent }], withSchema);
         const data = parsePayload(parseJsonContent(content));
@@ -315,6 +326,11 @@ async function extractWithGemini(apiKey: string, userContent: string): Promise<E
         if (error instanceof AppError) throw error;
         const status = (error as { status?: number }).status;
         const message = error instanceof Error ? error.message : "";
+        if (isTransientAiError(error)) {
+          transientFailures += 1;
+          if (transientFailures >= 2) throw mapAiError(error, "gemini", apiKey);
+          break;
+        }
         if (status === 404 || /NOT_FOUND|no longer available|is not found/i.test(message)) {
           break;
         }
@@ -458,8 +474,8 @@ function mapAiError(error: unknown, provider: "gemini" | "openai", apiKey?: stri
   const message = sanitizeAiMessage(error instanceof Error ? error.message : "Unknown AI error", apiKey);
   const status = (error as { status?: number }).status;
 
-  if (/timeout|ETIMEDOUT|AbortError/i.test(message)) {
-    return new AppError("AI_FAILURE", "The AI request timed out. Please try again.", 502);
+  if (/timeout|ETIMEDOUT|AbortError|fetch failed|ECONNRESET|ENOTFOUND/i.test(message)) {
+    return new AppError("AI_FAILURE", "Could not reach Gemini to extract this job. Check your connection and try again.", 502);
   }
   if (status === 401 || status === 403 || /API_KEY_INVALID|unauthenticated|invalid api key/i.test(message)) {
     return new AppError(

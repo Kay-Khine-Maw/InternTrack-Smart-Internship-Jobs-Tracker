@@ -4,7 +4,7 @@ import type { ExtractionResult } from "@/lib/ai/internshipExtractor";
 import { extractFromDocx } from "@/lib/extractors/docxExtractor";
 import { extractFromImage } from "@/lib/extractors/imageExtractor";
 import { extractFromPdf } from "@/lib/extractors/pdfExtractor";
-import { extractFromUrl } from "@/lib/extractors/urlExtractor";
+import { extractFromUrl, type LinkedInPosting } from "@/lib/extractors/urlExtractor";
 import { findDuplicateInternship } from "@/lib/server/duplicates";
 import { AppError, databaseError, isAppError } from "@/lib/server/errors";
 import { getCurrentUser } from "@/lib/server/auth";
@@ -71,6 +71,7 @@ export async function POST(request: Request) {
     let title = "";
     let sourceType: "url" | "file" = "url";
     let usedVision = false;
+    let linkedIn: LinkedInPosting | null = null;
     let imageUpload = false;
     let extraction: ExtractionResult | null = null;
 
@@ -141,6 +142,7 @@ export async function POST(request: Request) {
         textContent = page.textContent;
         title = page.title;
         sourceUrl = page.sourceUrl;
+        linkedIn = page.linkedIn ?? null;
       } else {
         throw new AppError("VALIDATION", "Provide a job URL or upload a PDF, DOCX, PNG, or JPG.", 400);
       }
@@ -154,6 +156,7 @@ export async function POST(request: Request) {
       textContent = page.textContent;
       title = page.title;
       sourceUrl = page.sourceUrl;
+      linkedIn = page.linkedIn ?? null;
     }
 
     let historyId: string | null = null;
@@ -174,10 +177,41 @@ export async function POST(request: Request) {
     }
 
     if (!extraction) {
-      extraction = await extractInternshipFromText({
-        rawText: textContent,
-        sourceUrl,
-      });
+      try {
+        extraction = await extractInternshipFromText({
+          rawText: textContent,
+          sourceUrl,
+        });
+      } catch (error) {
+        if (!linkedIn || (!linkedIn.companyName && !linkedIn.position && !linkedIn.description)) throw error;
+        const missingFields = [
+          !linkedIn.companyName ? "companyName" : null,
+          !linkedIn.position ? "position" : null,
+          !linkedIn.location ? "location" : null,
+          !linkedIn.description ? "description" : null,
+          "deadline",
+          linkedIn.requirements.length ? null : "requirements",
+          "requiredDocuments",
+          "skills",
+        ].filter((field): field is string => Boolean(field));
+        extraction = {
+          data: {
+            companyName: linkedIn.companyName,
+            position: linkedIn.position,
+            location: linkedIn.location,
+            deadline: null,
+            description: linkedIn.description,
+            requirements: linkedIn.requirements,
+            requiredDocuments: [],
+            applicationUrl: sourceUrl ?? null,
+            hrEmail: null,
+            skills: [],
+            matchingRequirements: [],
+          },
+          missingFields,
+          confidence: linkedIn.companyName && linkedIn.position && linkedIn.description ? "medium" : "low",
+        };
+      }
     }
     if (textContent.trim()) {
       extraction.data = hydrateFromSourceText(textContent, extraction.data);

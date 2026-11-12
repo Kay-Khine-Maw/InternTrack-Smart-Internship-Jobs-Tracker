@@ -164,10 +164,10 @@ export function TranslatableReadout({
       {bullets ? (
         <ul className="list-disc space-y-1 pl-5 text-sm text-navy">
           {text
-            .split(/\r?\n|(?<=[.!?])\s+/)
-            .map((item) => item.trim())
+            .split(/\r?\n/)
+            .map((item) => item.replace(/^[-•*]\s*/, "").trim())
             .filter(Boolean)
-            .map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}
+            .map((item, index) => <li key={`${index}-${item.slice(0, 24)}`}>{item}</li>)}
         </ul>
       ) : (
         <p className="whitespace-pre-wrap text-sm text-navy">{text}</p>

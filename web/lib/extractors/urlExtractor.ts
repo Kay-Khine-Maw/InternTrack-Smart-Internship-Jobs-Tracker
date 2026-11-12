@@ -1,12 +1,22 @@
 import "server-only";
 import * as cheerio from "cheerio";
+import { toRoleDescription } from "@/lib/extract-mapper";
 import { AppError } from "@/lib/server/errors";
 import { normalizeUrl } from "@/lib/utils";
+
+export type LinkedInPosting = {
+  companyName: string | null;
+  position: string | null;
+  location: string | null;
+  description: string | null;
+  requirements: string[];
+};
 
 export type UrlExtractResult = {
   title: string;
   textContent: string;
   sourceUrl: string;
+  linkedIn?: LinkedInPosting;
 };
 
 const FETCH_TIMEOUT_MS = 15_000;
@@ -44,6 +54,18 @@ const STRIP_SELECTORS = [
   ".header",
 ].join(", ");
 
+function linkedInGuestUrl(url: string) {
+  try {
+    const parsed = new URL(url);
+    if (!/(^|\.)linkedin\.com$/i.test(parsed.hostname)) return null;
+    const jobId = parsed.pathname.match(/\/jobs\/view\/(\d+)/)?.[1];
+    if (!jobId) return null;
+    return `https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/${jobId}`;
+  } catch {
+    return null;
+  }
+}
+
 function validateHttpUrl(url: string) {
   const trimmed = url.trim();
   if (!trimmed) {
@@ -59,6 +81,44 @@ function validateHttpUrl(url: string) {
     throw new AppError("INVALID_URL", "Please enter a valid http or https job URL.", 400);
   }
   return parsed.toString();
+}
+
+function cleanText(value: string) {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+export function parseLinkedInPosting(html: string): LinkedInPosting | null {
+  const $ = cheerio.load(html);
+  const position = cleanText($("h2.topcard__title").first().text()) || null;
+  const companyName = cleanText($("a.topcard__org-name-link").first().text()) || null;
+  const location = cleanText($("span.topcard__flavor--bullet").first().text()) || null;
+  const blocks: string[] = [];
+  const requirements: string[] = [];
+  let inQualifications = false;
+  $(".show-more-less-html__markup").find("p, li").each((_, element) => {
+    const text = cleanText($(element).text());
+    if (!text) return;
+    const node = $(element);
+    if (node.is("p") && /^qualifications\b/i.test(text)) {
+      inQualifications = true;
+      blocks.push(text);
+      return;
+    }
+    if (node.is("p") && /^(responsibilities|process)\b/i.test(text)) {
+      inQualifications = false;
+      blocks.push(text);
+      return;
+    }
+    if (node.is("li")) {
+      blocks.push(`- ${text}`);
+      if (inQualifications) requirements.push(text);
+      return;
+    }
+    blocks.push(text);
+  });
+  const description = toRoleDescription(blocks.join("\n"));
+  if (!position && !companyName && !description) return null;
+  return { companyName, position, location, description, requirements };
 }
 
 function cleanHtml(html: string) {
@@ -173,6 +233,24 @@ async function extractWithPlaywright(url: string): Promise<UrlExtractResult> {
 
 export async function extractFromUrl(url: string): Promise<UrlExtractResult> {
   const sourceUrl = validateHttpUrl(url);
+  const guestUrl = linkedInGuestUrl(sourceUrl);
+  if (guestUrl) {
+    try {
+      const guestHtml = await fetchHtml(guestUrl);
+      const guestResult = cleanHtml(guestHtml);
+      const linkedIn = parseLinkedInPosting(guestHtml);
+      if ((linkedIn && (linkedIn.position || linkedIn.companyName || linkedIn.description)) || guestResult.textContent.length >= 40) {
+        return {
+          title: linkedIn?.position || guestResult.title || sourceUrl,
+          textContent: guestResult.textContent,
+          sourceUrl: normalizeUrl(sourceUrl) || sourceUrl,
+          ...(linkedIn ? { linkedIn } : {}),
+        };
+      }
+    } catch {
+      // The public job page is the fallback when the guest posting cannot be read.
+    }
+  }
   const html = await fetchHtml(sourceUrl);
   const cheerioResult = cleanHtml(html);
   const looksJsApp =

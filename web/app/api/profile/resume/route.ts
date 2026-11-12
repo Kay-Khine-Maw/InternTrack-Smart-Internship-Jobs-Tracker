@@ -31,12 +31,12 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(await file.arrayBuffer());
     let textContent: string;
     if (name.endsWith(".pdf") || mime === "application/pdf") {
-      textContent = (await extractFromPdf(buffer, file.name)).textContent;
+      textContent = (await extractFromPdf(buffer, file.name, { preserveLines: true })).textContent;
     } else if (
       name.endsWith(".docx") ||
       mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ) {
-      textContent = (await extractFromDocx(buffer, file.name)).textContent;
+      textContent = (await extractFromDocx(buffer, file.name, { preserveLines: true })).textContent;
     } else {
       throw new AppError("UNSUPPORTED_FILE", "Unsupported resume type. Upload a PDF or DOCX file.", 400);
     }

@@ -168,11 +168,10 @@ export function calculateMatch(profile: StudentProfile, requirements: MatchingRe
   const applicableWeight = criteria.filter((item) => item.result !== "not_applicable").reduce((sum, item) => sum + item.weight, 0);
   const assessed = criteria.filter((item) => item.result === "matched" || item.result === "not_met");
   const assessedWeight = assessed.reduce((sum, item) => sum + item.weight, 0);
-  const matchedWeight = assessed.filter((item) => item.result === "matched").reduce((sum, item) => sum + item.weight, 0);
   const mandatoryConditions = criteria.filter((item) => item.mandatory || item.classification === "required");
   return {
     state: assessedWeight ? "ready" : "complete_profile",
-    score: assessedWeight ? Math.round((matchedWeight / assessedWeight) * 100) : null,
+    score: null,
     coverage: applicableWeight ? Math.round((assessedWeight / applicableWeight) * 100) : 0,
     criteria,
     mandatoryConditions,

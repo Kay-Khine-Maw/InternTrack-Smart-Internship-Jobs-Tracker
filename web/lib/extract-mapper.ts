@@ -173,17 +173,19 @@ export function normalizeExtractedData(raw: unknown): ExtractedInternshipData {
       "office",
     ]) || null,
     deadline: isoDeadline(firstString(obj, ["deadline", "applyBy", "applicationDeadline", "apply_by"])) || null,
-    description: firstString(obj, [
-      "description",
-      "jobDescription",
-      "job_description",
-      "about",
-      "summary",
-      "overview",
-      "roleDescription",
-      "role_description",
-      "details",
-    ]) || null,
+    description: toRoleDescription(
+      firstString(obj, [
+        "description",
+        "jobDescription",
+        "job_description",
+        "about",
+        "summary",
+        "overview",
+        "roleDescription",
+        "role_description",
+        "details",
+      ])
+    ),
     requirements: asStringArray(obj.requirements ?? obj.requirement),
     requiredDocuments: asStringArray(
       obj.requiredDocuments ?? obj.documents ?? obj.required_documents
@@ -234,18 +236,85 @@ export function inferLocationFromText(text: string): string | null {
   return hint?.trim() || null;
 }
 
+const ROLE_HEADING =
+  /^(about the role|the role|job description|responsibilities|key responsibilities|what you(?:'|’)ll do|your role|duties|role overview|หน้าที่(?:ความรับผิดชอบ)?|รายละเอียด(?:งาน|ตำแหน่ง)?)\b/i;
+const STOP_HEADING =
+  /^(qualifications|requirements|what you(?:'|’)ll need|benefits|perks|what we offer|compensation|how to apply|application process|process|คุณสมบัติ|สวัสดิการ|วิธีการสมัคร)\b/i;
+const SKIP_HEADING =
+  /^(about the company|about us|who we are|our story|why join|life at|เกี่ยวกับบริษัท|เกี่ยวกับเรา)\b/i;
+
+function isSectionHeading(line: string, pattern: RegExp) {
+  const heading = line.replace(/[:–—-]\s*$/, "").trim();
+  return heading.length <= 80 && pattern.test(heading);
+}
+
+function isBenefitOrPitch(line: string) {
+  return /\b(provident fund|health insurance|vacation leave|flexible fund|learning access|overseas outing|fun activities|compensation package|performance-based bonus|medical insurance|annual leave|we are one of|we offer a competitive|join us and be a part|don(?:'|’)t just follow trends)\b/i.test(
+    line
+  );
+}
+
+function descriptionLines(value: string) {
+  return value.split(/\r?\n/).flatMap((line) => {
+    const trimmed = line.replace(/^[-•*]\s*/, "").trim();
+    if (!trimmed) return [];
+    if (trimmed.length > 240) {
+      return trimmed
+        .split(/(?<=[.!?])\s+/)
+        .map((part) => part.trim())
+        .filter(Boolean);
+    }
+    return [trimmed];
+  });
+}
+
+export function toRoleDescription(value: string | null | undefined): string | null {
+  if (!value?.trim()) return null;
+  const lines = descriptionLines(value);
+  const alreadyEdited =
+    lines.length > 0 &&
+    lines.length <= 30 &&
+    lines.join("\n").length <= 2500 &&
+    lines.every(
+      (line) =>
+        !isSectionHeading(line, ROLE_HEADING) &&
+        !isSectionHeading(line, SKIP_HEADING) &&
+        !isSectionHeading(line, STOP_HEADING) &&
+        !isBenefitOrPitch(line)
+    );
+  if (alreadyEdited) return lines.map((line) => `- ${line}`).join("\n");
+  let mode: "seek" | "role" | "skip" = "seek";
+  const selected: string[] = [];
+  for (const line of lines) {
+    if (isSectionHeading(line, ROLE_HEADING)) {
+      if (mode !== "role") selected.length = 0;
+      mode = "role";
+      continue;
+    }
+    if (isSectionHeading(line, SKIP_HEADING) || isSectionHeading(line, STOP_HEADING)) {
+      if (mode === "role") break;
+      mode = "skip";
+      continue;
+    }
+    if (mode === "skip" || isBenefitOrPitch(line) || line.length < 30) continue;
+    if (/^(home|menu|cookie|privacy|apply now|sign in)$/i.test(line)) continue;
+    selected.push(line);
+  }
+  const bullets = selected.slice(0, 8).map((line) => {
+    if (line.length <= 180) return line;
+    const cut = line.slice(0, 177).replace(/\s+\S*$/, "").trim();
+    return `${cut || line.slice(0, 177).trim()}…`;
+  });
+  if (bullets.length) return bullets.map((line) => `- ${line}`).join("\n");
+  const compact = value.replace(/\s+/g, " ").trim();
+  if (compact.length <= 320 && !isBenefitOrPitch(compact) && !/about the company/i.test(compact)) {
+    return `- ${compact}`;
+  }
+  return null;
+}
+
 export function inferDescriptionFromText(text: string): string | null {
-  const labeled = text.match(
-    /(?:job description|description|about the role|about us|สรุปงาน|รายละเอียด(?:งาน)?)\s*[:\-]\s*([\s\S]{40,1200})/i
-  )?.[1]?.trim();
-  if (labeled) return labeled.split(/\n{3,}/)[0].trim().slice(0, 1500);
-  const paragraphs = text
-    .split(/\n+/)
-    .map((line) => line.trim())
-    .filter((line) => line.length >= 40)
-    .filter((line) => !/^(home|menu|cookie|privacy|apply now|sign in)$/i.test(line));
-  const body = paragraphs.slice(0, 8).join("\n").trim().slice(0, 1500);
-  return body || null;
+  return toRoleDescription(text);
 }
 
 export function hydrateFromSourceText(text: string, current: ExtractedInternshipData): ExtractedInternshipData {

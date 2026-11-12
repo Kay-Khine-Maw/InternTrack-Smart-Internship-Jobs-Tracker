@@ -50,7 +50,7 @@ export function Navbar({
           <Link
             href="/profile"
             aria-label="Open profile"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 text-sm font-semibold text-white shadow-sm ring-2 ring-white hover:from-indigo-500 hover:to-violet-600"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-deep text-sm font-semibold text-white shadow-sm ring-2 ring-white hover:bg-[#5B54F0]"
           >
             {profileName ? profileInitial(profileName) : "..."}
           </Link>

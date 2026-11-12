@@ -6,12 +6,11 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DocumentChecklist } from "@/components/internships/DocumentChecklist";
 import { MatchPanel } from "@/components/internships/MatchPanel";
-import { RequirementsReview } from "@/components/internships/RequirementsReview";
 import { EditInternshipModal } from "@/components/internships/EditInternshipModal";
 import { PriorityBadge } from "@/components/internships/PriorityBadge";
 import { TranslatableReadout } from "@/components/internships/FieldTranslateBar";
+import { toRoleDescription } from "@/lib/extract-mapper";
 import { ConfirmModal } from "@/components/modals/ConfirmModal";
 import { formatLongDate, formatShortDate } from "@/lib/dates";
 import { useInternships } from "@/lib/store";
@@ -51,7 +50,7 @@ function InternshipBackLink() {
 export default function InternshipDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { getById, toggleDocument, addDocument, removeDocument, deleteInternship, setPriority, updateInternship } =
+  const { getById, deleteInternship, setPriority, updateInternship } =
     useInternships();
   const internship = getById(params.id);
   const [editOpen, setEditOpen] = useState(false);
@@ -118,7 +117,7 @@ export default function InternshipDetailPage() {
         <InternshipBackLink />
       </Suspense>
 
-      <Card className="p-5 sm:p-6">
+      <Card className="bg-white p-5 sm:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex gap-4">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-lg font-semibold text-accent-deep">
@@ -145,32 +144,12 @@ export default function InternshipDetailPage() {
       </Card>
 
       <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Document Checklist</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DocumentChecklist
-              documents={internship.documents}
-              onToggle={(id) => toggleDocument(internship.id, id)}
-              onAdd={(name) => addDocument(internship.id, name)}
-              onRemove={(id) => removeDocument(internship.id, id)}
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
+        <Card className="bg-white">
           <CardHeader>
             <CardTitle>Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="grid gap-1 rounded-lg border border-border/70 p-3 sm:grid-cols-[140px_1fr]">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">HR email</p>
-              <p className={internship.hrEmail ? "text-sm text-navy" : "text-sm text-muted-foreground"}>
-                {internship.hrEmail || "HR email not found. Add it manually."}
-              </p>
-            </div>
-            <div className="grid gap-1 rounded-lg border border-border/70 p-3 sm:grid-cols-[140px_1fr]">
+            <div className="grid gap-1 rounded-lg border border-border/70 bg-white p-3 sm:grid-cols-[140px_1fr]">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Company</p>
               <p className="text-sm text-navy">{internship.company}</p>
             </div>
@@ -178,12 +157,32 @@ export default function InternshipDetailPage() {
               [
                 ["Position", "position", internship.role],
                 ["Location", "location", internship.location || ""],
-                ["Description", "description", internship.description || ""],
+              ] as const
+            ).map(([label, field, original]) => (
+              <div key={field} className="rounded-lg border border-border/70 bg-white p-3">
+                <TranslatableReadout
+                  label={label}
+                  field={field}
+                  original={original}
+                  translations={internship.translations}
+                  onTranslated={persistTranslation}
+                />
+              </div>
+            ))}
+            <div className="grid gap-1 rounded-lg border border-border/70 bg-white p-3 sm:grid-cols-[140px_1fr]">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">HR email</p>
+              <p className={internship.hrEmail ? "text-sm text-navy" : "text-sm text-muted-foreground"}>
+                {internship.hrEmail || "HR email not found. Add it manually."}
+              </p>
+            </div>
+            {(
+              [
+                ["Description", "description", toRoleDescription(internship.description) || ""],
                 ["Requirements", "requirements", (internship.requirements ?? []).join("\n")],
                 ["Notes", "notes", internship.notes || ""],
               ] as const
             ).map(([label, field, original]) => (
-              <div key={field} className="rounded-lg border border-border/70 p-3">
+              <div key={field} className="rounded-lg border border-border/70 bg-white p-3">
                 <TranslatableReadout
                   label={label}
                   field={field}
@@ -195,7 +194,7 @@ export default function InternshipDetailPage() {
               </div>
             ))}
             {info.map(([label, value]) => (
-              <div key={label} className="grid gap-1 rounded-lg border border-border/70 p-3 sm:grid-cols-[140px_1fr]">
+              <div key={label} className="grid gap-1 rounded-lg border border-border/70 bg-white p-3 sm:grid-cols-[140px_1fr]">
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
                 {label === "Application link" && internship.url ? (
                   <a
@@ -234,7 +233,6 @@ export default function InternshipDetailPage() {
           </CardContent>
         </Card>
         <MatchPanel internshipId={internship.id} />
-        <RequirementsReview internship={internship} />
       </div>
 
       <EditInternshipModal open={editOpen} internship={internship} onOpenChange={setEditOpen} />

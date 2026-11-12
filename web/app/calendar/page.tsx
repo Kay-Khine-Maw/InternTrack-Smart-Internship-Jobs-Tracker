@@ -47,21 +47,21 @@ const KIND_META: Record<EventKind, { label: string; chip: string; bar: string; d
   deadline: {
     label: "Application deadline",
     title: "Deadline",
-    chip: "bg-rose-100 text-rose-600",
+    chip: "bg-rose-50 text-rose-700",
     bar: "bg-rose-400",
     dot: "bg-rose-400",
   },
   followUp: {
     label: "Follow-up Date",
     title: "Follow-up",
-    chip: "bg-amber-100 text-amber-700",
+    chip: "bg-amber-50 text-amber-800",
     bar: "bg-amber-400",
     dot: "bg-amber-400",
   },
   interview: {
     label: "Interview",
     title: "Interview",
-    chip: "bg-violet-100 text-violet-600",
+    chip: "bg-violet-50 text-violet-700",
     bar: "bg-violet-400",
     dot: "bg-violet-400",
   },
@@ -291,7 +291,7 @@ export default function CalendarPage() {
                   key={`${cell.key ?? "empty"}-${index}`}
                   className={cn(
                     "min-h-[104px] rounded-xl p-2 text-left align-top",
-                    isToday && "bg-sky-50/80",
+                    isToday && "bg-white/5",
                     cell.day && "cursor-pointer hover:bg-navy-50/50"
                   )}
                   onClick={(event) => {
@@ -354,7 +354,7 @@ export default function CalendarPage() {
                     onClick={() => setSelectedDay(event.day)}
                     className={cn(
                       "flex items-start gap-3 rounded-xl px-2 py-2 hover:bg-navy-50",
-                      selectedDay === event.day && "bg-sky-50"
+                      selectedDay === event.day && "bg-white/10"
                     )}
                   >
                     <span className={cn("mt-1 h-8 w-1 shrink-0 rounded-full", KIND_META[event.kind].bar)} />

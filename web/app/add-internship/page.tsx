@@ -670,7 +670,7 @@ export default function AddInternshipPage() {
               </Button>
             </div>
             {!canSave && (
-              <p className="text-right text-xs text-red-700">
+              <p className="text-right text-xs text-red-300">
                 Company and position are required to save.
               </p>
             )}

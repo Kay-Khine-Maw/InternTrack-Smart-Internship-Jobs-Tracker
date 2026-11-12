@@ -175,8 +175,8 @@ export function NotificationBell() {
                     className={cn(
                       "block rounded-xl px-3 py-2",
                       read
-                        ? "bg-white text-navy/70 hover:bg-white"
-                        : "bg-transparent hover:bg-white/50"
+                        ? "bg-white text-navy/70 hover:bg-navy-50"
+                        : "bg-transparent hover:bg-navy-50"
                     )}
                   >
                     <p className={cn("truncate text-sm font-medium", read ? "text-navy/70" : "text-navy")}>

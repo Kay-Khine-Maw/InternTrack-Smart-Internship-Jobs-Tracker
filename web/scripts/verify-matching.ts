@@ -34,7 +34,7 @@ const qaResult = calculateMatch({
 assert.equal(qaResult.criteria.find((item) => item.label === "manual software testing")?.result, "matched");
 assert.equal(qaResult.criteria.find((item) => item.label === "test-case design")?.result, "matched");
 assert.equal(qaResult.criteria.find((item) => item.label === "APIs")?.result, "matched");
-assert.ok((qaResult.score ?? 0) > 0);
+assert.equal(qaResult.score, null);
 
 const empty = calculateMatch(profile, []);
 assert.equal(empty.state, "insufficient_requirements");

@@ -52,7 +52,7 @@ export function MatchPanel({ internshipId }: { internshipId: string }) {
           <p className="mt-2 text-xs text-muted-foreground">This percentage concerns assessed requirements and is not a hiring-success prediction.</p>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {result.criteria.map((criterion) => (
-              <div key={`${criterion.category}-${criterion.label}`} className="rounded-lg border border-border px-3 py-2 text-sm">
+              <div key={`${criterion.category}-${criterion.label}`} className="rounded-lg border border-border bg-white px-3 py-2 text-sm">
                 <p className="font-medium text-navy">{criterion.label}</p>
                 <p className="text-xs capitalize text-muted-foreground">{criterion.result.replace("_", " ")}</p>
               </div>

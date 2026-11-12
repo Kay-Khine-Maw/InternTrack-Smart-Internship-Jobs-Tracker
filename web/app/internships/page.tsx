@@ -30,7 +30,7 @@ export default function InternshipsPage() {
         <div className="relative w-full max-w-md">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            className="pl-9"
+            className="bg-white pl-9"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search company, position, or tags"
@@ -57,10 +57,8 @@ export default function InternshipsPage() {
         </div>
       ) : visible.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-white px-6 py-16 text-center">
-          <p className="text-base font-semibold text-navy">No internships match these filters</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Try another search term, choose All, or add a new internship.
-          </p>
+          <p className="text-base font-semibold text-navy">No internships match this search</p>
+          <p className="mt-1 text-sm text-muted-foreground">Try another search term, or add a new internship.</p>
           <Button asChild className="mt-4">
             <Link href="/add-internship">Add Internship</Link>
           </Button>

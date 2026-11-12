@@ -237,7 +237,7 @@ export default function ProfilePage() {
               <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-indigo-100 bg-accent-soft/50 p-4">
                 <div>
                   <p className="font-medium text-navy">Complete your profile from a resume</p>
-                  <p className="mt-1 text-xs text-muted-foreground">PDF or DOCX content is processed by Gemini and shown for review before saving.</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Upload a PDF or DOCX resume. Extracted facts stay as a draft until you apply them.</p>
                 </div>
                 <label className="inline-flex cursor-pointer items-center rounded-md bg-accent-deep px-3 py-2 text-sm font-medium text-white hover:opacity-90">
                   {resumeLoading ? "Processing..." : "Upload Resume"}
@@ -260,6 +260,8 @@ export default function ProfilePage() {
                   <p className="mt-1 text-sm text-amber-900">Existing values are preserved until you choose to use extracted values. You can correct them before saving.</p>
                   <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-amber-950">
                     {resumeDraft.displayName ? <li>Name: {resumeDraft.displayName}</li> : null}
+                    {resumeDraft.contact.email ? <li>Email: {resumeDraft.contact.email}</li> : null}
+                    {resumeDraft.summary ? <li>Summary: {resumeDraft.summary}</li> : null}
                     {resumeDraft.year ? <li>Year: {resumeDraft.year}</li> : null}
                     {resumeDraft.address ? <li>Address: {resumeDraft.address}</li> : null}
                     {resumeDraft.skills.length ? <li>Skills: {resumeDraft.skills.join(", ")}</li> : null}
@@ -320,7 +322,7 @@ export default function ProfilePage() {
 
 function InfoRow({ icon: Icon, text }: { icon: typeof Mail; text: string }) {
   return (
-    <div className="flex items-center gap-2.5">
+    <div className="flex items-center gap-2.5 text-sm text-navy/80">
       <Icon className="h-4 w-4 shrink-0 text-navy/45" />
       <span>{text}</span>
     </div>

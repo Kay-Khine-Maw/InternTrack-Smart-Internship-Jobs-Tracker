@@ -59,7 +59,7 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        card: "0 1px 2px rgba(21, 32, 72, 0.06), 0 8px 24px rgba(21, 32, 72, 0.04)",
+        card: "0 1px 2px rgba(21, 32, 72, 0.04), 0 8px 24px rgba(21, 32, 72, 0.06)",
       },
       keyframes: {
         "fade-in": {

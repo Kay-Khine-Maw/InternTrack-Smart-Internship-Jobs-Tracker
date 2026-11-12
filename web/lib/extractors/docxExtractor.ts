@@ -2,10 +2,15 @@ import "server-only";
 import mammoth from "mammoth";
 import { AppError } from "@/lib/server/errors";
 
-export async function extractFromDocx(buffer: Buffer, filename?: string) {
+function readableText(text: string, preserveLines: boolean) {
+  if (!preserveLines) return text.replace(/\s+/g, " ").trim();
+  return text.replace(/\r\n/g, "\n").replace(/[^\S\n]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+}
+
+export async function extractFromDocx(buffer: Buffer, filename?: string, options?: { preserveLines?: boolean }) {
   try {
     const result = await mammoth.extractRawText({ buffer });
-    const textContent = (result.value ?? "").replace(/\s+/g, " ").trim();
+    const textContent = readableText(result.value ?? "", Boolean(options?.preserveLines));
     if (!textContent) {
       throw new AppError("EXTRACT_FAILURE", "The Word document did not contain readable text.", 400);
     }

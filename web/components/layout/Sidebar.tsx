@@ -24,7 +24,7 @@ export function Sidebar({
     <>
       <div
         className={cn(
-          "fixed inset-0 z-40 bg-navy/40 lg:hidden",
+          "fixed inset-0 z-40 bg-black/70 lg:hidden",
           open ? "block" : "hidden"
         )}
         onClick={onClose}
@@ -38,9 +38,7 @@ export function Sidebar({
       >
         <div className="mb-8 flex items-center justify-between px-2">
           <Link href="/dashboard" className="flex items-center gap-2" onClick={onClose}>
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-deep text-sm font-bold text-white">
-              IT
-            </span>
+            <img src="/logo.png" alt="InternTrack" className="h-8 w-8" />
             <span className="text-lg font-semibold tracking-tight text-navy">InternTrack</span>
           </Link>
           <button

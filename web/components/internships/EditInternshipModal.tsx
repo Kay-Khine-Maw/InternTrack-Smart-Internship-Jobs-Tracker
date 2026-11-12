@@ -22,7 +22,18 @@ import {
 } from "@/components/ui/select";
 import { PRIORITIES, PRIORITY_LABELS, type Internship, type Priority } from "@/lib/types";
 import { toDateInput } from "@/lib/dates";
+import { toRoleDescription } from "@/lib/extract-mapper";
 import { useInternships } from "@/lib/store";
+
+function linesForEdit(value: string | null | undefined) {
+  const shown = toRoleDescription(value);
+  const source = shown || value || "";
+  return source
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^[-•*]\s*/, "").trim())
+    .filter(Boolean)
+    .join("\n");
+}
 
 interface Props {
   open: boolean;
@@ -35,6 +46,9 @@ export function EditInternshipModal({ open, internship, onOpenChange }: Props) {
   const [company, setCompany] = useState(internship.company);
   const [role, setRole] = useState(internship.role);
   const [location, setLocation] = useState(internship.location ?? "");
+  const [hrEmail, setHrEmail] = useState(internship.hrEmail ?? "");
+  const [description, setDescription] = useState(linesForEdit(internship.description));
+  const [requirements, setRequirements] = useState((internship.requirements ?? []).join("\n"));
   const [deadline, setDeadline] = useState(toDateInput(internship.deadline));
   const [url, setUrl] = useState(internship.url ?? "");
   const [notes, setNotes] = useState(internship.notes ?? "");
@@ -46,6 +60,9 @@ export function EditInternshipModal({ open, internship, onOpenChange }: Props) {
     setCompany(internship.company);
     setRole(internship.role);
     setLocation(internship.location ?? "");
+    setHrEmail(internship.hrEmail ?? "");
+    setDescription(linesForEdit(internship.description));
+    setRequirements((internship.requirements ?? []).join("\n"));
     setDeadline(toDateInput(internship.deadline));
     setUrl(internship.url ?? "");
     setNotes(internship.notes ?? "");
@@ -64,6 +81,29 @@ export function EditInternshipModal({ open, internship, onOpenChange }: Props) {
           <Field label="Company" value={company} onChange={setCompany} />
           <Field label="Position" value={role} onChange={setRole} />
           <Field label="Location" value={location} onChange={setLocation} />
+          <Field label="HR email" value={hrEmail} onChange={setHrEmail} />
+          <div className="space-y-2">
+            <Label htmlFor="edit-description">Description</Label>
+            <Textarea
+              id="edit-description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="What this role involves. One point per line."
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="edit-requirements">Requirements</Label>
+            <Textarea
+              id="edit-requirements"
+              value={requirements}
+              onChange={(e) => setRequirements(e.target.value)}
+              placeholder="One requirement per line."
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="edit-notes">Notes</Label>
+            <Textarea id="edit-notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add notes..." />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="edit-deadline">Deadline</Label>
             <Input id="edit-deadline" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
@@ -72,6 +112,7 @@ export function EditInternshipModal({ open, internship, onOpenChange }: Props) {
             ) : null}
           </div>
           <Field label="Application link" value={url} onChange={setUrl} />
+          <Field label="Tags" value={tags} onChange={setTags} />
           <div className="space-y-2">
             <Label>Priority</Label>
             <Select value={priority} onValueChange={(value) => setPriority(value as Priority)}>
@@ -87,11 +128,6 @@ export function EditInternshipModal({ open, internship, onOpenChange }: Props) {
               </SelectContent>
             </Select>
           </div>
-          <Field label="Tags" value={tags} onChange={setTags} />
-          <div className="space-y-2">
-            <Label htmlFor="edit-notes">Notes</Label>
-            <Textarea id="edit-notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add notes..." />
-          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
@@ -104,6 +140,12 @@ export function EditInternshipModal({ open, internship, onOpenChange }: Props) {
                   company,
                   role,
                   location,
+                  hrEmail: hrEmail.trim(),
+                  description: description.trim(),
+                  requirements: requirements
+                    .split(/\r?\n/)
+                    .map((item) => item.trim())
+                    .filter(Boolean),
                   deadline: deadline || null,
                   url,
                   notes,

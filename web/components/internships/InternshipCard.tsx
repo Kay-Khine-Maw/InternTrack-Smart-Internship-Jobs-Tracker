@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 
 export function InternshipCard({ internship }: { internship: Internship }) {
   const [match, setMatch] = useState<MatchResult | null>(null);
+  const [matchLoaded, setMatchLoaded] = useState(false);
   const soon = isDeadlineSoon(internship.deadline, 7);
   const hasDeadline = Boolean(internship.deadline);
 
@@ -24,6 +25,9 @@ export function InternshipCard({ internship }: { internship: Internship }) {
       })
       .catch(() => {
         if (active) setMatch(null);
+      })
+      .finally(() => {
+        if (active) setMatchLoaded(true);
       });
     return () => {
       active = false;
@@ -32,7 +36,7 @@ export function InternshipCard({ internship }: { internship: Internship }) {
 
   return (
     <Link href={`/internships/${internship.id}`} className="block h-full">
-      <Card className="h-full p-5 transition-all hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md">
+      <Card className="h-full bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md">
         <div className="flex items-start gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-sm font-semibold text-accent-deep">
             {companyInitials(internship.company)}
@@ -60,7 +64,7 @@ export function InternshipCard({ internship }: { internship: Internship }) {
         <div className="mt-3 space-y-2">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Profile match</span>
-            <span>{match?.score === null || match?.score === undefined ? "Not available" : `${match.score}%`}</span>
+            <span>{!matchLoaded ? "Calculating..." : match?.score === null || match?.score === undefined ? "Not available" : `${match.score}%`}</span>
           </div>
           <Progress value={match?.score ?? 0} />
         </div>

@@ -148,7 +148,7 @@ export function UpdateStatusModal({ open, internship, onOpenChange }: Props) {
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          {error && <p className="text-sm text-red-700">{error}</p>}
+          {error && <p className="text-sm text-red-300">{error}</p>}
           <Button
             disabled={saving}
             onClick={async () => {
