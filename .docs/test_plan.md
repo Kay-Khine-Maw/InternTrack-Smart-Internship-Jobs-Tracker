@@ -95,12 +95,19 @@ The test programme will determine whether InternTrack:
   - Required, preferred, matched, not met, unknown and insufficient states.
   - Skill-match percentage, match reasons, skills to acquire, other unmet
     requirements, unknown profile gaps, and profile skills the posting does
-    not ask for. Those lists stay in the match result.
-  - The profile-match panel shows the deterministic skill-match percentage,
-    the explanation paragraph for that percentage, and skill-gap
-    recommendations with rough study times. The percentage and explanation
-    stay the same on refresh and recalculate until the compared skills or
-    requirements change. It does not show the three chip groups.
+    not ask for. Those lists stay in the match result. The panel does not
+    show the three chip groups.
+  - The profile-match panel shows the deterministic skill-match percentage.
+    Unknown lines are excluded. Refresh and Recalculate do not change it
+    unless profile skills or tools, or the posting's skill or tool
+    requirements, change. Gemini does not replace the number.
+  - "Why this percentage" shows separate sentences. The first sentence states
+    the percentage. Later sentences may be a stored Gemini rewrite. A failure
+    leaves the original sentences and says smoother wording is unavailable.
+  - "How to raise this match" lists missing skill names, required before
+    preferred and shorter rough estimates first. Estimates are not shown as
+    promises. See more opens learning text and http(s) links, including
+    Coursera, Udemy, freeCodeCamp, and LinkedIn Learning.
   - Category aliases, phrase tolerance, singular/plural tolerance and legacy
     fallback.
 - Calendar, search and translation.
@@ -329,9 +336,11 @@ expected result and the relevant database/API evidence.
 | DUP-02 | Title duplicate | Existing company and position | Add same company/position with different URL | Duplicate warning appears when URL matching is unavailable |
 | DUP-03 | Duplicate decisions | Duplicate warning | Return, view existing and explicitly override in separate runs | Each choice has the correct outcome; override creates only one intended record |
 | SEARCH-01 | Search/filter | Several synthetic records | Search by company/position and use available filters | Matching records appear; stored data is not mutated |
-| MATCH-01 | Ready match | Profile and reviewed requirements | Open match panel | Deterministic percentage and criterion results are shown |
+| MATCH-01 | Ready match | Profile and reviewed requirements | Open match panel | Deterministic percentage is shown. "Why this percentage" lists separate sentences. The three chip groups are not shown |
 | MATCH-02 | Unknown/insufficient | Missing profile facts or empty requirements | Open match panel | Unknown or insufficient state is shown; no invented score |
 | MATCH-03 | Legacy match | Record has only requirements/skills | Open match panel | Legacy fallback produces a usable assessment |
+| MATCH-04 | Stable percentage | Unchanged profile skills/tools and posting skill/tool requirements | Refresh and Recalculate | The percentage stays the same. A stored smoothed explanation is reused. Gemini does not replace the percentage. A failed rewrite keeps the original sentences and says smoother wording is unavailable |
+| MATCH-05 | Skill dialog | A not-met skill or tool is listed | Hover or focus the card, then activate See more | The card darkens and shows a grey underlined See more button. The dialog explains how to learn the skill and lists http(s) links, including Coursera, Udemy, freeCodeCamp, and LinkedIn Learning. Non-http(s) links are absent. Close uses the accent button |
 | TRANS-01 | Translation | Non-English supported field | Request English translation; switch original/English | Translation appears, original remains available, and failure is visible |
 | DEL-01 | Delete | Saved record | Confirm deletion; reload list and direct URL | Record is removed only after successful server response |
 | ERR-01 | Database failure | Stop or isolate database during mutation | Attempt save/update/delete | Clear failure; UI does not claim success or lose recoverable input |
@@ -712,7 +721,7 @@ The final report must separate:
 |---|---|
 | F1 / B10 / B24 | PROF-01 to PROF-05; UAT-05; resume review |
 | F13 / B12 | AUTH-01 to AUTH-09; SEC tests; UAT sign-in |
-| F14 / B25 | MATCH-01 to MATCH-03; existing matching script; UAT-05 |
+| F14 / B25 | MATCH-01 to MATCH-05; existing matching script; UAT-05 |
 | F2–F4 / B02–B04 | EXT-01 to EXT-05; UAT-01 and UAT-02 |
 | F5 / B05 | SAVE-01 to SAVE-03; persistence checks; UAT-02 |
 | F6 / B06 | DUP-01 to DUP-03; `test:duplicates` |

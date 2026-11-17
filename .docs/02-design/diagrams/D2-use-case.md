@@ -56,6 +56,7 @@ This diagram does not show step order. D4 shows the interaction sequence.
 - Dates and Calendar: F9; B09.
 - Search and Filter: F10; B20.
 - Translate Fields: F11; B11.
+- Compare Profile with a Posting: F14; B25. The percentage is deterministic. Gemini may smooth later explanation sentences and suggest how to learn missing skills.
 - Delete Internship: F12; B23.
 
 Privacy, retention and access-control requirements apply across

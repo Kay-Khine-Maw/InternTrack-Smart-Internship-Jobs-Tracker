@@ -91,9 +91,10 @@ Supporting features extend the core workflow. Their priorities follow the specif
 ### F14 — Explainable Profile Matching
 
 - Compare a saved internship's reviewed requirements with the Student profile.
-- Show the deterministic skill-match percentage and a paragraph that explains that same percentage. The percentage and the paragraph stay the same on refresh and recalculate until profile skills or tools, or the posting's skill or tool requirements, change. When they change, the paragraph says which skills or tools were added or removed.
-- Below that paragraph, show "How to raise this match": one card per missing skill or tool, showing only the skill name. Hovering or focusing the card shows an underlined See more control that opens a dialog with how to learn the skill, useful http(s) links, and common learning sites such as Coursera, Udemy, freeCodeCamp, and LinkedIn Learning. Required gaps come before preferred gaps, and a shorter estimate comes first when importance is the same. Say there is no gap to fill when every compared skill and tool is already covered.
-- Show a provider failure for the skill-gap recommendations instead of inventing them. The first sentence of the percentage explanation stays the deterministic count. Gemini rewrites only the later sentences, cached until those inputs change, and a failure leaves the original sentences with a note that smoother wording is unavailable.
+- Show the deterministic skill-match percentage: matched skill and tool lines divided by matched plus not-met lines. Unknown lines are excluded. Refresh and Recalculate do not change it unless profile skills or tools, or the posting's skill or tool requirements, change. Gemini does not replace the number.
+- Under "Why this percentage", show separate sentences. Keep the first comparison sentence, which states the percentage. Gemini may rewrite only the later sentences. Store the combined text with the input hash and reuse a successful rewrite until those inputs change. When they change, name the skills or tools that were added or removed, or say that the profile or requirements were updated. If Gemini fails, keep the original sentences and say smoother wording is unavailable.
+- Below that, show "How to raise this match" instead of the three chip groups. List missing skills and tools with required lines before preferred lines, then a shorter rough learning-time estimate before a longer one. Estimates order the list, are not promises, and are not printed on the cards. Each card shows only the skill name. Hover or focus darkens it and shows a grey underlined See more button. The dialog explains how to learn the skill and lists Gemini http(s) links plus Coursera, Udemy, freeCodeCamp, and LinkedIn Learning search links. Drop links that are not http or https. Say there is no skill gap to fill when every compared skill and tool is already covered.
+- Show a provider failure for the skill-gap recommendations instead of inventing them.
 - Keep the deterministic comparison in the match result, including match reasons, skills to acquire, other unmet requirements, unknown gaps, and profile skills the posting does not ask for. The panel does not show those three chip groups.
 - Do not present the result as a hiring prediction.
 - Normalize category aliases and support legacy records that only contain requirements and skills.
@@ -202,7 +203,7 @@ Priorities:
 
 ## AI Boundaries
 
-Gemini is the sole AI provider for extraction and translation.
+Gemini is the sole AI provider for extraction, translation, match-explanation wording, and skill-gap learning text. It does not choose the profile-match percentage.
 
 AI output may be incomplete or incorrect. The Student must be able to review and correct it.
 

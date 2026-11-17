@@ -12,13 +12,13 @@ A component shown here is not automatically implemented or accepted.
 
 InternTrack uses a Next.js application with server-side route handlers, Prisma and PostgreSQL.
 
-Gemini is the sole AI provider for extraction and translation.
+Gemini is the sole AI provider for extraction, translation, match-explanation wording, and skill-gap learning text. It does not choose the profile-match percentage.
 
 Core workflow:
 
 Capture → extract → review and correct → explicitly save → reopen.
 
-Supporting workflows cover profiles, application tracking, checklists, dates, search, translation and deletion.
+Supporting workflows cover profiles, explainable profile matching, application tracking, checklists, dates, search, translation and deletion. The interface is light theme only. A dashboard dark theme was tried and then removed.
 
 ## 1. Browser Interface
 
@@ -124,9 +124,9 @@ Server routes handle requests between the browser and internal services.
 `GET /api/internships/:id/match`
 
 - Load only the authorized Student profile and internship.
-- Calculate a deterministic skill comparison from skill and tool requirements, plus coverage, match reasons, skills to acquire, other unmet requirements, and unknown lines. The route still returns that comparison. Internship cards use the score only.
-- Show the deterministic skill-match percentage. Persist the explanation of that percentage with a hash of the profile skills, profile tools, and skill or tool requirements, and reuse that paragraph until those inputs change. Do not replace the percentage with a Gemini score. When the inputs change, the paragraph names the added or removed skills or tools, or says that the profile or requirements were updated.
-- Ask Gemini in a second cached request for skill-gap recommendations. Send profile skills and tools, skill and tool requirements (label, classification, and skill or tool category), the deterministic not-met skill and tool lines, and the short job context already used for the match. Do not send account ids, emails, or secrets. Keep only recommendations that match those not-met lines, using the same skill alias normalization, and order required lines before preferred lines, then shorter learning-time estimates first. Cap the list at eight. Each kept item may include a short howTo paragraph and at most three links; drop any link that is not http or https. The panel shows "How to raise this match" instead of the three chip groups. Each card shows only the skill name; hover or keyboard focus reveals See more, which opens a dialog with that explanation, those links, and common learning sites (Coursera, Udemy, freeCodeCamp, and LinkedIn Learning), or says the learning details are unavailable. If there is no not-met skill or tool line after a real comparison, say there is no gap to fill and do not call Gemini. Show a provider failure in that section instead of inventing recommendations.
+- Calculate a deterministic skill comparison from skill and tool requirements, plus coverage, match reasons, skills to acquire, other unmet requirements, and unknown lines. The route still returns that comparison. The displayed percentage, and the score on internship cards, is matched skill and tool lines divided by matched plus not-met lines. Unknown lines are excluded. Gemini must not replace that number.
+- Build "Why this percentage" from that comparison. Keep the first sentence, which states the percentage. Ask Gemini to rewrite only the later sentences, then show the combined text as separate sentences. Store it in `Internship.matchExplanationState` with a hash of the profile skills, profile tools, and skill or tool requirement labels. Reuse a stored rewrite while that hash matches and the stored text still starts with the current first sentence. When the inputs change, the text names the added or removed skills or tools, or says that the profile or requirements were updated. If Gemini fails, return the original sentences and the message that smoother wording is unavailable, and do not store that failure as a completed rewrite.
+- Ask Gemini for skill-gap learning text when not-met skill or tool lines remain. Cache that response in the server process by a hash of the minimized input. It is not the stored explanation. Send profile skills and tools, skill and tool requirements (label, classification, and skill or tool category), the deterministic not-met skill and tool lines, and the short job context already used for the match. Do not send account ids, emails, or secrets. Keep only recommendations that match those not-met lines, using the same skill alias normalization, and order required lines before preferred lines, then shorter rough learning-time estimates first. Estimates are not promises and are not shown on the cards. Cap the list at eight. Each kept item may include a short howTo paragraph and at most three links; drop any link that is not http or https. The panel shows "How to raise this match" instead of the three chip groups. Each card shows only the skill name. Hover or keyboard focus darkens the card and reveals a grey underlined See more button, which opens a dialog with that explanation, the kept links, and Coursera, Udemy, freeCodeCamp, and LinkedIn Learning search links, skipping a common site when the same host is already present. If learning details are missing, the dialog says so. If there is no not-met skill or tool line after a real comparison, say there is no skill gap to fill and do not call Gemini. Show a provider failure in that section instead of inventing recommendations.
 - Normalize extracted requirement categories before persistence.
 - Fall back to legacy `requirements` and `skills` for older records whose reviewed matching requirements are empty.
 
@@ -190,6 +190,8 @@ Gemini provides:
 
 - Structured internship extraction.
 - English translation of supported fields.
+- Smoother wording for the later sentences of a profile-match explanation. The first sentence and the percentage stay deterministic.
+- Learning text and website links for missing skills and tools on "How to raise this match". Recommendations that are not deterministic not-met lines are dropped.
 
 Provider calls occur on the server.
 
@@ -205,9 +207,9 @@ The integration must:
 The system does not define another AI provider or automatic provider failover.
 
 Profile information is not automatically included in extraction.
-Profile-driven personalization requires a separate scope decision.
+The match route may send bounded profile skills and tools, skill and tool requirements, missing lines, and short job context for explanation wording and skill-gap text. It does not send account ids, emails, or secrets, and Gemini does not choose the percentage.
 
-Trace: F3, F4, F11, LR2; B03, B04, B11, B16.
+Trace: F3, F4, F11, F14, LR2; B03, B04, B11, B16, B25.
 
 ## 6. Application Logic
 
@@ -236,7 +238,7 @@ Main data areas include:
 
 - Users.
 - Profiles.
-- Internships.
+- Internships, including optional `matchExplanationState` JSON for the stored profile-match explanation.
 - Document checklist items.
 - Tags.
 - Extraction history.

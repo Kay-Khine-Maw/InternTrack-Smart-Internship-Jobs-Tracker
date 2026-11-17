@@ -20,7 +20,7 @@ Capture → extract → review and correct → explicitly save → reopen.
 - View dates through a calendar.
 - Manage profiles and search internship records.
 - Upload a PDF or DOCX resume to review profile facts before saving.
-- Review internship requirements and view a deterministic skill-match percentage, the reason each skill matches, and the skills or requirements still to fill.
+- Review internship requirements and see a deterministic skill-match percentage. "Why this percentage" keeps that count in the first sentence and may smooth the later sentences. "How to raise this match" lists missing skills, with a dialog for how to learn each one. The percentage is not a hiring prediction.
 - Translate supported fields into English.
 
 Requirements and acceptance status are recorded in the

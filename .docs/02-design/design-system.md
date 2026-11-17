@@ -34,7 +34,7 @@ Use semantic tokens for backgrounds, text, borders, focus and errors.
 
 Reuse existing colors across screens. Do not communicate meaning through color alone.
 
-The interface uses the light theme only.
+The interface uses the light theme only. A dashboard dark theme, theme toggle, and black dashboard were tried and then removed. They are not part of the current interface.
 
 ## Typography and Spacing
 
@@ -47,6 +47,7 @@ The interface uses the light theme only.
 ## Layout
 
 - Use the shared application shell for signed-in screens.
+- Show the InternTrack logo at its intrinsic aspect ratio in the sidebar and on the sign-in page. Size it by height and let the width follow (`w-auto`, `object-contain`). Do not force it into a square.
 - Keep navigation consistent.
 - Collapse navigation when space is limited.
 - Use a simpler layout for sign-in where appropriate.
@@ -113,6 +114,8 @@ Provide clear states for:
 - Expired sessions or denied access.
 
 Dialogs must have clear titles and action labels. Destructive actions require confirmation.
+
+The shared dialog shell keeps rounded corners on all four sides while its body scrolls. The scroll region sits inside the shell, and a tall dialog keeps its top padding while the content moves. The skill-learning dialog is wider (`sm:max-w-2xl`), has no card shadow, and its Close button uses the accent button color. See more on a skill card is grey and underlined.
 
 Keep focus visible and return it appropriately when a dialog closes.
 

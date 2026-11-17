@@ -25,6 +25,7 @@ The Student uses InternTrack to:
 - Save, search, reopen and delete records.
 - Manage priority, checklists and notes. Application-status tracking is deferred.
 - Track deadlines, follow-ups and interviews.
+- Compare a saved posting with the profile. The displayed percentage is deterministic. Gemini may smooth the later explanation sentences and suggest how to learn missing skills. It does not choose the percentage.
 - Translate supported fields into English.
 
 ## System Boundaries
@@ -34,7 +35,8 @@ The Student uses InternTrack to:
 - New accounts start with blank profile and internship data; records are isolated by authenticated user.
 - PostgreSQL is internal and appears in D3.
 - Uploaded files are inputs supplied by the Student.
-- Gemini is the sole AI provider.
+- Gemini is the sole AI provider. It does not choose the profile-match percentage.
+- The interface is light theme only. A dashboard dark theme was tried and then removed.
 - AI output requires Student review before saving.
 - External processing must follow data-minimization rules.
 
@@ -54,6 +56,7 @@ The Student uses InternTrack to:
 - F11: Translation.
 - F12: Deletion.
 - F13: Authentication and session access.
+- F14: Explainable profile matching.
 - LR2: External AI processing.
 - LR4: Ownership and personal-data rights.
 - NFR3: Security and access boundaries.

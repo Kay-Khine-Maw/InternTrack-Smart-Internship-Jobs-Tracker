@@ -8,7 +8,7 @@ Core journey:
 
 Capture → extract → review and correct → explicitly save → reopen.
 
-Supporting journeys cover profile management, application tracking, search, translation and deletion.
+Supporting journeys cover profile management, profile matching, application tracking, search, translation and deletion.
 
 This document describes intended system behavior. The backlog records implementation gaps and acceptance status.
 
@@ -17,7 +17,7 @@ This document describes intended system behavior. The backlog records implementa
 - The application and database are available.
 - The Student has an account through the selected enrollment process.
 - Protected actions require a valid authenticated session.
-- Gemini is configured for extraction and translation.
+- Gemini is configured for extraction and translation. It may also smooth later match-explanation sentences and suggest how to learn missing skills. The profile-match percentage does not depend on Gemini.
 - Relevant data-handling information is available to the Student.
 
 ## J0 — Sign Up, Sign In and Sign Out
@@ -160,6 +160,20 @@ Supported priorities:
 `high`, `medium`, `low`.
 
 Checklist items track preparation. They do not imply storage of the actual application documents.
+
+## Supporting Journey — Compare a Profile with a Posting
+
+The Student opens a saved internship and reads the profile match.
+
+- Screen: `/internships/[id]`.
+- Trace: F14; B25.
+- The percentage is the deterministic skill and tool match: matched lines divided by matched plus not-met lines. Unknown lines are excluded.
+- Refresh and Recalculate keep that percentage unless profile skills or tools, or the posting's skill or tool requirements, change. Gemini does not replace the number.
+- "Why this percentage" shows separate sentences. The first sentence states the percentage. Later sentences may use smoother Gemini wording stored with those inputs. If that wording is unavailable, the original sentences remain and the panel says so.
+- "How to raise this match" lists missing skills and tools, required before preferred and shorter rough estimates first. Each card shows only the name. Hover or focus darkens it and shows a grey underlined See more button. The dialog explains how to learn the skill and lists website links, including Coursera, Udemy, freeCodeCamp, and LinkedIn Learning. Links that are not http or https are dropped.
+- Estimates are rough, not promises. The result is not a hiring prediction.
+- The matched-skill, skills-to-acquire, and not-asked-for chip groups are not shown.
+- The dashboard and the rest of the app stay on the light theme. There is no theme toggle.
 
 ## Supporting Journey — Review Dates
 

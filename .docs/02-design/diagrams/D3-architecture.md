@@ -27,6 +27,7 @@ flowchart TB
         Readers["Website and document readers"]
         ExtractAI["Gemini extraction adapter"]
         TranslateAI["Gemini translation adapter"]
+        MatchAI["Gemini match wording and skill-gap adapter"]
         Data["Prisma and database helpers"]
         Cleanup["Retention and cleanup process"]
 
@@ -37,6 +38,7 @@ flowchart TB
         API -->|"Process source"| Readers
         API -->|"Extract structured draft"| ExtractAI
         API -->|"Translate fields"| TranslateAI
+        API -->|"Smooth match wording and skill gaps"| MatchAI
         API -->|"Authorized reads and writes"| Data
         Cleanup -->|"Apply retention decisions"| Data
     end
@@ -56,6 +58,7 @@ flowchart TB
 
     ExtractAI <-->|"Necessary source content; draft or error"| Gemini
     TranslateAI <-->|"Selected text; translation or error"| Gemini
+    MatchAI <-->|"Bounded match text; wording, learning text, or error"| Gemini
 
     Data <--> DB
 ```
@@ -102,13 +105,16 @@ Gemini is the sole AI provider.
 
 - Prepare structured internship drafts.
 - Translate supported fields.
+- Rewrite only the later sentences of a profile-match explanation. The percentage and the first sentence stay deterministic.
+- Suggest how to learn missing skills and tools. Keep only deterministic not-met lines, and drop links that are not http or https.
 - Receive only necessary content.
-- Return results for validation and user review.
+- Return results for validation. Match wording and skill-gap text are not hiring predictions.
 
 ### Persistence
 
 PostgreSQL stores users, password hashes, authenticated sessions, profiles,
 internships, checklists, tags, extraction history and related translation data.
+An internship may store `matchExplanationState` for the profile-match explanation.
 
 Use valid ownership relationships and consistent multi-step writes.
 
@@ -130,7 +136,7 @@ Cleanup is a required capability, not a claim of implementation.
 - AI output remains a draft until explicitly saved after review.
 - Failed persistence must not appear successful.
 - Application-status tracking and status badge colors are deferred; priority remains supported.
-- Matching uses reviewed requirements, normalized categories and legacy requirement fallback.
+- Matching uses reviewed requirements, normalized categories and legacy requirement fallback. The displayed percentage is the deterministic skill and tool count. "How to raise this match" replaces the three chip groups. The app is light theme only; a dashboard dark theme was removed.
 - Extraction history is separate from traffic/security logs.
 - Deployment logging must follow applicable rules in `rule.md`.
 
@@ -142,6 +148,7 @@ Detailed execution order belongs in D4.
 
 - F1–F12: application pages, processing and persistence.
 - F13: authentication and session access.
+- F14: explainable profile matching.
 - NFR1–NFR4: reliability, validation, security and data quality.
 - NFR5–NFR6: accessible and responsive browser UI.
 - NFR7–NFR8: performance and maintainability.
