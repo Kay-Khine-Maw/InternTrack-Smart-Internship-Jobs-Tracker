@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 226 45% 97%;
+    --foreground: 226 50% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 226 50% 18%;
+    --primary: 239 70% 63%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 226 40% 95%;
+    --secondary-foreground: 226 50% 22%;
+    --muted: 226 30% 95%;
+    --muted-foreground: 226 16% 42%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 226 24% 88%;
+    --input: 226 24% 88%;
+    --ring: 239 70% 63%;
+    --radius: 0.9rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body {
+    @apply min-h-full bg-background text-foreground;
+  }
+
+  body {
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    line-height: 1.55;
+  }
+
+  input[type="date"] {
+    position: relative;
+    padding-right: 2.25rem;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 0.5rem;
+    left: auto;
+    cursor: pointer;
+  }
+}
+
+@layer utilities {
+  .page-enter {
+    animation: fade-in 280ms ease-out;
+  }
+}
