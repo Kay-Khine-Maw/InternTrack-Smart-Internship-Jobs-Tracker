@@ -1,0 +1,165 @@
+# D3 — High-Level Architecture
+
+## Scope
+
+This diagram describes the intended architecture of the whole system.
+
+It includes the browser, authentication, server processing,
+Gemini integration and database.
+
+Implementation and verification status remain in the backlog.
+
+## Architecture Diagram
+
+```mermaid
+flowchart TB
+    subgraph Browser["Browser"]
+        UI["Pages and shared components"]
+        Client["Client state and request handlers"]
+        UI <--> Client
+    end
+
+    subgraph App["InternTrack — Next.js application"]
+        Auth["Authentication and session handling"]
+        API["Protected server routes"]
+        Access["Authorization and record ownership"]
+        Logic["Validation, mapping and duplicate policy"]
+        Readers["Website and document readers"]
+        ExtractAI["Gemini extraction adapter"]
+        TranslateAI["Gemini translation adapter"]
+        MatchAI["Gemini match wording and skill-gap adapter"]
+        Data["Prisma and database helpers"]
+        Cleanup["Retention and cleanup process"]
+
+        Auth -->|"Session verification"| API
+        API -->|"Check permitted operation"| Access
+        Access -->|"Check record ownership"| Data
+        API -->|"After authorization"| Logic
+        API -->|"Process source"| Readers
+        API -->|"Extract structured draft"| ExtractAI
+        API -->|"Translate fields"| TranslateAI
+        API -->|"Smooth match wording and skill gaps"| MatchAI
+        API -->|"Authorized reads and writes"| Data
+        Cleanup -->|"Apply retention decisions"| Data
+    end
+
+    subgraph Persistence["Internal persistence"]
+        DB[("PostgreSQL")]
+    end
+
+    Website["Source Website"]
+    Gemini["Gemini"]
+
+    Client <-->|"Sign-in and sign-out"| Auth
+    Client <-->|"Requests with session; responses"| API
+
+    Readers <-->|"Fetch posting content"| Website
+    Readers -->|"Prepared content"| API
+
+    ExtractAI <-->|"Necessary source content; draft or error"| Gemini
+    TranslateAI <-->|"Selected text; translation or error"| Gemini
+    MatchAI <-->|"Bounded match text; wording, learning text, or error"| Gemini
+
+    Data <--> DB
+```
+
+## Component Responsibilities
+
+### Browser
+
+Provides sign-in, dashboard, list, capture/review, detail, calendar and profile screens.
+
+Client handlers call server routes.
+Credentials and database access remain server-side.
+
+### Authentication and Authorization
+
+- Verify sessions for protected requests.
+- Reject invalid or expired sessions.
+- Check ownership of records and related data.
+- Handle sign-out and session invalidation.
+
+The current implementation uses local email/password authentication.
+Passwords are stored as salted scrypt hashes, and PostgreSQL-backed sessions
+are represented in the browser by an HTTP-only `interntrack_session` cookie.
+No external identity provider is assumed.
+
+### Server Processing
+
+- Validate requests and record references.
+- Coordinate extraction and translation.
+- Evaluate duplicate policy.
+- Handle authorized reads and writes.
+- Return clear success and failure responses.
+
+### Source Readers
+
+Process supported URLs, PDF, DOCX and image inputs.
+
+Image processing may use vision or OCR.
+The extraction route coordinates the relevant processing path.
+
+### Gemini
+
+Gemini is the sole AI provider.
+
+- Prepare structured internship drafts.
+- Translate supported fields.
+- Rewrite only the later sentences of a profile-match explanation. The percentage and the first sentence stay deterministic.
+- Suggest how to learn missing skills and tools. Keep only deterministic not-met lines, and drop links that are not http or https.
+- Receive only necessary content.
+- Return results for validation. Match wording and skill-gap text are not hiring predictions.
+
+### Persistence
+
+PostgreSQL stores users, password hashes, authenticated sessions, profiles,
+internships, checklists, tags, extraction history and related translation data.
+An internship may store `matchExplanationState` for the profile-match explanation.
+
+Use valid ownership relationships and consistent multi-step writes.
+
+`AuthSession` stores server-side sessions with expiry and ownership indexes.
+New accounts receive a blank profile and no copied demo internships.
+
+### Retention and Cleanup
+
+Apply documented retention decisions to stored data.
+
+Include failed, cancelled and orphaned extraction records.
+Cleanup is a required capability, not a claim of implementation.
+
+## Important Boundaries
+
+- Protected operations require server-side authorization.
+- External content and AI output are untrusted.
+- Website fetching must restrict unsafe destinations.
+- AI output remains a draft until explicitly saved after review.
+- Failed persistence must not appear successful.
+- Application-status tracking and status badge colors are deferred; priority remains supported.
+- Matching uses reviewed requirements, normalized categories and legacy requirement fallback. The displayed percentage is the deterministic skill and tool count. "How to raise this match" replaces the three chip groups. The app is light theme only; a dashboard dark theme was removed.
+- Extraction history is separate from traffic/security logs.
+- Deployment logging must follow applicable rules in `rule.md`.
+
+Arrows show communication responsibilities.
+They do not mean authorization is optional.
+Detailed execution order belongs in D4.
+
+## Traceability
+
+- F1–F12: application pages, processing and persistence.
+- F13: authentication and session access.
+- F14: explainable profile matching.
+- NFR1–NFR4: reliability, validation, security and data quality.
+- NFR5–NFR6: accessible and responsive browser UI.
+- NFR7–NFR8: performance and maintainability.
+- LR1–LR6, LR8: applicable data and operational controls.
+- LR7: conditional acceptance/signature requirements outside current scope.
+
+## Related Documents
+
+- [Architecture overview](../architecture.md)
+- [Specification](../../01-requirements/spec.md)
+- [Backlog](../../01-requirements/backlog.md)
+- [D1 system context](D1-system-context.md)
+- [D2 use cases](D2-use-case.md)
+- [D4 sequence](D4-activity.md)
