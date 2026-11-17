@@ -93,6 +93,14 @@ The test programme will determine whether InternTrack:
   - View-existing, return-to-review and explicit override.
 - Profile matching:
   - Required, preferred, matched, not met, unknown and insufficient states.
+  - Skill-match percentage, match reasons, skills to acquire, other unmet
+    requirements, unknown profile gaps, and profile skills the posting does
+    not ask for. Those lists stay in the match result.
+  - The profile-match panel shows the deterministic skill-match percentage,
+    the explanation paragraph for that percentage, and skill-gap
+    recommendations with rough study times. The percentage and explanation
+    stay the same on refresh and recalculate until the compared skills or
+    requirements change. It does not show the three chip groups.
   - Category aliases, phrase tolerance, singular/plural tolerance and legacy
     fallback.
 - Calendar, search and translation.

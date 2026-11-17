@@ -38,7 +38,13 @@ export function Navbar({
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-white/90 backdrop-blur">
       <div className="flex items-center gap-3 px-4 py-4 sm:px-6 lg:px-8">
-        <Button variant="ghost" size="icon" className="lg:hidden" onClick={onMenu} aria-label="Open sidebar">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden"
+          onClick={onMenu}
+          aria-label="Open sidebar"
+        >
           <Menu className="h-5 w-5" />
         </Button>
         <div className="min-w-0 flex-1">

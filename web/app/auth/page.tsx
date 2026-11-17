@@ -39,7 +39,7 @@ export default function AuthPage() {
         <section className="hidden bg-indigo-50 p-10 text-navy md:flex md:flex-col md:justify-between">
           <div>
             <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="InternTrack" className="h-10 w-10" />
+              <img src="/logo.png" alt="InternTrack" width={650} height={724} className="h-10 w-auto shrink-0 object-contain" />
               <span className="text-xl font-semibold">InternTrack</span>
             </div>
             <h2 className="mt-16 max-w-sm text-4xl font-semibold leading-tight">Turn internship opportunities into your next step.</h2>
@@ -52,7 +52,7 @@ export default function AuthPage() {
           </div>
         </section>
         <form onSubmit={submit} className="flex flex-col justify-center space-y-5 p-7 sm:p-10">
-          <div className="flex items-center gap-2 text-navy md:hidden"><img src="/logo.png" alt="InternTrack" className="h-7 w-7" /><span className="font-semibold">InternTrack</span></div>
+          <div className="flex items-center gap-2 text-navy md:hidden"><img src="/logo.png" alt="InternTrack" width={650} height={724} className="h-7 w-auto shrink-0 object-contain" /><span className="font-semibold">InternTrack</span></div>
           <div>
             <p className="text-sm font-medium text-accent-deep">{mode === "signin" ? "Welcome back" : "Get started"}</p>
             <h1 className="mt-1 text-2xl font-semibold text-navy">{mode === "signin" ? "Sign in to your workspace" : "Create your account"}</h1>

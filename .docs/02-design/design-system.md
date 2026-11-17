@@ -34,6 +34,8 @@ Use semantic tokens for backgrounds, text, borders, focus and errors.
 
 Reuse existing colors across screens. Do not communicate meaning through color alone.
 
+The interface uses the light theme only.
+
 ## Typography and Spacing
 
 - Use the configured Geist Sans font.

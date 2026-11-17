@@ -91,8 +91,10 @@ Supporting features extend the core workflow. Their priorities follow the specif
 ### F14 — Explainable Profile Matching
 
 - Compare a saved internship's reviewed requirements with the Student profile.
-- Show provisional score and assessment coverage.
-- Explain matched, not met and unknown criteria.
+- Show the deterministic skill-match percentage and a paragraph that explains that same percentage. The percentage and the paragraph stay the same on refresh and recalculate until profile skills or tools, or the posting's skill or tool requirements, change. When they change, the paragraph says which skills or tools were added or removed.
+- Below that paragraph, show "How to raise this match": one card per missing skill or tool, showing only the skill name. Hovering or focusing the card shows an underlined See more control that opens a dialog with how to learn the skill, useful http(s) links, and common learning sites such as Coursera, Udemy, freeCodeCamp, and LinkedIn Learning. Required gaps come before preferred gaps, and a shorter estimate comes first when importance is the same. Say there is no gap to fill when every compared skill and tool is already covered.
+- Show a provider failure for the skill-gap recommendations instead of inventing them. The first sentence of the percentage explanation stays the deterministic count. Gemini rewrites only the later sentences, cached until those inputs change, and a failure leaves the original sentences with a note that smoother wording is unavailable.
+- Keep the deterministic comparison in the match result, including match reasons, skills to acquire, other unmet requirements, unknown gaps, and profile skills the posting does not ask for. The panel does not show those three chip groups.
 - Do not present the result as a hiring prediction.
 - Normalize category aliases and support legacy records that only contain requirements and skills.
 - Use punctuation-, phrase- and common singular/plural-tolerant deterministic comparisons.

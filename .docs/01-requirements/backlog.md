@@ -81,7 +81,7 @@
 - User story: As a Student, I want a provisional, explainable comparison between my profile and reviewed requirements.
 - Traces to: F14, F1, NFR4
 - Evidence in code: `web/lib/matching.ts`, `web/app/api/internships/[id]/match/route.ts`, `web/components/internships/MatchPanel.tsx`
-- Notes: Normalizes requirement categories, supports legacy requirements and skills, preserves Unknown results, and uses deterministic phrase-tolerant matching.
+- Notes: Normalizes requirement categories, supports legacy requirements and skills, preserves Unknown results, and uses deterministic phrase-tolerant matching. The match percentage counts matched skill and tool lines only and explains each match from the profile entry that satisfied it. The panel shows that deterministic percentage, a stored explanation whose first sentence is that count and whose later sentences are a cached Gemini rewrite, and skill-gap recommendations instead of the three chip groups. The percentage and explanation stay the same until profile skills or tools, or the posting's skill or tool requirements, change. If the rewrite fails, the original sentences remain. Status remains Implemented.
 
 ### B08 - Document checklist and preparation notes
 

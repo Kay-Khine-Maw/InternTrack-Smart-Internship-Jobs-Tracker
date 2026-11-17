@@ -38,7 +38,7 @@ export function Sidebar({
       >
         <div className="mb-8 flex items-center justify-between px-2">
           <Link href="/dashboard" className="flex items-center gap-2" onClick={onClose}>
-            <img src="/logo.png" alt="InternTrack" className="h-8 w-8" />
+            <img src="/logo.png" alt="InternTrack" width={650} height={724} className="h-8 w-auto shrink-0 object-contain" />
             <span className="text-lg font-semibold tracking-tight text-navy">InternTrack</span>
           </Link>
           <button
