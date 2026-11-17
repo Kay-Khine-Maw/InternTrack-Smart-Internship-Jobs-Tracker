@@ -22,7 +22,7 @@ consistent.
 ## Team rules
 
 1. Do not invent research, test results, measurements or user feedback.
-2. Label proxy, secondary and synthetic evidence clearly.
+2. Label proxy, secondary and real evidence clearly.
 3. Keep credentials, private uploads and personal data out of source control.
 4. Keep AI output editable and require explicit user confirmation before saving.
 5. Every presentation number must have a reproducible source.
@@ -34,7 +34,7 @@ consistent.
 
 Product decisions are recorded in the requirements/backlog documents. Technical
 decisions are recorded in design or development-log documents. Test results are
-recorded with the command, fixture, date, expected result and actual result.
+recorded with the command, test data, date, expected result and actual result.
 Human review is required before a feature is described as accepted.
 
 ## Related documents

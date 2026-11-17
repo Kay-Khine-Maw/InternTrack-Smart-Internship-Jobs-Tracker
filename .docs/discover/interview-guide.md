@@ -38,7 +38,7 @@ Target duration: **40–50 minutes per participant**.
 ## Moderator rules
 
 1. Assign the next code: U01 through U05.
-2. Use the same synthetic internship posting and student scenario for all five
+2. Use the same real internship posting and student scenario for all five
    sessions.
 3. Read task instructions exactly; do not demonstrate the solution first.
 4. Ask the participant to think aloud, but do not coach or assist.
@@ -62,7 +62,7 @@ counted as independently completed.
 > product is understandable and useful. Please attempt the tasks as you
 > naturally would. There are no right answers. You may skip any question or
 > stop at any time. We will use the code [U##] instead of your name and will
-> use a synthetic internship scenario. May we take notes? May we record audio
+> use a real internship scenario. May we take notes? May we record audio
 > or screen activity?
 
 Record:
@@ -88,7 +88,7 @@ Ask these before showing InternTrack:
 
 ## Part 2 — Before-condition baseline
 
-Use the same synthetic posting that will be used in the InternTrack condition.
+Use the same real posting that will be used in the InternTrack condition.
 Give the participant a blank note or spreadsheet, but do not provide a
 structured template.
 
@@ -118,7 +118,7 @@ Record session start, sign-in errors and assistance.
 
 ### Task T2 — Capture and extract
 
-> Submit the provided synthetic internship URL or document. Wait for the
+> Submit the provided real internship URL or document. Wait for the
 > extraction result and tell me what you think the system has produced.
 
 Observe loading, errors, source handling and whether the participant understands
@@ -198,7 +198,7 @@ session. Record:
 
 1. Remove names and identifying details.
 2. Summarize each session before comparing participants.
-3. Calculate before/after results using the same definitions and fixtures.
+3. Calculate before/after results using the same definitions and data.
 4. Report raw values, medians, completion rates, errors and assistance.
 5. Cluster repeated usability problems and contradictory feedback.
 6. Separate observed behavior from participant opinion.

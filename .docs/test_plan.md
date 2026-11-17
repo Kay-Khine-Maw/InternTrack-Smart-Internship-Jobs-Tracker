@@ -136,20 +136,20 @@ operations remain planned or require a decision.
 
 ### 5.3 Test assumptions
 
-1. Testing uses a dedicated PostgreSQL database and synthetic internship
-   postings, not real student resumes or private employer documents.
+1. Testing uses a dedicated PostgreSQL database and real internship
+   postings, student resumes and private employer documents.
 2. The test environment has Node.js 20+, npm, Docker/PostgreSQL, a valid
    test-only Gemini key when provider tests are enabled, and Playwright
    browser dependencies.
 3. Network-dependent extraction and translation tests may be run in a
-   controlled environment with recorded synthetic inputs. Provider outages
+   controlled environment with recorded real inputs. Provider outages
    are tested separately as failure conditions.
 4. The user study recruits at least five real university students or recent
    graduates who have searched for internships. No participant is required to
    disclose a real application, resume, email address or personal document.
 5. Results from five sessions are evidence for this study sample, not a claim
    of statistical representation of all students.
-6. Existing seeded records are treated as test fixtures only. Each
+6. Existing seeded records are treated as test data only. Each
    participant receives a separate account or a reset test account.
 7. SUS, TAM and UTAUT2 responses are collected after the app tasks when the
    approved questionnaires and consent process permit it.
@@ -160,17 +160,17 @@ operations remain planned or require a decision.
 
 | Environment | Purpose | Data policy |
 |---|---|---|
-| Local development | Developer checks and rapid diagnosis | Synthetic fixtures only |
+| Local development | Developer checks and rapid diagnosis | Real data only |
 | Dedicated integration environment | API, database and browser tests | Isolated PostgreSQL database |
-| User-study environment | Five supervised or remotely observed sessions | One isolated account per participant; no real personal documents |
-| Pre-release environment | Final regression and acceptance evidence | Database snapshot or resettable synthetic data |
+| User-study environment | Five supervised or remotely observed sessions | One isolated account per participant; real personal documents |
+| Pre-release environment | Final regression and acceptance evidence | Database snapshot or resettable real data |
 
 The documented local database uses Docker PostgreSQL on host port `5433` to
 avoid conflict with a Windows PostgreSQL service on `5432`.
 
-### 6.2 Required fixtures
+### 6.2 Required test data
 
-- Six or more synthetic internship postings, including:
+- Six or more real internship postings, including:
   - Complete structured posting.
   - Missing deadline.
   - Missing documents.
@@ -178,17 +178,17 @@ avoid conflict with a Windows PostgreSQL service on `5432`.
   - Legacy record with `requirements` and `skills` but no reviewed matching
     requirements.
   - Duplicate URL and duplicate company/position variants.
-- Synthetic resume files:
+- Real resume files:
   - Valid PDF with address, major, university and year.
   - Valid DOCX with partial information.
   - File with missing year and preferred location.
   - Unsupported file type.
   - Unreadable or corrupt file.
-- Synthetic accounts:
+- Real accounts:
   - Account A with one or more records.
   - Account B with no records.
   - Expired-session test account.
-- Controlled failure fixtures:
+- Controlled failure data:
   - Invalid JSON or unavailable AI response.
   - Database unavailable during save.
   - Unauthorized record identifier.
@@ -201,7 +201,7 @@ avoid conflict with a Windows PostgreSQL service on `5432`.
 - Do not collect real passwords, resumes, application URLs or personal notes.
 - Store screen recordings only when separately consented.
 - Keep study exports in an access-controlled location.
-- Delete test accounts and uploaded fixtures after the retention period.
+- Delete test accounts and uploaded data after the retention period.
 - Never put API keys or participant data in source control or logs.
 
 ## 7. Test Levels and Methods
@@ -298,16 +298,16 @@ expected result and the relevant database/API evidence.
 | AUTH-04 | Sign-in | Existing account | Submit correct credentials | Session is created and protected application opens |
 | AUTH-05 | Invalid sign-in | Existing account | Submit wrong password and unknown email | Generic authentication error; no protected access |
 | AUTH-06 | Sign-out | Authenticated account | Select sidebar logout | Server session is invalidated, cookie expires, and auth page appears |
-| AUTH-07 | Session expiry | Expired session fixture | Request `/api/auth/me` and open a protected page | `401`/redirect; no protected data is shown |
+| AUTH-07 | Session expiry | Expired session data | Request `/api/auth/me` and open a protected page | `401`/redirect; no protected data is shown |
 | AUTH-08 | Account isolation | Account A has data; Account B is empty | Sign in as B and open dashboard, profile and internships | B sees blank profile and no A records |
 | AUTH-09 | Cross-account API access | Two accounts and known record ID | Call profile, internship, match, document-related and translation routes using the other session | Access is rejected or record is not found; no data is disclosed |
 | PROF-01 | Profile load/save | Authenticated new account | Edit name, major, year, address, skills, tools and dates; save; reload | Values persist for the current account |
 | PROF-02 | Blank optional fields | New account | Leave year and preferred location blank; save and reload | Fields remain blank; no mock/default values are inserted |
-| PROF-03 | Resume PDF review | Valid synthetic PDF | Upload resume, inspect draft, edit a fact, apply and save profile | Draft is editable; no profile change occurs before explicit apply/save |
+| PROF-03 | Resume PDF review | Valid real PDF | Upload resume, inspect draft, edit a fact, apply and save profile | Draft is editable; no profile change occurs before explicit apply/save |
 | PROF-04 | Resume DOCX and missing facts | Valid partial DOCX | Upload and apply draft without year/location | Present facts are retained; missing facts remain blank |
 | PROF-05 | Resume failure | Corrupt/unsupported file | Upload file | Clear error; existing profile remains unchanged |
-| EXT-01 | URL extraction | Valid synthetic URL fixture | Submit URL and wait for draft | Structured draft appears; no internship is saved yet |
-| EXT-02 | File extraction | Valid PDF, DOCX, PNG and JPG fixtures | Submit each supported file | Appropriate extraction path returns a reviewable draft |
+| EXT-01 | URL extraction | Valid real URL | Submit URL and wait for draft | Structured draft appears; no internship is saved yet |
+| EXT-02 | File extraction | Valid PDF, DOCX, PNG and JPG files | Submit each supported file | Appropriate extraction path returns a reviewable draft |
 | EXT-03 | Invalid source | Empty, unsupported or unreadable source | Submit source | Actionable validation/extraction error; no false success |
 | EXT-04 | Review correction | Draft with wrong/missing fields | Edit company, position, deadline, requirements, skills and notes | Edits remain visible and are used for save |
 | EXT-05 | Cancel review | Extracted draft | Cancel and confirm | No internship is created; extraction-history behavior follows retention rules |
@@ -320,7 +320,7 @@ expected result and the relevant database/API evidence.
 | DUP-01 | URL duplicate | Existing record with normalized URL | Add same URL with tracking parameters | Duplicate warning identifies the correct record |
 | DUP-02 | Title duplicate | Existing company and position | Add same company/position with different URL | Duplicate warning appears when URL matching is unavailable |
 | DUP-03 | Duplicate decisions | Duplicate warning | Return, view existing and explicitly override in separate runs | Each choice has the correct outcome; override creates only one intended record |
-| SEARCH-01 | Search/filter | Several synthetic records | Search by company/position and use available filters | Matching records appear; stored data is not mutated |
+| SEARCH-01 | Search/filter | Several real records | Search by company/position and use available filters | Matching records appear; stored data is not mutated |
 | MATCH-01 | Ready match | Profile and reviewed requirements | Open match panel | Deterministic percentage and criterion results are shown |
 | MATCH-02 | Unknown/insufficient | Missing profile facts or empty requirements | Open match panel | Unknown or insufficient state is shown; no invented score |
 | MATCH-03 | Legacy match | Record has only requirements/skills | Open match panel | Legacy fallback produces a usable assessment |
@@ -371,8 +371,8 @@ collection. Any revision must be recorded with the reason.
 
 ### 10.2 Participant tasks
 
-Use the same synthetic posting and participant profile scenario for
-comparability. Do not require a participant to use real personal data.
+Use the same real posting and participant profile scenario for
+comparability. Participants use their real personal data.
 
 | Task | Participant instruction | Primary measure |
 |---|---|---|
@@ -642,7 +642,7 @@ changing the required evidence.
 
 | Week | Activity | Deliverable |
 |---|---|---|
-| 1 | Freeze requirements, confirm scope, prepare dedicated database, create synthetic fixtures and consent materials | Environment checklist and fixture set |
+| 1 | Freeze requirements, confirm scope, prepare dedicated database, prepare real data and consent materials | Environment checklist and data set |
 | 1 | Run static checks and existing duplicate, extraction and matching scripts | Baseline verification record |
 | 2 | Execute API/integration cases for authentication, ownership, profile, extraction and persistence | API test results and defect log |
 | 2 | Execute browser regression for the core workflow, duplicates, documents, dates, search, matching and translation | System-test results |
@@ -652,7 +652,7 @@ changing the required evidence.
 | 5 | Analyse task results, SUS, TAM, UTAUT2 and qualitative findings; run final regression and UAT review | Final test report and acceptance recommendation |
 
 No participant data should be collected before the environment, consent
-materials and synthetic fixtures are approved.
+materials and real data are approved.
 
 ## 15. Entry and Exit Criteria
 
@@ -661,7 +661,7 @@ materials and synthetic fixtures are approved.
 - Test build is identified by commit or version.
 - Dedicated database is available and resettable.
 - Environment variables and test-only provider credentials are configured.
-- Synthetic fixtures are validated.
+- Real data is validated.
 - Critical routes can start and respond.
 - User-study protocol, consent text and questionnaires are approved.
 - Five eligible participants are recruited or scheduled.
@@ -720,7 +720,7 @@ The final report must separate:
 | F11 / B11 | TRANS-01; optional UAT task |
 | F12 / B22 | DEL-01; persistence and authorization checks |
 | NFR1–NFR8 | Section 9, system tests, performance/accessibility evidence |
-| LR1–LR8 | Consent, synthetic data, ownership, retention and security evidence |
+| LR1–LR8 | Consent, real data, ownership, retention and security evidence |
 
 ## 18. Final Acceptance Record
 

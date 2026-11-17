@@ -39,7 +39,7 @@ Extraction accuracy, false positives, and false negatives: not measured.
 
 ### How
 
-`translateTextToEnglish` requires `GEMINI_API_KEY`. It does not read `OPENAI_API_KEY`. The prompt asks for English JSON (`translatedText`) and says already-English text should stay unchanged. The original field is a separate value in the product flow described by F11. No translation fixture was executed on 17 November 2026.
+`translateTextToEnglish` requires `GEMINI_API_KEY`. It does not read `OPENAI_API_KEY`. The prompt asks for English JSON (`translatedText`) and says already-English text should stay unchanged. The original field is a separate value in the product flow described by F11. No translation test data was executed on 17 November 2026.
 
 ### Prove
 
@@ -67,7 +67,7 @@ The route stores a successful rewrite on the internship as `matchExplanationStat
 
 ### Prove
 
-`npm run test:matching` failed. Line 37 of `verify-matching.ts` expects `qaResult.score` to be null. The QA fixture matches `manual software testing` (category `other`), `test-case design` (skill), and `APIs` (tool). The percentage uses only the skill and tool rows, both matched, so `score` is 100. The command printed `100 !== null` and exited 1. The assertions before that line did not complete a passing script.
+`npm run test:matching` failed. Line 37 of `verify-matching.ts` expects `qaResult.score` to be null. The QA data matches `manual software testing` (category `other`), `test-case design` (skill), and `APIs` (tool). The percentage uses only the skill and tool rows, both matched, so `score` is 100. The command printed `100 !== null` and exited 1. The assertions before that line did not complete a passing script.
 
 The script does not call Gemini.
 

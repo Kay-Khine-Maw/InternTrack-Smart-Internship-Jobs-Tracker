@@ -16,7 +16,7 @@ Only issues checked against the repository on 17 November 2026 are listed as cur
 - Fix commit: none. The matcher and the script were not changed.
 - Retest: not run after a fix
 
-The QA fixture marks three requirements matched, including one with category `other`. The skill-match percentage counts only `skill` and `tool` rows. Those two rows were both matched, so the percentage is 100, and that percentage is copied into `score`.
+The QA data marks three requirements matched, including one with category `other`. The skill-match percentage counts only `skill` and `tool` rows. Those two rows were both matched, so the percentage is 100, and that percentage is copied into `score`.
 
 ## ISS-TSC-01
 

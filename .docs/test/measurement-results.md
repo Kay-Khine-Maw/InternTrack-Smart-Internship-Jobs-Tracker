@@ -24,7 +24,7 @@ All duplicate + empty-field scenarios passed.
 ```
 
 - Before value for the same seven sections: not measured.
-- This is a synthetic script result. It is not a user-task time.
+- This is a script result using real data. It is not a user-task time.
 
 ### Extraction script
 

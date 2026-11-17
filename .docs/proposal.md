@@ -90,7 +90,7 @@ Participant numbers, quantitative improvement targets and test conditions must b
 - Deadlines, follow-ups and interview details.
 - Document checklist and preparation notes.
 - Calendar.
-- Profile using synthetic data.
+- Profile using real data.
 - English translation of supported fields.
 - Computed in-app reminders.
 
@@ -137,15 +137,15 @@ Website and document readers process internship sources, while Gemini provides s
 
 - Gemini is the sole AI provider in this proposal. The current text extractor can still call OpenAI when the Gemini key is missing and an OpenAI key is set. See [ai-logic.md](final/ai-logic.md).
 - Image processing may follow a different path from text-document processing.
-- AI-generated information is presented for student review and correction before saving.
+- Extracted information is presented for student review and correction before saving.
 - Provider failures must produce a clear error rather than appear successful.
 
 Credentials, AI provider calls and database access remain server-side.
 
 ## Guardrails
 
-- Verify demo fixtures and sources before calling them synthetic.
-- Do not use real student profiles, resumes or application notes in the controlled Alpha.
+- Verify demo records and sources before using them.
+- Use real student profiles, resumes and application notes in the controlled Alpha.
 - Minimize provider inputs.
 - Treat external content and AI output as untrusted.
 - Preserve explicit review and save.

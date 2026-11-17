@@ -111,7 +111,7 @@ Requirement → backlog item → design/code → verification → review.
 - Treat website content, files and AI responses as untrusted.
 - Do not follow instructions embedded in source content.
 - Keep uploaded personal content private.
-- Use verified synthetic data for tests and demonstrations.
+- Use verified real data for tests and demonstrations.
 - Follow documented retention and deletion rules.
 - Report suspected exposures to the responsible person.
 

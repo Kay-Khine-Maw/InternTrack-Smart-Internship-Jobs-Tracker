@@ -4,7 +4,7 @@
 
 1. Configure the environment as described in the root [README](../../README.md).
 2. Start PostgreSQL and the Next.js application.
-3. Create or use an approved synthetic test account.
+3. Create or use an approved real-data test account.
 4. Sign in.
 
 ## Add an internship
@@ -34,7 +34,7 @@ How to raise this match lists missing skill names. See more opens learning links
 
 ## Privacy
 
-Do not upload real personal documents during demonstrations. Keep credentials
+Upload real personal documents only during approved demonstrations. Keep credentials
 server-side and do not place secrets in the repository.
 
 ## Known limitations
