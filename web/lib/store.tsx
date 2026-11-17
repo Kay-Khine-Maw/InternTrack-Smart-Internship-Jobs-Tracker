@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import type { DocumentItem, Internship, Priority } from "./types";
+import type { DocumentItem, Internship, InternshipStatus, Priority } from "./types";
 import { findDuplicateRecord, toDuplicateInfo, type DuplicateCandidate, type DuplicateInfo } from "./duplicate-match";
 
 interface InternshipContextValue {
@@ -16,6 +16,7 @@ interface InternshipContextValue {
   addDocument: (internshipId: string, name: string) => Promise<void>;
   removeDocument: (internshipId: string, documentId: string) => Promise<void>;
   setPriority: (id: string, priority: Priority) => Promise<void>;
+  setStatus: (id: string, status: InternshipStatus, patch: Partial<Internship>) => Promise<void>;
   getById: (id: string) => Internship | undefined;
   findByUrl: (url: string, ignoreId?: string) => Internship | undefined;
   findDuplicate: (input: DuplicateCandidate, options?: { ignoreId?: string; urlOnly?: boolean }) => DuplicateInfo | undefined;
@@ -160,6 +161,9 @@ export function InternshipProvider({ children }: { children: ReactNode }) {
       },
       setPriority: async (id, priority) => {
         await put(id, { priority });
+      },
+      setStatus: async (id, status, patch) => {
+        await put(id, { ...patch, status });
       },
       getById: (id) => internships.find((item) => item.id === id),
       findByUrl: (url, ignoreId) => {

@@ -34,7 +34,7 @@ export function UpdateStatusModal({ open, internship, onOpenChange }: Props) {
   const { setStatus } = useInternships();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [status, setLocalStatus] = useState<InternshipStatus>(internship.status);
+  const [status, setLocalStatus] = useState<InternshipStatus>(internship.status ?? "saved");
   const [applicationDate, setApplicationDate] = useState(toDateInput(internship.applicationDate) || toDateInput(new Date().toISOString()));
   const [interviewDate, setInterviewDate] = useState(toDateInput(internship.interviewDate));
   const [interviewTime, setInterviewTime] = useState(internship.interviewTime ?? "");
@@ -43,7 +43,7 @@ export function UpdateStatusModal({ open, internship, onOpenChange }: Props) {
 
   useEffect(() => {
     if (!open) return;
-    setLocalStatus(internship.status);
+    setLocalStatus(internship.status ?? "saved");
     setApplicationDate(toDateInput(internship.applicationDate) || toDateInput(new Date().toISOString()));
     setInterviewDate(toDateInput(internship.interviewDate));
     setInterviewTime(internship.interviewTime ?? "");

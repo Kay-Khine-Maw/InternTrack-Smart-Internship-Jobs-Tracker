@@ -24,7 +24,7 @@ function uniqueLabels(values: string[]) {
     if (!label || !key || byKey.has(key)) continue;
     byKey.set(key, label);
   }
-  return [...byKey.entries()].sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0)).map(([, label]) => label);
+  return Array.from(byKey.entries()).sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0)).map(([, label]) => label);
 }
 
 function joinList(items: string[]) {

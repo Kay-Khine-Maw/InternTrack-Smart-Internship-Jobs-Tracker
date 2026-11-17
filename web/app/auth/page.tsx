@@ -3,8 +3,9 @@
 import { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
+import { Suspense } from "react";
 
-export default function AuthPage() {
+function AuthContent() {
   const router = useRouter();
   const search = useSearchParams();
   const [mode, setMode] = useState<"signin" | "signup">(search.get("mode") === "signup" ? "signup" : "signin");
@@ -74,5 +75,13 @@ export default function AuthPage() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={null}>
+      <AuthContent />
+    </Suspense>
   );
 }

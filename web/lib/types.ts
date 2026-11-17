@@ -7,6 +7,20 @@ export const PRIORITY_LABELS: Record<Priority, string> = {
   low: "Low",
 };
 
+export const INTERNSHIP_STATUSES = ["saved", "preparing", "applied", "interview", "accepted", "rejected"] as const;
+export type InternshipStatus = (typeof INTERNSHIP_STATUSES)[number];
+
+export const TIMELINE_STATUSES = ["saved", "preparing", "applied", "interview", "accepted"] as const;
+
+export const STATUS_LABELS: Record<InternshipStatus, string> = {
+  saved: "Saved",
+  preparing: "Preparing",
+  applied: "Applied",
+  interview: "Interview",
+  accepted: "Accepted",
+  rejected: "Rejected",
+};
+
 export interface DocumentItem {
   id: string;
   name: string;
@@ -25,6 +39,7 @@ export interface Internship {
   createdAt: string;
   sourceText?: string;
   priority: Priority;
+  status?: InternshipStatus;
   matchingRequirements?: import("@/lib/matching").MatchingRequirement[];
   tags: string[];
   description?: string;

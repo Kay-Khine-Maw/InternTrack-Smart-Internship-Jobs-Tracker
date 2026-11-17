@@ -72,7 +72,7 @@ export default function DashboardPage() {
     const name = locationName(item);
     locationCounts.set(name, (locationCounts.get(name) ?? 0) + 1);
   }
-  const locations = [...locationCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  const locations = Array.from(locationCounts.entries()).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
   const readyToContact = internships.filter(canContact);
   const needsContact = internships.filter((item) => !canContact(item));
   const locationMax = locations[0]?.[1] ?? 1;
