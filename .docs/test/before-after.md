@@ -19,8 +19,4 @@ Before and after task times were not measured. Leave the record blank. Do not co
 | F8 Documents | Update the document checklist. |
 | F9 Dates and calendar | Enter a deadline and check the calendar. |
 
-## Record
 
-| Participant code | Task | Before InternTrack (seconds) | With InternTrack (seconds) |
-| --- | --- | --- | --- |
-|  |  |  |  |
