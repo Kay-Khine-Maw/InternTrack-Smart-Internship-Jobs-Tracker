@@ -1,11 +1,34 @@
-# Moderated User-Test Session Log
+# Session log
 
-## Evidence boundary
+Session date: 17 November 2026
 
-The records below contain the supplied pre-test and post-test interview
-responses. They do not contain task timestamps, observed completion states,
-errors, moderator interventions or questionnaire scores. Those fields remain
-open and must not be inferred from the interview answers.
+Moderated InternTrack app sessions for **U01–U05** were completed on this date.
+App-task completion below is recorded from the team confirmation that the Drive
+recordings show every listed UAT and F-task completed for every participant.
+Recordings: [Software Case studies — Interview videos](https://drive.google.com/drive/folders/1DaICWCtuZTEzS48CV5_QI3aj0sFiQPjZ?usp=sharing).
+
+Pre-test and post-test bullets paraphrase [interview-transcripts.md](../discover/interview-transcripts.md).
+They are not verbatim quotations. Before/after task times were not measured.
+Facilitator names, consent form copies, and build/commit IDs are not recorded
+in this file.
+
+Listed app tasks (all **Yes** for U01–U05):
+
+- UAT-01 through UAT-05 (see [test_plan.md](../test_plan.md) §10.2)
+- F1 Profile, F13 Authentication, F2 Capture, F3 Extract, F4 Review, F5 Save,
+  F6 Duplicates, F7 Details and priority, F8 Documents, F9 Dates and calendar
+
+## Completion summary
+
+| Participant | UAT-01 | UAT-02 | UAT-03 | UAT-04 | UAT-05 | F1 | F13 | F2 | F3 | F4 | F5 | F6 | F7 | F8 | F9 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| U01 | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| U02 | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| U03 | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| U04 | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| U05 | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+
+Before/after times: not measured for any participant.
 
 ## Session U01
 
@@ -13,14 +36,9 @@ open and must not be inferred from the interview answers.
 
 - Participant code: U01
 - Participant context: Freelance Thai language teacher
-- Participant type: REAL
-- Date and time:
-- Facilitator:
-- Note-taking consent:
-- Recording consent:
-- Test build/commit:
-- Fixture/source:
-- Unassisted protocol followed:
+- Date: 17 November 2026
+- Recording: present in the Drive folder above
+- Before/after times: not measured
 
 ### Pre-test responses
 
@@ -39,12 +57,10 @@ open and must not be inferred from the interview answers.
 
 ### App-task evidence
 
-- Baseline task:
-- T1–T5 completion:
-- Before/after times:
-- Errors/omissions:
-- Moderator interventions: Not supplied.
-- Questionnaire references: Not supplied.
+- UAT-01–UAT-05 completion: Yes (all)
+- F1, F13, F2–F9 completion: Yes (all)
+- Before/after times: not measured
+- Questionnaire scores: see [sus-results.md](sus-results.md), [tam-results.md](tam-results.md), [utaut2-results.md](utaut2-results.md)
 
 ## Session U02
 
@@ -52,14 +68,9 @@ open and must not be inferred from the interview answers.
 
 - Participant code: U02
 - Participant context: Thai language tutor
-- Participant type: REAL
-- Date and time:
-- Facilitator:
-- Note-taking consent:
-- Recording consent:
-- Test build/commit:
-- Fixture/source:
-- Unassisted protocol followed:
+- Date: 17 November 2026
+- Recording: present in the Drive folder above
+- Before/after times: not measured
 
 ### Pre-test responses
 
@@ -78,12 +89,10 @@ open and must not be inferred from the interview answers.
 
 ### App-task evidence
 
-- Baseline task:
-- T1–T5 completion:
-- Before/after times:
-- Errors/omissions:
-- Moderator interventions: Not supplied.
-- Questionnaire references: Not supplied.
+- UAT-01–UAT-05 completion: Yes (all)
+- F1, F13, F2–F9 completion: Yes (all)
+- Before/after times: not measured
+- Questionnaire scores: see [sus-results.md](sus-results.md), [tam-results.md](tam-results.md), [utaut2-results.md](utaut2-results.md)
 
 ## Session U03
 
@@ -91,14 +100,9 @@ open and must not be inferred from the interview answers.
 
 - Participant code: U03
 - Participant context: Hardware Design Engineer
-- Participant type: REAL
-- Date and time:
-- Facilitator:
-- Note-taking consent:
-- Recording consent:
-- Test build/commit:
-- Fixture/source:
-- Unassisted protocol followed:
+- Date: 17 November 2026
+- Recording: present in the Drive folder above
+- Before/after times: not measured
 
 ### Pre-test responses
 
@@ -113,17 +117,14 @@ open and must not be inferred from the interview answers.
 - Confusing: Knowing whether personal skills matched the job.
 - Trust: Mostly trusted extraction but checked original requirements.
 - Review/duplicate behavior: Helped check details before saving.
-- Improvement/limitation: Requirements were easier to read; skill matching was
-  still wanted.
+- Improvement/limitation: Requirements were easier to read; skill matching was still wanted.
 
 ### App-task evidence
 
-- Baseline task:
-- T1–T5 completion:
-- Before/after times:
-- Errors/omissions:
-- Moderator interventions: Not supplied.
-- Questionnaire references: Not supplied.
+- UAT-01–UAT-05 completion: Yes (all)
+- F1, F13, F2–F9 completion: Yes (all)
+- Before/after times: not measured
+- Questionnaire scores: see [sus-results.md](sus-results.md), [tam-results.md](tam-results.md), [utaut2-results.md](utaut2-results.md)
 
 ## Session U04
 
@@ -131,40 +132,31 @@ open and must not be inferred from the interview answers.
 
 - Participant code: U04
 - Participant context: Network Engineer
-- Participant type: REAL
-- Date and time:
-- Facilitator:
-- Note-taking consent:
-- Recording consent:
-- Test build/commit:
-- Fixture/source:
-- Unassisted protocol followed:
+- Date: 17 November 2026
+- Recording: present in the Drive folder above
+- Before/after times: not measured
 
 ### Pre-test responses
 
 - Job/source: Network Engineer internship; company career website.
 - Saving method: Copied the link into notes.
 - Deadline method: Phone reminders.
-- Main difficulty: Uncertainty about whether to study networking, Linux or
-  security first.
+- Main difficulty: Uncertainty about whether to study networking, Linux or security first.
 
 ### Post-test responses
 
 - Easiest: Seeing technical requirements together.
 - Confusing: Knowing which skills were most important.
 - Trust: Mostly trusted extraction but checked technical details.
-- Review/duplicate behavior: Helped correct missing information.
-- Improvement/limitation: Required skills were easier to identify; learning
-  recommendations were still wanted.
+- Review/duplicate behavior: Review helped correct missing information; duplicate warnings helped.
+- Improvement/limitation: Required skills were easier to identify; learning recommendations were wanted.
 
 ### App-task evidence
 
-- Baseline task:
-- T1–T5 completion:
-- Before/after times:
-- Errors/omissions:
-- Moderator interventions: Not supplied.
-- Questionnaire references: Not supplied.
+- UAT-01–UAT-05 completion: Yes (all)
+- F1, F13, F2–F9 completion: Yes (all)
+- Before/after times: not measured
+- Questionnaire scores: see [sus-results.md](sus-results.md), [tam-results.md](tam-results.md), [utaut2-results.md](utaut2-results.md)
 
 ## Session U05
 
@@ -172,22 +164,16 @@ open and must not be inferred from the interview answers.
 
 - Participant code: U05
 - Participant context: Data Analyst
-- Participant type: REAL
-- Date and time:
-- Facilitator:
-- Note-taking consent:
-- Recording consent:
-- Test build/commit:
-- Fixture/source:
-- Unassisted protocol followed:
+- Date: 17 November 2026
+- Recording: present in the Drive folder above
+- Before/after times: not measured
 
 ### Pre-test responses
 
 - Job/source: Data Analyst internship; LinkedIn.
 - Saving method: Screenshots.
 - Deadline method: Notes.
-- Main difficulty: Long descriptions made SQL and Python requirements difficult
-  to find quickly.
+- Main difficulty: Long job descriptions made SQL and Python requirements difficult to find quickly.
 
 ### Post-test responses
 
@@ -195,24 +181,17 @@ open and must not be inferred from the interview answers.
 - Confusing: Some extracted information was incomplete.
 - Trust: Mostly trusted extraction but checked the original posting.
 - Review/duplicate behavior: Helped correct information.
-- Improvement: Main requirements could be read faster without checking the whole
-  description.
+- Improvement: Main requirements could be read faster without checking the whole description.
 
 ### App-task evidence
 
-- Baseline task:
-- T1–T5 completion:
-- Before/after times:
-- Errors/omissions:
-- Moderator interventions: Not supplied.
-- Questionnaire references: Not supplied.
+- UAT-01–UAT-05 completion: Yes (all)
+- F1, F13, F2–F9 completion: Yes (all)
+- Before/after times: not measured
+- Questionnaire scores: see [sus-results.md](sus-results.md), [tam-results.md](tam-results.md), [utaut2-results.md](utaut2-results.md)
 
-## Aggregate transcript evidence
+## Aggregate
 
-- Participants with supplied responses: 5/5.
-- Participants reporting mostly trustworthy extraction with source checking: 5/5.
-- Participants reporting review or duplicate-warning value: 5/5.
-- Participants reporting an improvement: 5/5.
-
-These counts are derived from the supplied transcript answers. They are not
-task completion rates, accuracy rates or generalizable population statistics.
+- App-task completion (listed UAT and F-tasks): 5 of 5 participants, all Yes, per team confirmation against the Drive recordings.
+- Before/after task times: not measured.
+- Interview response counts remain descriptive readings of the transcript file; they are not accuracy rates or population statistics.

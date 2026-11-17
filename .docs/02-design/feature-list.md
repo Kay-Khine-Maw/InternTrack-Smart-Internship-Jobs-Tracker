@@ -37,7 +37,7 @@ The Student provides a source, reviews the extracted draft, explicitly saves it 
 - Require company and position.
 - Allow cancellation without creating an internship.
 
-Review is an AI safeguard. It is not a reported student pain point.
+Review is required before save. Interview responses support checking the source after extraction (P5; see [problem-research.md](../discover/problem-research.md)).
 
 ### F5 — Persistence and Reopening
 
@@ -62,7 +62,7 @@ Review is an AI safeguard. It is not a reported student pain point.
 ### F13 — Authentication and Session Access
 
 - Priority: Must
-- Backlog: B13
+- Backlog: B12
 - Support sign-in and sign-out.
 - Verify sessions on the server.
 - Reject unauthorized or expired-session requests.
@@ -84,14 +84,16 @@ Supporting features extend the core workflow. Their priorities follow the specif
 - Preserve intentionally cleared optional fields.
 - Restrict access to the authorized Student.
 - Show update failures clearly.
-- Upload PDF/DOCX resumes for temporary Gemini extraction.
+- Upload PDF/DOCX resumes for temporary Gemini extraction (backlog B27).
 - Review extracted facts and explicitly choose when to apply them.
 - Extracted address, major and year are preserved when explicitly present; missing year and preferred location remain blank.
 
 ### F14 — Explainable Profile Matching
 
+- Backlog: B25
 - Compare a saved internship's reviewed requirements with the Student profile.
-- Show provisional score and assessment coverage.
+- Show the skill-and-tool match percentage (matched ÷ compared for skill/tool rows; `unknown` excluded from the divisor).
+- Show full requirement coverage separately from that percentage.
 - Explain matched, not met and unknown criteria.
 - Do not present the result as a hiring prediction.
 - Normalize category aliases and support legacy records that only contain requirements and skills.
@@ -131,7 +133,7 @@ In-app reminders do not imply email or push delivery.
 ### F10 — Search and Filtering
 
 - Priority: Should
-- Backlog: B20
+- Backlog: B19
 - Search documented internship fields.
 - Filter by priority and tags.
 - Preserve list context after viewing a record.
@@ -152,7 +154,7 @@ Research must confirm the required translation direction.
 ### F12 — Internship Deletion
 
 - Priority: Should
-- Backlog: B23
+- Backlog: B22
 - Request explicit confirmation.
 - Verify authorization on the server.
 - Handle related data under retention rules.
@@ -200,7 +202,7 @@ Priorities:
 
 ## AI Boundaries
 
-Gemini is the sole AI provider for extraction and translation.
+The project rule names Gemini as the only AI provider. Text extraction can use OpenAI when `GEMINI_API_KEY` is missing and `OPENAI_API_KEY` is set. The profile-match percentage is a skill and tool count, not a Gemini score. See [ai-logic.md](../final/ai-logic.md).
 
 AI output may be incomplete or incorrect. The Student must be able to review and correct it.
 
@@ -227,4 +229,4 @@ These features require a separate scope decision. They must not be presented as 
 - [User journey](user-journey.md)
 - [Architecture](architecture.md)
 - [Design system](design-system.md)
-- [D2 use cases](diagrams/D2-use-case.md)
+- D1–D6, including the class diagram, are present under `.docs/02-design/diagrams/`.

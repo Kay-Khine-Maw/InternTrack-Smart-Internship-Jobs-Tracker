@@ -8,7 +8,14 @@ questions provide context before the test and explanations after the test; they
 are not the main activity.
 
 Run exactly five sessions with real users, coded **U01, U02, U03, U04 and U05**.
-Do not treat this guide as evidence that sessions have already happened.
+Do not treat this guide alone as evidence that sessions happened.
+
+## Completion record
+
+The team reported five moderated sessions on **17 November 2026** for U01–U05.
+Evidence: [session-log.md](../test/session-log.md), questionnaire result files
+under `.docs/test/`, and [Software Case studies — Interview videos](https://drive.google.com/drive/folders/1DaICWCtuZTEzS48CV5_QI3aj0sFiQPjZ?usp=sharing).
+Before/after task times were not measured.
 
 ## Participants
 
@@ -168,9 +175,9 @@ you expect to happen here?”
 Administer the approved SUS, TAM and UTAUT2 forms after the tasks and before
 the final thank-you. Record responses using the participant code only.
 
-- [SUS response template](../test/sus-results.md)
-- [TAM response template](../test/tam-results.md)
-- [UTAUT2 response template](../test/utaut2-results.md)
+- [SUS results](../test/sus-results.md)
+- [TAM results](../test/tam-results.md)
+- [UTAUT2 results](../test/utaut2-results.md)
 
 ## Per-session evidence record
 

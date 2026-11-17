@@ -20,7 +20,7 @@ Capture → extract → review and correct → explicitly save → reopen.
 - View dates through a calendar.
 - Manage profiles and search internship records.
 - Upload a PDF or DOCX resume to review profile facts before saving.
-- Review internship requirements and view a deterministic provisional profile-match percentage with criterion explanations.
+- Review internship requirements and view a profile-match percentage counted from skill and tool names. The first explanation sentence comes from that count. Later sentences may be smoothed. Missing skills open as names with learning links. The percentage is not a hiring prediction.
 - Translate supported fields into English.
 
 Requirements and acceptance status are recorded in the
@@ -98,11 +98,14 @@ Run from `web/`:
 npm run lint
 npm run test:duplicates
 npm run test:extract
+npm run test:matching
 npx tsc --noEmit
 npm run build
 ```
 
 The supplied scripts are focused checks, not complete system tests.
+
+On 17 November 2026, from `web/`: `npm run test:duplicates` printed seven PASS lines; `npm run test:extract` exited 0 and `web/scripts/verify-extract.ts` is empty; `npm run test:matching` exited 1 because the script expects `qaResult.score` to be null and `calculateMatch` returned 100; `npx tsc --noEmit` exited 2 and printed 16 error lines. `npm run lint`, `npm run build`, and `npm audit` were not run. Details: [.docs/test/measurement-results.md](.docs/test/measurement-results.md). These results are not acceptance.
 
 Also verify review and cancellation, duplicate decisions, persistence after reload/restart, failure handling and authorization.
 Record actual results against acceptance criteria.
@@ -114,6 +117,7 @@ Record actual results against acceptance criteria.
 - Extraction history is separate from saved internships.
 - Cancellation does not automatically delete extraction history.
 - In-app reminders do not imply email or push delivery.
+- Text extraction uses Gemini when `GEMINI_API_KEY` is set. If that key is missing and `OPENAI_API_KEY` is set, text extraction can use OpenAI. Translation uses Gemini only. That matches `CLAUDE.md` and F3. The match route does not take its percentage from Gemini.
 
 ## Documentation
 

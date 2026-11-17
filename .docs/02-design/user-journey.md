@@ -8,7 +8,7 @@ Core journey:
 
 Capture → extract → review and correct → explicitly save → reopen.
 
-Supporting journeys cover profile management, application tracking, search, translation and deletion.
+Supporting journeys cover profile management, priority, documents, dates, search, translation and deletion. Application-status tracking is deferred. The interface is light theme only.
 
 This document describes intended system behavior. The backlog records implementation gaps and acceptance status.
 
@@ -180,7 +180,7 @@ The Student searches or filters the internship list.
 
 - Screen: `/internships`.
 - Trace: F10; B20.
-- Support status, priority, tags and documented search fields.
+- Support priority, tags and documented search fields. Application-status filtering is deferred with F7 status tracking.
 - Show only authorized records.
 - Preserve search and filter context after viewing a record.
 - Explain empty results.
@@ -218,4 +218,4 @@ The request process need not depend on having an active account.
 - [Feature list](feature-list.md)
 - [Design system](design-system.md)
 - [Prototype](prototype/README.md)
-- [D4 sequence](diagrams/D4-activity.md)
+- Use-case, activity, sequence, class, and entity-relationship diagram files are not in this repository.

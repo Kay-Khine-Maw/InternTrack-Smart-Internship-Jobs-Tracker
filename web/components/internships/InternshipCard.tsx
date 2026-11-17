@@ -10,6 +10,13 @@ import type { Internship } from "@/lib/types";
 import type { MatchResult } from "@/lib/matching";
 import { useEffect, useState } from "react";
 
+function skillMatchLabel(matchLoaded: boolean, match: MatchResult | null) {
+  if (!matchLoaded) return "Calculating...";
+  if (typeof match?.score === "number") return `${match.score}%`;
+  if (match?.skillMatch?.emptyReason === "no_skill_requirements") return "No skills to compare";
+  return "Not available";
+}
+
 export function InternshipCard({ internship }: { internship: Internship }) {
   const [match, setMatch] = useState<MatchResult | null>(null);
   const [matchLoaded, setMatchLoaded] = useState(false);
@@ -64,7 +71,7 @@ export function InternshipCard({ internship }: { internship: Internship }) {
         <div className="mt-3 space-y-2">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Profile match</span>
-            <span>{!matchLoaded ? "Calculating..." : match?.score === null || match?.score === undefined ? "Not available" : `${match.score}%`}</span>
+            <span>{skillMatchLabel(matchLoaded, match)}</span>
           </div>
           <Progress value={match?.score ?? 0} />
         </div>

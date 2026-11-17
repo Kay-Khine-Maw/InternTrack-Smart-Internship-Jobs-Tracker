@@ -19,7 +19,7 @@ Application-status tracking and status badge colors are deferred; priority track
 - Tailwind CSS and shared UI components.
 - Gemini for structured extraction and translation.
 
-Gemini is the sole AI provider defined by the specification. Do not introduce another provider without an approved scope change. Keep database access and provider credentials server-side.
+Gemini is the sole AI provider defined by the specification for translation, match-explanation smoothing, and skill-gap suggestions. Text extraction uses Gemini when `GEMINI_API_KEY` is set; when that key is missing and `OPENAI_API_KEY` is set, `web/lib/ai/internshipExtractor.ts` may call OpenAI for structured text extraction only. Do not introduce another provider without an approved scope change. Keep database access and provider credentials server-side.
 
 ## Team
 

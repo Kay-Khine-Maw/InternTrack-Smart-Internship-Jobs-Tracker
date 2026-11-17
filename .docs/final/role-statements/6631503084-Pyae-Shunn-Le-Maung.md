@@ -1,37 +1,16 @@
-# Role Statement — Pyae Shunn Le Maung
+# Role statement — Pyae Shunn Le' Maung
 
 **Student ID:** 6631503084  
-**Role:** Designer
+**Charter role:** Designer. The charter spells the name Pyae Shunn Le Maung and assigns interaction design, the design system, the review flow, accessibility, and responsive UI. This statement is not acceptance, and it has no reflection section.
 
-## Ownership
+Git on `main` records Pyae Shunn Le Maung as the author of `8de907a` ("Add web designs") and of the Designer pull-request merge (`27d5089`). That design commit adds pages for add-internship, calendar, dashboard, internship detail, list, and profile, plus shared UI components, layout, Tailwind setup, and the D1, D2, and D4 diagram images. It also adds `StatusBadge.tsx`, `UpdateStatusModal.tsx`, and `ProgressTimeline.tsx`. The current specification defers application-status tracking. On 17 November 2026 those three files were among the files named by `npx tsc --noEmit`, which printed 16 error lines. This statement does not claim those type errors are fixed.
 
-I owned the interaction design, shared visual language, review-before-save flow,
-loading/error/empty states and responsive/accessibility considerations. My
-evidence should show how students can inspect and correct extracted information
-without confusing a draft with a saved record.
+The 18 September 2026 log names Pyae as reviewer of D1, D2, the journey, the design system, and the prototype. It names Claude. The line for specific AI contributions was left as an instruction to record them, so the actual contributions are not recorded. Later logo-ratio and light-theme edits are in Kay Khine Maw's commit `591bb44`, not in Pyae's design commit. No other personal AI-use diary is stored.
 
 ## Evidence
 
+- [Company charter](../../discover/company-charter.md)
+- [18 September 2026 log](../../05-log/20260918-log.md)
 - [Design system](../../02-design/design-system.md)
-- [User journey](../../02-design/user-journey.md)
-- UI evidence:
-- Accessibility evidence:
-- Responsive evidence:
-
-## AI disclosure
-
-I used AI assistance for:
-
--:
-
-I reviewed the output against the design requirements and remain responsible for
-the final interaction decisions.
-
-## Reflection
-
-Complete by Sunday 22 November 2026, 23:59, in your own words.
-
-1. Lessons learned about requirements, design, coding, testing, quality,
-   security, teamwork and AI; include one improvement and one drawback.
-2. Where you stand in the software industry in the AI era.
-3. Your plan for next year and where you expect to be in five years.
+- [Measurement results](../../test/measurement-results.md)
+- Commits: `8de907a`, `27d5089`

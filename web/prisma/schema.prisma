@@ -89,6 +89,7 @@ model Internship {
   interviewLink    String?
   preparationNotes String?            @db.Text
   translations     Json               @default("{}")
+  matchExplanationState Json?
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   userId           String

@@ -11,8 +11,8 @@
 | Required user study | Five real-user sessions |
 | Acceptance model | SUS, TAM and UTAUT2 responses recorded separately |
 | Related requirements | F1–F14, NFR1–NFR8, LR1–LR8 |
-| Related backlog | B01–B12, B19, B22, B24–B25; B20 is the user-validation backlog item |
-| Last reviewed | 2026-10-28 |
+| Related backlog | B01–B12, B19–B22, B25, B27; B20 is the user-validation backlog item |
+| Last reviewed | 2026-11-17 |
 
 This plan is based on the current repository, including the root README,
 `CLAUDE.md`, the requirements and backlog, the design documentation, the
@@ -120,7 +120,7 @@ still pending: dashboard summary (B01), source capture (B02), extraction
 (B03), review (B04), persistence (B05), duplicate handling (B06),
 record updates and priority (B07), profile management (B10), translation
 (B11), authentication and ownership (B12), resume-assisted profile
-completion (B24), and explainable matching (B25). Document/checklist and
+completion (B27), and explainable matching (B25). Document/checklist and
 calendar workflows are also represented as implemented in the backlog.
 
 “Implemented” means that code and focused checks exist; this plan still
@@ -197,7 +197,7 @@ avoid conflict with a Windows PostgreSQL service on `5432`.
 ### 6.3 Data protection controls
 
 - Obtain informed consent before each user session.
-- Use participant IDs such as `P01` rather than names in results.
+- Use participant IDs such as `U01` rather than names in results.
 - Do not collect real passwords, resumes, application URLs or personal notes.
 - Store screen recordings only when separately consented.
 - Keep study exports in an access-controlled location.
@@ -338,7 +338,7 @@ expected result and the relevant database/API evidence.
 | Data integrity | Duplicate, ownership and persistence checks | 100% of security and integrity cases pass |
 | Security | Unauthorized and expired-session cases | 100% rejected with no protected data disclosure |
 | Usability | SUS score after user sessions | Median SUS at least 70; investigate any score below 50 |
-| Efficiency | Task time and completion | Post-system median time improves on at least four of five core tasks |
+| Efficiency | Task time and completion | Post-system median time improves on at least four of five core tasks. The 17 November 2026 study did not measure before/after task times; this criterion was not evaluated. |
 | Effectiveness | Task completion and critical errors | At least 80% independent completion per core task; no critical privacy error |
 | Accessibility | Keyboard, labels, focus and visible errors | No blocking issue in the tested flows |
 | Performance | Page/API response under local test load | Record p50/p95; investigate p95 above 2 seconds for ordinary local CRUD |
@@ -359,7 +359,7 @@ collection. Any revision must be recorded with the reason.
   valid sessions.
 - **Duration:** 40–50 minutes per session.
 - **Mode:** Moderated in person or remote screen-share with consent.
-- **Study design:** Within-subject before/after comparison.
+- **Study design:** Within-subject before/after comparison. Timed before/after measures were planned; the 17 November 2026 sessions did not record task times (see [measurement-results.md](test/measurement-results.md)).
 - **Before condition:** Participant completes the same five information tasks
   using their usual method (for example, browser tabs plus notes or a blank
   spreadsheet), without InternTrack.
@@ -394,7 +394,8 @@ The release is UAT-acceptable when:
 3. At least 4 of 5 participants independently complete each mandatory task,
    or the task is classified as requiring redesign.
 4. The post-system median time is lower than the baseline median for at least
-   four of the five mandatory tasks.
+   four of the five mandatory tasks. Not evaluated for the 17 November 2026
+   study: before/after task times were not measured.
 5. The median SUS score is at least 70.
 6. TAM usefulness, ease-of-use and intention-to-use results meet the thresholds
    in Section 12 or are accompanied by a documented remediation decision.
@@ -486,41 +487,36 @@ SUS is a usability instrument and is not counted as an acceptance model.
 Collect TAM and UTAUT2 responses separately from SUS. Do not combine their
 scores into one acceptance number; report each instrument and its limitations.
 
-Use a seven-point scale:
+Use a five-point scale matching [tam-results.md](test/tam-results.md):
 
-1 = Strongly disagree, 2 = Disagree, 3 = Somewhat disagree,
-4 = Neither agree nor disagree, 5 = Somewhat agree, 6 = Agree,
-7 = Strongly agree.
+1 = Strongly disagree, 2 = Disagree, 3 = Neither agree nor disagree,
+4 = Agree, 5 = Strongly agree.
 
-**Perceived usefulness (PU)**
+**Perceived usefulness (PU)** — three items
 
-1. InternTrack would improve my ability to organise internship opportunities.
-2. InternTrack would make it easier to keep deadlines, documents and notes
-   together.
-3. InternTrack would help me avoid re-entering internship information.
-4. InternTrack would improve my effectiveness when preparing internship
-   applications.
+1. InternTrack would help me organize internship opportunities.
+2. InternTrack would help me prepare internship applications more efficiently.
+3. InternTrack would help me keep track of application requirements and deadlines.
 
-**Perceived ease of use (PEOU)**
+**Perceived ease of use (PEOU)** — three items
 
-5. Learning to use InternTrack would be easy for me.
-6. I would find it easy to get InternTrack to do what I want.
-7. It would be easy for me to become skilful at using InternTrack.
-8. I would find InternTrack easy to use.
+4. Learning to use InternTrack would be easy for me.
+5. I would find it easy to complete the tasks I need in InternTrack.
+6. My interaction with InternTrack would be clear and understandable.
 
-**Behavioural intention (BI)**
+**Intention to use (IU)** — three items
 
-9. Assuming access were available, I intend to use InternTrack for internship
-   tracking.
-10. I would recommend InternTrack to a student managing internship
-    applications.
+7. I intend to use InternTrack when looking for internships.
+8. I plan to use InternTrack to manage future internship applications.
+9. I expect to continue using InternTrack during my internship search.
 
-Calculate the mean for PU items, PEOU items and BI items for each participant,
-then report the sample median and range. Proposed acceptance indicators are:
+Calculate the mean for PU items, PEOU items and IU items for each participant,
+then report the sample mean of those five participant scores (as in
+`tam-results.md`). Proposed acceptance indicators are:
 
-- PU median ≥ 5.0/7.
-- PEOU median ≥ 5.0/7.
-- BI median ≥ 5.0/7.
+- PU mean ≥ 3.5/5.
+- PEOU mean ≥ 3.5/5.
+- IU mean ≥ 3.5/5.
 
 These thresholds are decision indicators, not proof of market adoption.
 Qualitative reasons must accompany any score below threshold.
@@ -539,7 +535,7 @@ method, missing-response policy and limitations in
 
 ```text
 InternTrack UAT Session
-Participant ID: P__
+Participant ID: U__
 Date:
 Moderator:
 Mode: in person / remote
@@ -556,7 +552,7 @@ Environment issues:
 Repeat one row for each of UAT-01 to UAT-05 and for both conditions.
 
 ```text
-Participant ID: P__
+Participant ID: U__
 Task ID:
 Condition: BEFORE / AFTER
 Start time:
@@ -598,7 +594,7 @@ Severity definitions:
 ### 13.4 SUS response sheet
 
 ```text
-Participant ID: P__
+Participant ID: U__
 Use 1–5: 1 Strongly disagree, 5 Strongly agree
 
 Item 1:  __    Item 2:  __    Item 3:  __    Item 4:  __    Item 5:  __
@@ -611,16 +607,16 @@ SUS score:
 ### 13.5 TAM response sheet
 
 ```text
-Participant ID: P__
-Use 1–7: 1 Strongly disagree, 7 Strongly agree
+Participant ID: U__
+Use 1–5: 1 Strongly disagree, 5 Strongly agree
 
-PU1: __  PU2: __  PU3: __  PU4: __
-PEOU1: __  PEOU2: __  PEOU3: __  PEOU4: __
-BI1: __  BI2: __
+PU1: __  PU2: __  PU3: __
+PEOU1: __  PEOU2: __  PEOU3: __
+IU1: __  IU2: __  IU3: __
 
 PU mean:
 PEOU mean:
-BI mean:
+IU mean:
 Comments explaining low scores:
 ```
 
@@ -652,7 +648,7 @@ changing the required evidence.
 | 2 | Execute browser regression for the core workflow, duplicates, documents, dates, search, matching and translation | System-test results |
 | 3 | Fix or triage blocking defects; rerun failed critical cases; verify clean test data | Retest report |
 | 3 | Pilot one user session and refine wording or timing without changing acceptance thresholds | Pilot notes and approved protocol |
-| 4 | Conduct sessions P01–P05, recording before/after task measures, SUS, TAM and observations | Five completed session packets |
+| 4 | Conduct sessions U01–U05, recording SUS, TAM and observations (before/after task times were not measured on 17 November 2026) | Five completed session packets |
 | 5 | Analyse task results, SUS, TAM, UTAUT2 and qualitative findings; run final regression and UAT review | Final test report and acceptance recommendation |
 
 No participant data should be collected before the environment, consent
@@ -676,8 +672,9 @@ materials and synthetic fixtures are approved.
 - All failed cases have a disposition: fixed, accepted limitation, deferred
   with owner, or blocked with reason.
 - Five valid real-user sessions are complete.
-- Before/after measures, SUS, TAM and UTAUT2 responses are complete for each valid
-  session, apart from documented missing responses.
+- SUS, TAM and UTAUT2 responses are complete for each valid session, apart from
+  documented missing responses. Before/after task times were not measured in the
+  17 November 2026 study and are not required for that study's exit.
 - No unresolved critical privacy, ownership or data-loss defect remains.
 - Final report includes actual commands, results, metrics, limitations and
   acceptance decision.
@@ -710,7 +707,7 @@ The final report must separate:
 
 | Requirement/backlog | Verification coverage |
 |---|---|
-| F1 / B10 / B24 | PROF-01 to PROF-05; UAT-05; resume review |
+| F1 / B10 / B27 | PROF-01 to PROF-05; UAT-05; resume review |
 | F13 / B12 | AUTH-01 to AUTH-09; SEC tests; UAT sign-in |
 | F14 / B25 | MATCH-01 to MATCH-03; existing matching script; UAT-05 |
 | F2–F4 / B02–B04 | EXT-01 to EXT-05; UAT-01 and UAT-02 |
@@ -735,11 +732,11 @@ API/integration result:
 Browser/system result:
 Valid real-user sessions: __ / 5 minimum
 Core-task completion result:
-Before/after measurement result:
+Before/after measurement result: not measured (17 November 2026)
 Median SUS:
-Median TAM PU:
-Median TAM PEOU:
-Median TAM BI:
+Mean TAM PU (/5):
+Mean TAM PEOU (/5):
+Mean TAM IU (/5):
 Open critical defects:
 Deferred features confirmed:
 Acceptance decision: ACCEPT / ACCEPT WITH CONDITIONS / NOT ACCEPTED

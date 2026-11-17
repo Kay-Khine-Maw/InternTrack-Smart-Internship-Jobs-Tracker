@@ -12,13 +12,13 @@ A component shown here is not automatically implemented or accepted.
 
 InternTrack uses a Next.js application with server-side route handlers, Prisma and PostgreSQL.
 
-Gemini is the sole AI provider for extraction and translation.
+The project rule names Gemini as the only AI provider. In the current extractor, text extraction uses Gemini when `GEMINI_API_KEY` is set, and uses OpenAI only when that key is missing and `OPENAI_API_KEY` is set. Translation, explanation smoothing, and skill-gap suggestions call Gemini. The profile-match percentage is counted in application code from skill and tool rows. The match route does not replace it with a Gemini percentage. See [ai-logic.md](../final/ai-logic.md).
 
 Core workflow:
 
 Capture → extract → review and correct → explicitly save → reopen.
 
-Supporting workflows cover profiles, application tracking, checklists, dates, search, translation and deletion.
+Supporting workflows cover profiles, priority, checklists, dates, search, translation and deletion. Application-status tracking is deferred. The interface is light theme only.
 
 ## 1. Browser Interface
 
@@ -413,7 +413,4 @@ These require a separate scope and architecture review.
 - [Feature list](feature-list.md)
 - [User journey](user-journey.md)
 - [Design system](design-system.md)
-- [D1 system context](diagrams/D1-system-context.md)
-- [D2 use cases](diagrams/D2-use-case.md)
-- [D3 architecture diagram](diagrams/D3-architecture.md)
-- [D4 sequence](diagrams/D4-activity.md)
+- Diagram images are in [`diagrams/`](diagrams/) (D1–D6). A class diagram is not in the repository.

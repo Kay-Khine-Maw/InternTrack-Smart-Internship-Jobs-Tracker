@@ -94,7 +94,9 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       {loadError && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{loadError}</div>
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {loadError}
+        </div>
       )}
       <div>
         <h2 className="text-2xl font-semibold tracking-tight text-navy sm:text-3xl">

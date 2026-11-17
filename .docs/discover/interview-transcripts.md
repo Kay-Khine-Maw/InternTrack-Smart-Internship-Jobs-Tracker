@@ -3,9 +3,10 @@
 ## Status
 
 Five anonymized pre-test and post-test interview responses were supplied by the
-team. These records contain interview evidence only. They do not prove that the
-five app task flows were completed, because task timings, completion states,
-errors and moderator-observation records were not supplied here.
+team. Moderated InternTrack sessions for **U01–U05** were run on **17 November
+2026**. Task-level completion by requirement is in [session-log.md](../test/session-log.md).
+Recordings are in [Software Case studies — Interview videos](https://drive.google.com/drive/folders/1DaICWCtuZTEzS48CV5_QI3aj0sFiQPjZ?usp=sharing).
+Before/after task times were not measured.
 
 Participant codes are used instead of names. The job descriptions below are
 participant-provided contexts, not claims about the participants' identities or

@@ -1,12 +1,14 @@
 # InternTrack Product Backlog
 
+No item below is Accepted. Implemented means code or a document is present. Human review is still required before acceptance.
+
 ### B01 - Dashboard pipeline summary
 
 - Type: Feature
 - Priority: Must
 - Status: Implemented 
 - User story: As a Student, I want an application overview so I know what needs attention.
-- Traces to: F7, F9, NFR1, P3, P6
+- Traces to: F7, F9, NFR1, P3, P7
 - Evidence in code: `web/app/dashboard/page.tsx`
 
 ### B02 - Capture internship from URL or file
@@ -51,7 +53,7 @@
 - Priority: Must
 - Status: Implemented 
 - User story: As a Student, I want duplicate warnings so I avoid accidental copies.
-- Traces to: F6, P5
+- Traces to: F6, P6
 - Evidence in code: `web/lib/server/duplicates.ts`, `web/components/modals/DuplicateWarningModal.tsx`
 
 ### B07 - Internship record updates
@@ -60,10 +62,10 @@
 - Priority: Must
 - Status: Implemented
 - User story: As a Student, I want to update internship details and priority.
-- Traces to: F7, NFR1, P6
+- Traces to: F7, NFR1, P7
 - Evidence in code: `web/app/internships/[id]/page.tsx`, `web/app/api/internships/[id]/route.ts`
 
-### B24 - Resume-assisted profile completion
+### B27 - Resume-assisted profile completion
 
 - Type: Feature
 - Priority: Should
@@ -81,7 +83,7 @@
 - User story: As a Student, I want a provisional, explainable comparison between my profile and reviewed requirements.
 - Traces to: F14, F1, NFR4
 - Evidence in code: `web/lib/matching.ts`, `web/app/api/internships/[id]/match/route.ts`, `web/components/internships/MatchPanel.tsx`
-- Notes: Normalizes requirement categories, supports legacy requirements and skills, preserves Unknown results, and uses deterministic phrase-tolerant matching.
+- Notes: Normalizes requirement categories, supports legacy requirements and skills, preserves Unknown results, and uses deterministic phrase-tolerant matching. On 17 November 2026, `npm run test:matching` failed: `web/scripts/verify-matching.ts` expects `qaResult.score` to be null, and `calculateMatch` returned 100. The matcher and the script were not changed. See [measurement-results.md](../test/measurement-results.md). Not Accepted.
 
 ### B08 - Document checklist and preparation notes
 
@@ -89,7 +91,7 @@
 - Priority: Must
 - Status: Implemented 
 - User story: As a Student, I want preparation tasks together so I know what remains.
-- Traces to: F8, LR4, P4, P6
+- Traces to: F8, LR4, P4, P7
 - Evidence in code: `web/components/internships/DocumentChecklist.tsx`, `web/app/internships/[id]/page.tsx`
 
 ### B09 - Calendar and application dates
@@ -98,7 +100,7 @@
 - Priority: Must
 - Status: Implemented
 - User story: As a Student, I want dates together so I can plan upcoming actions.
-- Traces to: F9, P3, P6
+- Traces to: F9, P3, P7
 - Evidence in code: `web/app/calendar/page.tsx`, `web/components/layout/NotificationBell.tsx`
 
 ### B10 - Profile management
@@ -116,7 +118,7 @@
 - Priority: Should
 - Status: Implemented 
 - User story: As a Student, I want translated fields so I can understand posting information.
-- Traces to: F11, LR2, P7
+- Traces to: F11, LR2, P8
 - Evidence in code: `web/components/internships/FieldTranslateBar.tsx`, `web/app/api/translate/route.ts`
 
 ### B12 - Authentication and ownership
@@ -164,7 +166,8 @@
 - Priority: Must
 - Status: Backlog
 - User story: As a team, we want genuine evidence so product choices reflect student needs.
-- Traces to: P1, P2, P3, P4, P5, P6, P7
+- Traces to: P1, P2, P3, P4, P5, P6, P7, P8
+- Notes: Five structured responses are in [interview-transcripts.md](../discover/interview-transcripts.md). App-task completion for listed UAT/F-tasks is recorded in [session-log.md](../test/session-log.md) from the 17 November 2026 moderated sessions (Drive videos). Before/after task times and consent-form copies are still absent. Not Accepted.
 
 ### B17 - Outbound notifications
 
@@ -189,17 +192,17 @@
 - Priority: Should
 - Status: Implemented / acceptance pending
 - User story: As a Student, I want useful filters so I can find relevant records.
-- Traces to: F10, P1, P6
+- Traces to: F10, P1, P7
 - Evidence in code: `web/app/internships/page.tsx`
 
 ### B20 - Usability and workflow validation
 
 - Type: Validation
 - Priority: Must
-- Status: Backlog
+- Status: Implemented / acceptance pending
 - User story: As a team, we want usability evidence so we can identify workflow problems.
 - Traces to: F2, F3, F4, F5, F6, NFR5, NFR6
-- Dependency: Testable workflow and suitable participants.
+- Evidence: Five moderated sessions (U01–U05) on 17 November 2026; [session-log.md](../test/session-log.md), SUS/TAM/UTAUT2 result files, and interview videos in [Software Case studies — Interview videos](https://drive.google.com/drive/folders/1DaICWCtuZTEzS48CV5_QI3aj0sFiQPjZ?usp=sharing). Before/after task times were not measured. Not Accepted.
 
 ### B21 - Input validation and record integrity
 
@@ -226,6 +229,7 @@
 - User story: As a team, we want reproducible checks so changes can be reviewed reliably.
 - Traces to: NFR8
 - Evidence in code: `web/package.json`, `web/scripts/`
+- Notes: On 17 November 2026, `npm run test:duplicates` printed seven PASS lines, `npm run test:extract` exited 0 with an empty `web/scripts/verify-extract.ts`, `npm run test:matching` failed, and `npx tsc --noEmit` printed 16 error lines. `npm run lint`, `npm run build`, and `npm audit` were not run. Not Accepted. See [measurement-results.md](../test/measurement-results.md).
 
 ### B24 - Accessibility and responsive design
 
@@ -235,7 +239,7 @@
 - User story: As a Student, I want accessible screens so I can complete tasks across supported devices.
 - Traces to: NFR5, NFR6
 
-### B25 - Performance verification
+### B28 - Performance verification
 
 - Type: Quality
 - Priority: Must

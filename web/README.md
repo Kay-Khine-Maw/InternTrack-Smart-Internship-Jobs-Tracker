@@ -8,7 +8,7 @@ See the [root README](../README.md) for setup and configuration.
 
 Capture → extract → review and correct → explicitly save → reopen.
 
-Supporting features include profiles, application tracking, checklists, calendar, search, translation and deletion.
+Supporting features include profiles, priority, documents, dates, calendar, search, translation and deletion. Application-status tracking is deferred.
 
 ## Application Structure
 
@@ -22,10 +22,10 @@ Supporting features include profiles, application tracking, checklists, calendar
 ## Processing and Storage
 
 - Supported sources include URLs, PDF, DOCX, PNG and JPG.
-- Gemini is the sole AI provider for extraction and translation.
+- Text extraction uses Gemini when `GEMINI_API_KEY` is set. If that key is missing and `OPENAI_API_KEY` is set, text extraction can use OpenAI. Translation uses Gemini only. That matches the text-extraction fallback allowed in `CLAUDE.md` and F3.
 - Extracted information remains editable before saving.
 - Resume imports are temporary, server-side PDF/DOCX processing drafts; original resume files are not retained.
-- Matching is deterministic after requirement review, shows coverage, and is not a hiring-success prediction.
+- The profile-match percentage counts skill and tool requirements. Gemini does not replace that number. The first explanation sentence comes from the count. Later sentences may be smoothed. Missing skills are listed by name, with learning links. The percentage is not a hiring prediction.
 - PostgreSQL stores saved records and related data.
 - Credentials and database access remain server-side.
 - Extraction history follows separate retention and cleanup rules.

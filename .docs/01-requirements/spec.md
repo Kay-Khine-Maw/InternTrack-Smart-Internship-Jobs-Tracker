@@ -6,7 +6,7 @@
 - Product: Internship tracking and application preparation web app
 - Primary implementation: `web/` (Next.js 14, PostgreSQL, Prisma)
 - Source of truth: this specification, the backlog, and the legal rules in `rule.md`
-- Research status: no interview transcripts or validated pain notes are currently stored in `.docs`; the P# references below are provisional and must be replaced or confirmed when research evidence is added.
+- Research status: five structured pre-test and post-test responses are stored in [interview-transcripts.md](../discover/interview-transcripts.md) as U01–U05. Moderated sessions were reported on **17 November 2026** with recordings linked from [final README](../final/README.md). [session-log.md](../test/session-log.md) records task completion; before/after task times were not measured. The P# statements below stay provisional where those responses do not state the pain. This status is not acceptance.
 
 ## Product Goal
 
@@ -15,13 +15,13 @@ Help university students turn scattered internship postings into an organised ap
 ## Users and Actors
 
 - **Student user:** owns a profile and internship records, reviews extracted data, and manages applications.
-- **AI provider:** Gemini is preferred; OpenAI may be used as a fallback for structured extraction or translation. It must receive only the minimum required text.
+- **AI provider:** Gemini is preferred. OpenAI may be used only as a fallback for structured **text** extraction when `GEMINI_API_KEY` is unset. Translation uses Gemini only. Providers must receive only the minimum required text.
 - **Source website or document:** provides internship content through a URL or uploaded PDF, DOCX, PNG, or JPG.
 - **Database:** PostgreSQL stores users, profiles, internships, documents, tags, translations, and extraction history through Prisma.
 
 ## Provisional Problem Statements
 
-These are placeholders until interview evidence is added to `.docs`:
+The five response records support some of these statements and do not mention others. U01–U05 describe scattered screenshots, bookmarks, notes, or saved posts (P1), different deadline methods (related to P3, without saying a deadline was missed), checking the original after extraction (P5), and, for U02, difficulty with formal Thai (P8). They do not state document-checklist gaps (P4), a measured copying-error rate (P2), a pre-test duplicate problem (P6), or a single missing progress view (P7). Post-test comments about review and duplicate warnings are reactions, not baseline measurements.
 
 - **P1:** Internship details are spread across job boards, emails, and documents.
 - **P2:** Manually copying company, role, deadline, and requirements is repetitive and error-prone.
@@ -76,8 +76,8 @@ As a student, I want to compare my reviewed profile with reviewed internship req
 
 Acceptance criteria:
 
-- Matching uses deterministic application code with documented product-selected weights.
-- Results show a provisional percentage together with assessment coverage.
+- Matching uses deterministic application code in `web/lib/matching.ts`.
+- The prominent percentage is skill-and-tool match: matched skill/tool rows ÷ compared skill/tool rows (`unknown` rows are excluded from the divisor). Assessment coverage across all requirement categories is shown separately and is not the large headline number.
 - Missing profile information is `Unknown`, not automatically `Not met`.
 - Mandatory conditions are shown separately from the score.
 - Results are limited to the authorized Student's profile and internship.
@@ -108,7 +108,7 @@ Acceptance criteria:
 
 - URL extraction can use the existing URL extractor and browser fallback.
 - PDF, DOCX, and image inputs use the corresponding existing extractor.
-- Gemini is preferred and OpenAI may be used as a configured fallback.
+- Gemini is preferred for text and vision extraction. OpenAI may be used as a configured fallback for structured **text** extraction only when `GEMINI_API_KEY` is unset.
 - The response normalizes missing strings to null and missing lists to empty arrays.
 - Dates are normalized to an ISO-compatible date where a deadline can be identified.
 - AI failure, invalid JSON, and missing usable content are returned as controlled errors.

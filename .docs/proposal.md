@@ -10,9 +10,10 @@ The problem statements are:
 - **P2:** Manually copying internship details is repetitive and error-prone.
 - **P3:** Deadlines and follow-ups are easy to miss when tracked separately.
 - **P4:** Required application documents are not always tracked clearly.
-- **P5:** Duplicate records make the application pipeline harder to manage.
-- **P6:** Application progress, notes and preparation are not visible together.
-- **P7:** Students may need English translations of non-English information.
+- **P5:** Extracted or copied information may be incomplete and needs a clear review step.
+- **P6:** Duplicate saves make an internship pipeline difficult to trust.
+- **P7:** Application progress, interview preparation, and notes are not visible in one workflow.
+- **P8:** Users may need English translations while reviewing non-English internship information.
 
 ## Target Users and Stakeholders
 
@@ -41,7 +42,7 @@ InternTrack prepares a structured draft from a URL or supported file.
 
 The Student checks the draft against the source and corrects missing or inaccurate information before saving. AI output is assistance, not a guarantee of accuracy.
 
-PostgreSQL stores the saved record. Supporting features help the Student manage status, priority, dates, documents, notes and application preparation.
+PostgreSQL stores the saved record. Supporting features help the Student manage priority, dates, documents, notes and application preparation. Application-status tracking is deferred (F7).
 
 ## Objectives and Measurement
 
@@ -83,8 +84,9 @@ Participant numbers, quantitative improvement targets and test conditions must b
 
 ### Supporting capabilities
 
+- Local email/password sign-up, sign-in and sign-out with server-side sessions (F13).
 - Dashboard and internship list.
-- Status and priority.
+- Priority (application-status tracking is deferred under F7).
 - Deadlines, follow-ups and interview details.
 - Document checklist and preparation notes.
 - Calendar.
@@ -94,7 +96,7 @@ Participant numbers, quantitative improvement targets and test conditions must b
 
 ### Explicit WON'T for the Alpha Demo
 
-- Login, registration and authenticated multi-user tenancy.
+- Account recovery, email verification, rate limiting and production authentication hardening.
 - Sharing records.
 - Outbound email or push notifications.
 - Payments, subscriptions or messaging.
@@ -133,7 +135,7 @@ The application uses Next.js App Router, TypeScript, server routes, Prisma and P
 
 Website and document readers process internship sources, while Gemini provides structured information extraction and translation.
 
-- Gemini is the sole AI provider.
+- Gemini is the sole AI provider in this proposal. The current text extractor can still call OpenAI when the Gemini key is missing and an OpenAI key is set. See [ai-logic.md](final/ai-logic.md).
 - Image processing may follow a different path from text-document processing.
 - AI-generated information is presented for student review and correction before saving.
 - Provider failures must produce a clear error rather than appear successful.

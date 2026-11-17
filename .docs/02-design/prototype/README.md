@@ -212,8 +212,8 @@ Record:
 - Usability findings.
 - Remaining gaps.
 
-Track usability findings in B21.
-Track accessibility and responsive findings in B25.
+Track usability findings in B20.
+Track accessibility and responsive findings in B24.
 
 ## Related Documents
 
@@ -223,5 +223,4 @@ Track accessibility and responsive findings in B25.
 - [User journey](../user-journey.md)
 - [Architecture](../architecture.md)
 - [Design system](../design-system.md)
-- [D2 use cases](../diagrams/D2-use-case.md)
-- [D4 activity](../diagrams/D4-activity.md)
+- Use-case, activity, sequence, class, and entity-relationship diagram files are not in this repository.

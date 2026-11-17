@@ -49,7 +49,7 @@ export function ApplicationDetailsModal({ open, internship, onOpenChange }: Prop
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Update Application Details</DialogTitle>
           <DialogDescription>Keep dates and interview preparation details current for {internship.company}.</DialogDescription>

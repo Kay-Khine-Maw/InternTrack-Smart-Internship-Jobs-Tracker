@@ -141,7 +141,7 @@ Check affected screens for:
 - Responsive layouts at 375 px and 1440 px.
 - Agreement with the specification and user journey.
 
-Record usability findings in B21. Record accessibility and responsive findings in B25.
+Record usability findings in B20. Record accessibility and responsive findings in B24.
 
 ## Related Documents
 
