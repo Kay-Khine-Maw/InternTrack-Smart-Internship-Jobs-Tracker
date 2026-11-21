@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "app/api/extract/route.ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "app/api/translate/route.ts": {
+      "maxDuration": 30,
+      "memory": 1024
+    },
+    "app/api/profile/resume/route.ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "app/api/internships/[id]/match/route.ts": {
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  }
+}

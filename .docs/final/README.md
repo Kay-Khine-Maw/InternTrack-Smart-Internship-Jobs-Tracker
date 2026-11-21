@@ -25,7 +25,7 @@ One link for each rubric item that is in this repository. No item is marked Acce
 - [Sequence diagram](../02-design/diagrams/D6-sequence.jpg)
 - Class diagram: not in the repository
 - [Architecture](../02-design/architecture.md)
-- [Root setup](../../README.md) — local run at `http://localhost:3000`; this is not a public deployment
+- [Root setup](../../README.md) — local run at `http://localhost:3000`; live URL [https://intern-track-smart-internship-jobs.vercel.app/](https://intern-track-smart-internship-jobs.vercel.app/)
 - [Web README](../../web/README.md)
 - [Environment template](../../web/.env.example) — API key fields are empty; `.env` is listed in [web/.gitignore](../../web/.gitignore)
 - [Demo identity helper](../../web/lib/server/demoUser.ts) — no password is set in that create call
@@ -61,4 +61,4 @@ One link for each rubric item that is in this repository. No item is marked Acce
 
 ## Also in this folder
 
-- [Deployment notes](deployment-notes.md) — checklist only; no public URL is recorded
+- [Deployment notes](deployment-notes.md) — checklist; live URL [https://intern-track-smart-internship-jobs.vercel.app/](https://intern-track-smart-internship-jobs.vercel.app/)

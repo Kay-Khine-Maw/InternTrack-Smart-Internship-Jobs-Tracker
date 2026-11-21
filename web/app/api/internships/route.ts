@@ -9,6 +9,9 @@ import { parseTranslations } from "@/lib/translations";
 import { readInternshipExtras, writeHrEmail, writeTranslations } from "@/lib/server/translationsDb";
 import type { Priority } from "@/lib/types";
 import { normalizeMatchingRequirements } from "@/lib/matching";
+import { toEnglishShortLabels } from "@/lib/server/englishLabels";
+import { ensureEnglishInternshipTags } from "@/lib/server/ensureEnglishTags";
+
 
 const createSchema = z.object({
   companyName: z.string().trim().min(1, "Company is required."),
@@ -63,13 +66,21 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
     const extras = await readInternshipExtras(rows.map((row) => row.id));
-    return NextResponse.json({
-      internships: rows.map((row) => ({
-        ...toClientInternship(row),
-        translations: extras[row.id]?.translations ?? {},
-        hrEmail: extras[row.id]?.hrEmail ?? (row as { hrEmail?: string | null }).hrEmail ?? undefined,
-      })),
-    });
+    const internships = await Promise.all(
+      rows.map(async (row) => {
+        const englishTags = await ensureEnglishInternshipTags(
+          row.id,
+          row.tags.map((tag) => tag.name),
+        );
+        return {
+          ...toClientInternship(row),
+          tags: englishTags,
+          translations: extras[row.id]?.translations ?? {},
+          hrEmail: extras[row.id]?.hrEmail ?? (row as { hrEmail?: string | null }).hrEmail ?? undefined,
+        };
+      }),
+    );
+    return NextResponse.json({ internships });
   } catch (error) {
     return jsonError(error);
   }
@@ -101,8 +112,11 @@ export async function POST(request: Request) {
       }
     }
 
+    const englishTags = await toEnglishShortLabels(
+      body.tags.map((name) => name.trim()).filter(Boolean).slice(0, 8),
+    );
     const tags = await Promise.all(
-      body.tags
+      englishTags
         .map((name) => name.trim())
         .filter(Boolean)
         .map((name) =>

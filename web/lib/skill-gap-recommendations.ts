@@ -11,6 +11,8 @@ export type SkillGapRecommendation = {
   estimatedTime: string;
   howTo?: string;
   links?: SkillGapLink[];
+  /** Exact posting requirement label used for alignment; may be non-English. */
+  sourceLabel?: string;
 };
 
 export type SkillGapTarget = {
@@ -146,9 +148,17 @@ export function withCommonLearningSites(skill: string, links: unknown): SkillGap
   return combined;
 }
 
-function recommendationFrom(item: { skill: string; reason: string; estimatedTime: string; howTo?: string; links?: unknown }): SkillGapRecommendation {
+function recommendationFrom(item: {
+  skill: string;
+  reason: string;
+  estimatedTime: string;
+  howTo?: string;
+  links?: unknown;
+  sourceLabel?: string;
+}): SkillGapRecommendation {
   const howTo = clean(item.howTo, MAX_HOWTO);
   const links = skillGapLinks(item.links);
+  const sourceLabel = clean(item.sourceLabel, MAX_SKILL);
   const recommendation: SkillGapRecommendation = {
     skill: item.skill,
     reason: item.reason,
@@ -156,6 +166,7 @@ function recommendationFrom(item: { skill: string; reason: string; estimatedTime
   };
   if (howTo) recommendation.howTo = howTo;
   if (links.length) recommendation.links = links;
+  if (sourceLabel) recommendation.sourceLabel = sourceLabel;
   return recommendation;
 }
 
@@ -211,8 +222,9 @@ export function parseSkillGapRecommendations(text: string): SkillGapRecommendati
     const skill = clean(record.skill ?? record.name, MAX_SKILL);
     const reason = clean(record.reason ?? record.why, MAX_REASON);
     const estimatedTime = cleanTime(record.estimatedTime ?? record.time);
+    const sourceLabel = clean(record.sourceLabel ?? record.missingLabel ?? record.label, MAX_SKILL);
     if (!skill || !reason || !estimatedTime) continue;
-    const key = skill.toLowerCase();
+    const key = `${sourceLabel || skill}`.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
     recommendations.push(recommendationFrom({
@@ -221,6 +233,7 @@ export function parseSkillGapRecommendations(text: string): SkillGapRecommendati
       estimatedTime,
       howTo: typeof record.howTo === "string" ? record.howTo : undefined,
       links: record.links,
+      sourceLabel: sourceLabel || undefined,
     }));
     if (recommendations.length >= PARSE_LIMIT) break;
   }
@@ -240,12 +253,20 @@ export function alignSkillGapRecommendations(
   const chosen: Array<SkillGapRecommendation & { classification: "required" | "preferred"; days: number | null; order: number }> = [];
 
   items.forEach((item, order) => {
-    const match = remaining.find((gap) => canonicalSkillLabel(item.skill, [gap.label]) === gap.label);
+    const match = remaining.find((gap) => {
+      if (item.sourceLabel && canonicalSkillLabel(item.sourceLabel, [gap.label]) === gap.label) return true;
+      return canonicalSkillLabel(item.skill, [gap.label]) === gap.label;
+    });
     if (!match) return;
     remaining = remaining.filter((gap) => canonicalSkillLabel(gap.label, [match.label]) !== match.label);
+    // Keep Gemini's English display name; fall back to the posting label only if skill is empty.
+    const displaySkill = clean(item.skill, MAX_SKILL) || match.label;
     chosen.push({
-      ...recommendationFrom(item),
-      skill: match.label,
+      ...recommendationFrom({
+        ...item,
+        skill: displaySkill,
+        sourceLabel: match.label,
+      }),
       classification: match.classification,
       days: estimateDays(item.estimatedTime),
       order,
@@ -261,7 +282,7 @@ export function alignSkillGapRecommendations(
     return left.order - right.order;
   });
 
-  return chosen.slice(0, MAX_ITEMS).map(({ skill, reason, estimatedTime, howTo, links }) => (
-    recommendationFrom({ skill, reason, estimatedTime, howTo, links })
+  return chosen.slice(0, MAX_ITEMS).map(({ skill, reason, estimatedTime, howTo, links, sourceLabel }) => (
+    recommendationFrom({ skill, reason, estimatedTime, howTo, links, sourceLabel })
   ));
 }

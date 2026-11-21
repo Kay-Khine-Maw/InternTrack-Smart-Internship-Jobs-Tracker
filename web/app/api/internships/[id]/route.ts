@@ -8,6 +8,9 @@ import { parseTranslations } from "@/lib/translations";
 import { readInternshipExtras, writeHrEmail, writeTranslations } from "@/lib/server/translationsDb";
 import type { Priority } from "@/lib/types";
 import { normalizeMatchingRequirements } from "@/lib/matching";
+import { toEnglishShortLabels } from "@/lib/server/englishLabels";
+import { ensureEnglishInternshipTags } from "@/lib/server/ensureEnglishTags";
+
 
 const updateSchema = z.object({
   companyName: z.string().trim().min(1).optional(),
@@ -69,10 +72,15 @@ async function loadOwned(id: string) {
 export async function GET(_request: Request, { params }: { params: { id: string } }) {
   try {
     const row = await loadOwned(params.id);
+    const englishTags = await ensureEnglishInternshipTags(
+      row.id,
+      row.tags.map((tag) => tag.name),
+    );
     const extras = (await readInternshipExtras([row.id]))[row.id];
     return NextResponse.json({
       internship: {
         ...toClientInternship(row),
+        tags: englishTags,
         translations: extras?.translations ?? {},
         hrEmail: extras?.hrEmail ?? (row as { hrEmail?: string | null }).hrEmail ?? undefined,
       },
@@ -91,8 +99,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const applicationUrl = body.applicationUrl ?? body.url;
 
     if (body.tags) {
+      const englishTags = await toEnglishShortLabels(
+        body.tags.map((name) => name.trim()).filter(Boolean).slice(0, 8),
+      );
       const tags = await Promise.all(
-        body.tags
+        englishTags
           .map((name) => name.trim())
           .filter(Boolean)
           .map((name) =>

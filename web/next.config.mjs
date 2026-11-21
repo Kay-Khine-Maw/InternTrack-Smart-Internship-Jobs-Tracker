@@ -3,6 +3,8 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: [
       "playwright",
+      "playwright-core",
+      "@sparticuz/chromium",
       "tesseract.js",
       "tesseract.js-core",
       "pdf-parse",

@@ -222,7 +222,17 @@ export default function AddInternshipPage() {
       } | null;
 
       if (!response.ok) {
-        throw new Error(body?.message || "Extraction failed. Please try again.");
+        if (response.status === 504 || response.status === 408) {
+          throw new Error(
+            "Extraction timed out on the server. For LinkedIn, use Upload Job Post with a PDF, DOCX, PNG, or JPG."
+          );
+        }
+        throw new Error(
+          body?.message ||
+            (response.status >= 500
+              ? "Extraction failed on the server. For LinkedIn or blocked sites, upload the posting as a PDF, DOCX, PNG, or JPG."
+              : "Extraction failed. Please try again.")
+        );
       }
 
       const extractedText = body?.extractedText?.trim() ?? "";
@@ -287,7 +297,12 @@ export default function AddInternshipPage() {
         setDupOpen(false);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Extraction failed. Please try again.");
+      const message = err instanceof Error ? err.message : "Extraction failed. Please try again.";
+      setError(
+        /failed to fetch|networkerror|load failed|unexpected end of json|not valid json/i.test(message)
+          ? "Extraction timed out or was blocked. For LinkedIn, use Upload Job Post with a PDF, DOCX, PNG, or JPG."
+          : message
+      );
       setStep("input");
     } finally {
       window.clearTimeout(extractTimer);
@@ -349,7 +364,11 @@ export default function AddInternshipPage() {
         skills: draft.skills,
         matchingRequirements: draft.matchingRequirements,
         requiredDocuments: draft.documents.map((doc) => ({ name: doc.name, completed: doc.completed })),
-        tags: draft.skills.slice(0, 4),
+        tags: (
+          translations.skills?.translatedText
+            ? translations.skills.translatedText.split(/\n/).map((item) => item.trim()).filter(Boolean)
+            : draft.skills
+        ).slice(0, 4),
         applicationUrl: draft.applicationUrl || (tab === "link" ? url : "") || null,
         hrEmail: draft.hrEmail.trim() || null,
         sourceUrl: draft.sourceUrl || (tab === "link" ? url : "") || null,

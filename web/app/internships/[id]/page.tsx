@@ -63,9 +63,9 @@ export default function InternshipDetailPage() {
       ["Deadline", internship.deadline ? formatLongDate(internship.deadline) : "Deadline not found. Add it manually."],
       ["Application link", internship.url || "—"],
       ["Date added", formatShortDate(internship.createdAt)],
-      ["Tags", internship.tags.length ? internship.tags.join(", ") : "—"],
     ] as Array<[string, string]>;
   }, [internship]);
+  const tagsText = internship?.tags.length ? internship.tags.join(", ") : "";
 
   function persistTranslation(field: import("@/lib/translations").TranslatableField, originalText: string, translatedText: string) {
     if (!internship) return;
@@ -193,6 +193,10 @@ export default function InternshipDetailPage() {
                 />
               </div>
             ))}
+            <div className="grid gap-1 rounded-lg border border-border/70 bg-white p-3 sm:grid-cols-[140px_1fr]">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Tags</p>
+              <p className="text-sm text-navy">{tagsText || "—"}</p>
+            </div>
             {info.map(([label, value]) => (
               <div key={label} className="grid gap-1 rounded-lg border border-border/70 bg-white p-3 sm:grid-cols-[140px_1fr]">
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>

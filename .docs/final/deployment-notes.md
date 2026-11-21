@@ -30,7 +30,20 @@
 - Monitoring:
 - Rollback:
 
+## Vercel production notes
+
+- Project: `kenguin/intern-track-smart-internship-jobs-tracker`
+- Root Directory: `web`
+- Production URL: `https://intern-track-smart-internship-jobs.vercel.app`
+- Build runs `prisma migrate deploy && next build`
+- Runtime prefers `DATABASE_URL_POOLED` when `VERCEL` is set
+- URL extraction on Vercel uses `@sparticuz/chromium` + `playwright-core`
+- Image OCR language data uses `/tmp` on Vercel
+- Required env: `DATABASE_URL`, `DATABASE_URL_POOLED` (recommended), `GEMINI_API_KEY`, `GEMINI_MODEL`
+- Sites that block bots or require heavy client rendering may still need a PDF/DOCX/PNG/JPG upload
+
 ## Status
 
-This document is a deployment checklist, not evidence that a public deployment
-has passed.
+Production schema migrations were applied on 20 November 2026. Re-deploy after
+code changes that affect serverless extraction or Prisma. This document is not
+acceptance.

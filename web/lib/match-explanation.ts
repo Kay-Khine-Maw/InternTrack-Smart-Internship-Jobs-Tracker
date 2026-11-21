@@ -89,6 +89,8 @@ export function matchExplanationHash(snapshot: MatchExplanationSnapshot) {
       skills: snapshot.skills,
       tools: snapshot.tools,
       requirements: snapshot.requirements,
+      // Bust cached Thai-label explanations after English label localization.
+      locale: "en-labels-v1",
     }))
     .digest("hex");
 }

@@ -5,6 +5,8 @@ InternTrack helps university students collect internship opportunities and manag
 Built with Next.js, TypeScript, Prisma and PostgreSQL.
 Gemini provides structured extraction and translation.
 
+**Live URL:** [https://intern-track-smart-internship-jobs.vercel.app/](https://intern-track-smart-internship-jobs.vercel.app/)
+
 ## Core Workflow
 
 Capture → extract → review and correct → explicitly save → reopen.

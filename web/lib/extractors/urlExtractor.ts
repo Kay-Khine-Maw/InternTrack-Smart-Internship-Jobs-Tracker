@@ -19,12 +19,35 @@ export type UrlExtractResult = {
   linkedIn?: LinkedInPosting;
 };
 
-const FETCH_TIMEOUT_MS = 15_000;
-const PLAYWRIGHT_TIMEOUT_MS = 20_000;
+const IS_SERVERLESS = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const FETCH_TIMEOUT_MS = IS_SERVERLESS ? 8_000 : 15_000;
+const PLAYWRIGHT_TIMEOUT_MS = IS_SERVERLESS ? 12_000 : 20_000;
 const MAX_HTML_BYTES = 2_000_000;
 const MIN_TEXT_CHARS = 300;
+// LinkedIn and similar sites rate-limit obvious bot / localhost user agents.
 const USER_AGENT =
-  "InternTrack/1.0 (university internship tracker; +https://localhost) Mozilla/5.0";
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
+
+const FETCH_HEADERS: HeadersInit = {
+  "User-Agent": USER_AGENT,
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.9",
+  "Cache-Control": "no-cache",
+  Pragma: "no-cache",
+};
+
+function fetchHeadersFor(url: string): HeadersInit {
+  if (/linkedin\.com/i.test(url)) {
+    return {
+      ...FETCH_HEADERS,
+      Referer: "https://www.linkedin.com/jobs/",
+      "Sec-Fetch-Dest": "document",
+      "Sec-Fetch-Mode": "navigate",
+      "Sec-Fetch-Site": "same-origin",
+    };
+  }
+  return FETCH_HEADERS;
+}
 
 const STRIP_SELECTORS = [
   "nav",
@@ -54,16 +77,29 @@ const STRIP_SELECTORS = [
   ".header",
 ].join(", ");
 
-function linkedInGuestUrl(url: string) {
+function linkedInJobId(url: string) {
   try {
     const parsed = new URL(url);
     if (!/(^|\.)linkedin\.com$/i.test(parsed.hostname)) return null;
-    const jobId = parsed.pathname.match(/\/jobs\/view\/(\d+)/)?.[1];
-    if (!jobId) return null;
-    return `https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/${jobId}`;
+    return parsed.pathname.match(/\/jobs\/view\/(\d+)/)?.[1] ?? null;
   } catch {
     return null;
   }
+}
+
+function linkedInGuestUrls(url: string) {
+  const jobId = linkedInJobId(url);
+  if (!jobId) return [] as string[];
+  return [
+    `https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/${jobId}`,
+    `https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/${jobId}/`,
+  ];
+}
+
+function rateLimitedMessage(isLinkedIn: boolean) {
+  return isLinkedIn
+    ? "LinkedIn rate-limited this server (HTTP 429). Wait a minute and try again, or use Upload Job Post with a PDF, DOCX, PNG, or JPG."
+    : "The site rate-limited this server (HTTP 429). Wait a minute and try again, or upload the posting as a PDF, DOCX, PNG, or JPG.";
 }
 
 function validateHttpUrl(url: string) {
@@ -131,57 +167,71 @@ function cleanHtml(html: string) {
   return { title, textContent };
 }
 
-async function fetchHtml(url: string) {
+type SoftFetchResult =
+  | { ok: true; html: string; status: number }
+  | { ok: false; status: number; error?: unknown };
+
+async function softFetchHtml(url: string): Promise<SoftFetchResult> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
     const response = await fetch(url, {
       signal: controller.signal,
       redirect: "follow",
-      headers: { "User-Agent": USER_AGENT, Accept: "text/html,application/xhtml+xml" },
+      headers: fetchHeadersFor(url),
     });
-    if (response.status === 404) {
-      throw new AppError("INVALID_URL", "That job page could not be found (404).", 400);
-    }
-    if (response.status === 403) {
-      throw new AppError(
-        "EXTRACT_FAILURE",
-        "The site blocked the request (403). Try uploading the posting as a PDF instead.",
-        502
-      );
-    }
     if (!response.ok) {
-      throw new AppError(
-        "EXTRACT_FAILURE",
-        `Could not fetch the job page (HTTP ${response.status}).`,
-        502
-      );
+      return { ok: false, status: response.status };
     }
     const length = Number(response.headers.get("content-length") ?? 0);
     if (length > MAX_HTML_BYTES) {
       throw new AppError("EXTRACT_FAILURE", "The job page is too large to extract.", 400);
     }
-    const html = await response.text();
-    return html.slice(0, MAX_HTML_BYTES);
+    const html = (await response.text()).slice(0, MAX_HTML_BYTES);
+    return { ok: true, html, status: response.status };
   } catch (error) {
     if (error instanceof AppError) throw error;
     if (error instanceof Error && error.name === "AbortError") {
-      throw new AppError("EXTRACT_FAILURE", "The job page timed out. Try again or upload a file.", 502);
+      return { ok: false, status: 408, error };
     }
-    throw new AppError(
-      "EXTRACT_FAILURE",
-      "Network failure while fetching the job URL. Check the link and try again.",
-      502
-    );
+    return { ok: false, status: 0, error };
   } finally {
     clearTimeout(timer);
   }
 }
 
-async function extractWithPlaywright(url: string): Promise<UrlExtractResult> {
+function linkedInResultFromHtml(sourceUrl: string, html: string): UrlExtractResult | null {
+  const guestResult = cleanHtml(html);
+  const linkedIn = parseLinkedInPosting(html);
+  if ((linkedIn && (linkedIn.position || linkedIn.companyName || linkedIn.description)) || guestResult.textContent.length >= 40) {
+    return {
+      title: linkedIn?.position || guestResult.title || sourceUrl,
+      textContent: guestResult.textContent,
+      sourceUrl: normalizeUrl(sourceUrl) || sourceUrl,
+      ...(linkedIn ? { linkedIn } : {}),
+    };
+  }
+  return null;
+}
+
+async function launchBrowser() {
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    const chromium = (await import("@sparticuz/chromium")).default;
+    const { chromium: playwrightChromium } = await import("playwright-core");
+    chromium.setGraphicsMode = false;
+    return playwrightChromium.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
+      headless: true,
+    });
+  }
+  const { chromium } = await import("playwright");
+  return chromium.launch({ headless: true });
+}
+
+async function fetchHtmlWithPlaywright(url: string): Promise<{ html: string; title: string }> {
   try {
-    const { chromium } = await import("playwright");
-    const browser = await chromium.launch({ headless: true });
+    const browser = await launchBrowser();
     try {
       const page = await browser.newPage({ userAgent: USER_AGENT });
       const response = await page.goto(url, {
@@ -198,15 +248,13 @@ async function extractWithPlaywright(url: string): Promise<UrlExtractResult> {
           502
         );
       }
+      if (response?.status() === 429) {
+        throw new AppError("EXTRACT_FAILURE", rateLimitedMessage(/linkedin\.com/i.test(url)), 502);
+      }
       await page.waitForTimeout(800);
       const html = await page.content();
       const title = await page.title();
-      const cleaned = cleanHtml(html);
-      return {
-        title: cleaned.title || title || url,
-        textContent: cleaned.textContent,
-        sourceUrl: normalizeUrl(url) || url,
-      };
+      return { html, title };
     } finally {
       await browser.close();
     }
@@ -216,7 +264,9 @@ async function extractWithPlaywright(url: string): Promise<UrlExtractResult> {
     if (/Executable doesn't exist|browserType.launch|playwright install/i.test(message)) {
       throw new AppError(
         "EXTRACT_FAILURE",
-        "Playwright browsers are not installed. Run npx playwright install and try again.",
+        process.env.VERCEL
+          ? "Could not start the page browser on the server. Try uploading the posting as a PDF, DOCX, PNG, or JPG instead."
+          : "Playwright browsers are not installed. Run npx playwright install and try again.",
         502
       );
     }
@@ -231,47 +281,117 @@ async function extractWithPlaywright(url: string): Promise<UrlExtractResult> {
   }
 }
 
+async function extractWithPlaywright(url: string): Promise<UrlExtractResult> {
+  const { html, title } = await fetchHtmlWithPlaywright(url);
+  const cleaned = cleanHtml(html);
+  return {
+    title: cleaned.title || title || url,
+    textContent: cleaned.textContent,
+    sourceUrl: normalizeUrl(url) || url,
+  };
+}
+
 export async function extractFromUrl(url: string): Promise<UrlExtractResult> {
   const sourceUrl = validateHttpUrl(url);
-  const guestUrl = linkedInGuestUrl(sourceUrl);
-  if (guestUrl) {
-    try {
-      const guestHtml = await fetchHtml(guestUrl);
-      const guestResult = cleanHtml(guestHtml);
-      const linkedIn = parseLinkedInPosting(guestHtml);
-      if ((linkedIn && (linkedIn.position || linkedIn.companyName || linkedIn.description)) || guestResult.textContent.length >= 40) {
-        return {
-          title: linkedIn?.position || guestResult.title || sourceUrl,
-          textContent: guestResult.textContent,
-          sourceUrl: normalizeUrl(sourceUrl) || sourceUrl,
-          ...(linkedIn ? { linkedIn } : {}),
-        };
-      }
-    } catch {
-      // The public job page is the fallback when the guest posting cannot be read.
+  const isLinkedIn = Boolean(linkedInJobId(sourceUrl));
+  const guestUrls = linkedInGuestUrls(sourceUrl);
+  let sawRateLimit = false;
+
+  // LinkedIn: guest HTML only on serverless (Playwright cold-start exceeds Vercel limits).
+  for (const guestUrl of guestUrls) {
+    const guestFetch = await softFetchHtml(guestUrl);
+    if (guestFetch.ok) {
+      const parsed = linkedInResultFromHtml(sourceUrl, guestFetch.html);
+      if (parsed) return parsed;
+    } else if (guestFetch.status === 429) {
+      sawRateLimit = true;
     }
   }
-  const html = await fetchHtml(sourceUrl);
-  const cheerioResult = cleanHtml(html);
-  const looksJsApp =
-    cheerioResult.textContent.length < MIN_TEXT_CHARS ||
-    /enable javascript|you need to enable javascript/i.test(cheerioResult.textContent);
 
-  if (!looksJsApp) {
-    return {
-      title: cheerioResult.title || sourceUrl,
-      textContent: cheerioResult.textContent,
-      sourceUrl: normalizeUrl(sourceUrl) || sourceUrl,
-    };
+  if (isLinkedIn && !IS_SERVERLESS) {
+    for (const guestUrl of guestUrls) {
+      try {
+        const { html } = await fetchHtmlWithPlaywright(guestUrl);
+        const parsed = linkedInResultFromHtml(sourceUrl, html);
+        if (parsed) return parsed;
+      } catch (error) {
+        if (error instanceof AppError && /429|rate-limited/i.test(error.message)) sawRateLimit = true;
+        else if (error instanceof AppError && error.code === "INVALID_URL") throw error;
+      }
+    }
   }
 
-  const playwrightResult = await extractWithPlaywright(sourceUrl);
-  if (playwrightResult.textContent.length < 40) {
+  if (isLinkedIn && IS_SERVERLESS) {
     throw new AppError(
       "EXTRACT_FAILURE",
-      "Could not extract readable text from this page after Cheerio and Playwright. Try uploading a PDF instead.",
+      sawRateLimit
+        ? rateLimitedMessage(true)
+        : "Could not read this LinkedIn job from the hosted server. Use Upload Job Post with a PDF, DOCX, PNG, or JPG of the posting.",
       502
     );
   }
-  return playwrightResult;
+
+  const pageFetch = await softFetchHtml(sourceUrl);
+  if (pageFetch.ok) {
+    const cheerioResult = cleanHtml(pageFetch.html);
+    const looksJsApp =
+      cheerioResult.textContent.length < MIN_TEXT_CHARS ||
+      /enable javascript|you need to enable javascript/i.test(cheerioResult.textContent);
+
+    if (!looksJsApp) {
+      return {
+        title: cheerioResult.title || sourceUrl,
+        textContent: cheerioResult.textContent,
+        sourceUrl: normalizeUrl(sourceUrl) || sourceUrl,
+      };
+    }
+
+    try {
+      const playwrightResult = await extractWithPlaywright(sourceUrl);
+      if (playwrightResult.textContent.length >= 40) return playwrightResult;
+    } catch (error) {
+      if (error instanceof AppError && error.code === "INVALID_URL") throw error;
+      if (error instanceof AppError && /429|rate-limited/i.test(error.message)) {
+        throw error;
+      }
+      if (cheerioResult.textContent.length >= 40) {
+        return {
+          title: cheerioResult.title || sourceUrl,
+          textContent: cheerioResult.textContent,
+          sourceUrl: normalizeUrl(sourceUrl) || sourceUrl,
+        };
+      }
+      throw error;
+    }
+
+    if (cheerioResult.textContent.length >= 40) {
+      return {
+        title: cheerioResult.title || sourceUrl,
+        textContent: cheerioResult.textContent,
+        sourceUrl: normalizeUrl(sourceUrl) || sourceUrl,
+      };
+    }
+  } else if (pageFetch.status === 429) {
+    throw new AppError("EXTRACT_FAILURE", rateLimitedMessage(false), 502);
+  } else if (pageFetch.status === 404) {
+    throw new AppError("INVALID_URL", "That job page could not be found (404).", 400);
+  } else if (pageFetch.status > 0) {
+    throw new AppError(
+      "EXTRACT_FAILURE",
+      `Could not fetch the job page (HTTP ${pageFetch.status}). Try uploading a PDF, DOCX, PNG, or JPG instead.`,
+      502
+    );
+  } else {
+    throw new AppError(
+      "EXTRACT_FAILURE",
+      "Network failure while fetching the job URL. Check the link and try again.",
+      502
+    );
+  }
+
+  throw new AppError(
+    "EXTRACT_FAILURE",
+    "Could not extract readable text from this page after Cheerio and Playwright. Try uploading a PDF instead.",
+    502
+  );
 }

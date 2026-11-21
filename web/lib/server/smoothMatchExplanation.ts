@@ -13,6 +13,7 @@ Do not include or rewrite the first sentence. Do not change the percentage. Do n
 Do not invent skills, tools, or requirements that were not supplied.
 Write a few clear sentences about what matched, what is missing, and, when inputChange is present, why the inputs changed. Keep that meaning the same.
 Keep short skill and tool names recognizable. When a label is a long description, say it in shorter natural language without adding requirements.
+Write the follow-on sentences in English. If a skill or tool label is Thai or another non-English language, use a short English name for it in the explanation.
 Do not predict hiring success. Do not give learning advice.
 Return JSON only: {"explanation":"<a few sentences>"}`;
 

@@ -6,6 +6,7 @@ import { calculateMatch, matchingRequirementsFromLegacy, normalizeMatchingRequir
 import { combineMatchExplanation, matchExplanationChange, matchExplanationHash, matchExplanationSentences, matchExplanationSnapshot, readStoredMatchExplanation, type StoredMatchExplanation } from "@/lib/match-explanation";
 import { smoothMatchFollowOn } from "@/lib/server/smoothMatchExplanation";
 import { aiSkillGapRecommendations } from "@/lib/server/skillGapRecommendations";
+import { toEnglishShortLabels } from "@/lib/server/englishLabels";
 import { isAppError } from "@/lib/server/errors";
 import type { SkillGapRecommendation } from "@/lib/skill-gap-recommendations";
 
@@ -13,23 +14,35 @@ export const runtime = "nodejs";
 
 const SMOOTHER_UNAVAILABLE = "Smoother wording is unavailable.";
 
-function wordingLines(match: MatchResult) {
+function wordingLines(match: MatchResult, labelMap?: Map<string, string>) {
+  const localize = (label: string) => labelMap?.get(label) ?? label;
   return {
     matched: match.criteria
       .filter((item) => (item.category === "skill" || item.category === "tool") && item.result === "matched")
       .map((item) => ({
-        label: item.label,
+        label: localize(item.label),
         classification: item.classification,
         reason: item.match?.reason ?? "",
       })),
     notMet: match.skillMatch.toAcquire
       .filter((item) => item.category === "skill" || item.category === "tool")
       .map((item) => ({
-        label: item.label,
+        label: localize(item.label),
         classification: item.classification,
         reason: item.detail,
       })),
   };
+}
+
+async function englishLabelMap(labels: string[]) {
+  const unique = Array.from(new Set(labels.map((label) => label.trim()).filter(Boolean)));
+  const english = await toEnglishShortLabels(unique);
+  const map = new Map<string, string>();
+  unique.forEach((label, index) => {
+    const next = english[index]?.trim();
+    if (next) map.set(label, next);
+  });
+  return map;
 }
 
 async function saveMatchExplanation(id: string, userId: string, value: StoredMatchExplanation) {
@@ -73,7 +86,27 @@ export async function GET(_request: Request, { params }: { params: { id: string 
       user.id,
     );
     const stored = readStoredMatchExplanation(explanationRows[0]?.matchExplanationState ?? null);
-    const sentences = score === null ? null : matchExplanationSentences(match, stored?.snapshot ?? null, snapshot);
+    const labelMap = score === null
+      ? new Map<string, string>()
+      : await englishLabelMap([
+          ...match.skillMatch.matched.map((item) => item.label),
+          ...match.skillMatch.toAcquire.map((item) => item.label),
+        ]);
+    const localizedMatch: MatchResult = {
+      ...match,
+      skillMatch: {
+        ...match.skillMatch,
+        matched: match.skillMatch.matched.map((item) => ({
+          ...item,
+          label: labelMap.get(item.label) ?? item.label,
+        })),
+        toAcquire: match.skillMatch.toAcquire.map((item) => ({
+          ...item,
+          label: labelMap.get(item.label) ?? item.label,
+        })),
+      },
+    };
+    const sentences = score === null ? null : matchExplanationSentences(localizedMatch, stored?.snapshot ?? null, snapshot);
     const first = sentences?.[0] ?? "";
     const fresh = sentences?.join(" ") ?? null;
     const sameInputs = stored?.hash === hash;
@@ -91,7 +124,7 @@ export async function GET(_request: Request, { params }: { params: { id: string 
         await saveMatchExplanation(params.id, user.id, { hash, explanation: first, snapshot, smoothed: true });
       } else {
         try {
-          const lines = wordingLines(match);
+          const lines = wordingLines(match, labelMap);
           const followOn = await smoothMatchFollowOn({
             percentage: score,
             firstSentence: first,

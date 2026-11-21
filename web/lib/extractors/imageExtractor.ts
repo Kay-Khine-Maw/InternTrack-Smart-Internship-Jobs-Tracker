@@ -1,9 +1,18 @@
 import "server-only";
+import os from "node:os";
 import path from "node:path";
 import { AppError } from "@/lib/server/errors";
 
 const EMPTY_OCR_MESSAGE =
   "Could not read this image. Try a clearer photo or a PDF.";
+
+function tessdataCachePath() {
+  // Vercel’s app filesystem is read-only; OCR language data must use /tmp.
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return path.join(os.tmpdir(), "interntrack-tessdata");
+  }
+  return path.join(process.cwd(), ".tessdata");
+}
 
 async function loadTesseract() {
   const imported = await import(/* webpackIgnore: true */ "tesseract.js");
@@ -25,7 +34,7 @@ export async function extractFromImage(buffer: Buffer, filename?: string) {
       throw new Error("tesseract.js createWorker is not available");
     }
     worker = await createWorker("eng", 1, {
-      cachePath: path.join(process.cwd(), ".tessdata"),
+      cachePath: tessdataCachePath(),
       gzip: true,
     });
     const result = await worker.recognize(Buffer.from(buffer));

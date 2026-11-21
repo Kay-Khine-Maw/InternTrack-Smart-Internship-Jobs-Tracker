@@ -7,6 +7,7 @@ export const TRANSLATABLE_FIELDS = [
   "skills",
   "notes",
   "documents",
+  "tags",
 ] as const;
 
 export type TranslatableField = (typeof TRANSLATABLE_FIELDS)[number];
